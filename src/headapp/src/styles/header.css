@@ -1,0 +1,133 @@
+/* ==============================================
+   HEADER COMPONENT STYLES — Figma: node 1147-22
+   ============================================== */
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 54px;
+  height: 100px;
+  background-color: #ffffff;
+  font-family: 'Poppins', sans-serif;
+  color: #000000;
+  position: relative;
+  width: 100%;
+  z-index: 100;
+  box-sizing: border-box;
+}
+
+/* ── Logo ─────────────────────────────────────── */
+.header__logo {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  text-decoration: none;
+  flex-shrink: 0;
+}
+
+.header__logo img {
+  height: 32px;
+  width: 50px;
+  object-fit: cover;
+}
+
+.header__logo-text {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 700;
+  font-size: 34px;
+  color: #000000;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+/* ── Navigation ───────────────────────────────── */
+.header__nav {
+  display: flex;
+  align-items: center;
+  gap: 75px;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.header__nav-link {
+  font-family: 'Poppins', sans-serif;
+  font-size: 16px;
+  font-weight: 500;
+  color: #000000;
+  text-decoration: none;
+  transition: opacity 0.2s ease;
+  white-space: nowrap;
+}
+
+.header__nav-link:hover {
+  opacity: 0.65;
+}
+
+/* ── Action Icons ─────────────────────────────── */
+.header__icons {
+  display: flex;
+  align-items: center;
+  gap: 25px;
+  flex-shrink: 0;
+}
+
+.header__icon-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  color: #000000;
+  transition: opacity 0.2s ease;
+}
+
+.header__icon-btn:hover {
+  opacity: 0.65;
+}
+
+.header__icon-btn svg {
+  width: 28px;
+  height: 28px;
+  flex-shrink: 0;
+}
+
+/* ── Responsive ───────────────────────────────── */
+@media (max-width: 1024px) {
+  .header {
+    padding: 0 32px;
+  }
+
+  .header__nav {
+    gap: 40px;
+  }
+}
+
+@media (max-width: 768px) {
+  .header {
+    flex-wrap: wrap;
+    height: auto;
+    padding: 16px 24px;
+    gap: 16px;
+    justify-content: space-between;
+  }
+
+  .header__nav {
+    position: static;
+    transform: none;
+    order: 3;
+    width: 100%;
+    justify-content: center;
+    gap: 24px;
+    flex-wrap: wrap;
+  }
+
+  .header__icons {
+    gap: 16px;
+  }
+}

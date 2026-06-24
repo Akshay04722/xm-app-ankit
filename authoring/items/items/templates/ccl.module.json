@@ -47,6 +47,11 @@
                 "name": "ccl.media.bp",
                 "path": "/sitecore/media library/Feature/SYNC",
                 "allowedPushOperations": "CreateUpdateAndDelete"
+            },
+            {
+                "name": "ccl.media.akshay",
+                "path": "/sitecore/media library/Project/akshay/akshayxmc",
+                "allowedPushOperations": "CreateUpdateAndDelete"
             }
         ]
     }
