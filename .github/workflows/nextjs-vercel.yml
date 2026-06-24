@@ -37,6 +37,7 @@ jobs:
         SITECORE_API_HOST=${{ secrets.SITECORE_API_HOST }}
         SITECORE_API_KEY=${{ secrets.SITECORE_API_KEY }}
         SITECORE_EDGE_CONTEXT_ID=${{ secrets.SITECORE_EDGE_CONTEXT_ID }}
+        JSS_APP_NAME=akshayxmc
         EOF
 
     - name: Debug .env.local
