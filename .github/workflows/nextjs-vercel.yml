@@ -30,17 +30,22 @@ jobs:
         cd headapp
         npm ci
 
-    - name: Debug Sitecore Environment Variables
+    - name: Create .env.local
       run: |
-        echo "SITECORE_CONTEXT_ID=${SITECORE_CONTEXT_ID:+SET}"
-        echo "SITECORE_API_HOST=${SITECORE_API_HOST:+SET}"
-        echo "SITECORE_API_KEY=${SITECORE_API_KEY:+SET}"
-                echo "SITECORE_EDGE_CONTEXT_ID=${SITECORE_EDGE_CONTEXT_ID:+SET}"
+        cat > headapp/.env.local << 'EOF'
+        SITECORE_CONTEXT_ID=${{ secrets.SITECORE_CONTEXT_ID }}
+        SITECORE_API_HOST=${{ secrets.SITECORE_API_HOST }}
+        SITECORE_API_KEY=${{ secrets.SITECORE_API_KEY }}
+        SITECORE_EDGE_CONTEXT_ID=${{ secrets.SITECORE_EDGE_CONTEXT_ID }}
+        EOF
+
+    - name: Debug .env.local
+      run: cat headapp/.env.local
 
     - name: Build Next.js App
       run: |
         cd headapp
-        npm run build || { echo "Build failed" ; exit 1; }
+        npm run build || { echo "Build failed"; exit 1; }
 
   deploy:
     name: Deploy to Vercel
@@ -63,6 +68,15 @@ jobs:
 
     - name: Install Vercel CLI
       run: npm install -g vercel
+
+    - name: Create .env.local
+      run: |
+        cat > headapp/.env.local << 'EOF'
+        SITECORE_CONTEXT_ID=${{ secrets.SITECORE_CONTEXT_ID }}
+        SITECORE_API_HOST=${{ secrets.SITECORE_API_HOST }}
+        SITECORE_API_KEY=${{ secrets.SITECORE_API_KEY }}
+        SITECORE_EDGE_CONTEXT_ID=${{ secrets.SITECORE_EDGE_CONTEXT_ID }}
+        EOF
 
     - name: Pull Vercel Environment Information
       run: |
