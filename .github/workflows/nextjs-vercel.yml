@@ -37,6 +37,8 @@ jobs:
         SITECORE_API_HOST=${{ secrets.SITECORE_API_HOST }}
         SITECORE_API_KEY=${{ secrets.SITECORE_API_KEY }}
         SITECORE_EDGE_CONTEXT_ID=${{ secrets.SITECORE_EDGE_CONTEXT_ID }}
+        SITECORE_CLIENT_ID=${{ secrets.SITECORE_CLIENT_ID }}
+        SITECORE_CLIENT_SECRET=${{ secrets.SITECORE_CLIENT_SECRET }}
         JSS_APP_NAME=akshayxmc
         EOF
 
