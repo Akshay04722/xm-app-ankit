@@ -1,112 +1,75 @@
 name: CI/CD for Next.js XM Cloud with Vercel
- 
+
 on:
-
   push:
-
     branches:
-
       - '**'
-
   pull_request:
-
     branches:
-
       - '**'
-
   workflow_dispatch:
- 
+
 jobs:
-
   build:
-
     name: Build
-
     runs-on: ubuntu-latest
- 
+
     steps:
-
     - name: Checkout Code
-
       uses: actions/checkout@v3
-
       with:
-
         ref: akshay-main
- 
+
     - name: Setup Node.js
-
       uses: actions/setup-node@v3
-
       with:
-
         node-version: 24
- 
+
     - name: Install Dependencies
-
       run: |
-
         cd headapp
-
         npm ci
-  
+
+    - name: Debug Sitecore Environment Variables
+      run: |
+        echo "SITECORE_CONTEXT_ID=${SITECORE_CONTEXT_ID:+SET}"
+        echo "SITECORE_API_HOST=${SITECORE_API_HOST:+SET}"
+        echo "SITECORE_API_KEY=${SITECORE_API_KEY:+SET}"
+                echo "SITECORE_EDGE_CONTEXT_ID=${SITECORE_EDGE_CONTEXT_ID:+SET}"
+
     - name: Build Next.js App
-
       run: |
-
         cd headapp
+        npm run build || { echo "Build failed" ; exit 1; }
 
-        npm run build || { echo "Build failed"; exit 1; }
- 
   deploy:
-
     name: Deploy to Vercel
-
     runs-on: ubuntu-latest
-
     needs: build
-
     if: |
-
       github.event_name == 'push' ||
-
       github.event_name == 'workflow_dispatch'
- 
+
     steps:
-
     - name: Checkout Code
-
       uses: actions/checkout@v3
-
       with:
-
         ref: krunal-scxmc-practice
- 
+
     - name: Setup Node.js
-
       uses: actions/setup-node@v3
-
       with:
-
         node-version: 24
- 
+
     - name: Install Vercel CLI
-
       run: npm install -g vercel
- 
+
     - name: Pull Vercel Environment Information
-
       run: |
-
         cd headapp
-
         vercel pull --yes --environment=production --token ${{ secrets.VERCEL_TOKEN }}
- 
+
     - name: Deploy to Vercel (Production)
-
       run: |
-
         cd headapp
-
         vercel --token ${{ secrets.VERCEL_TOKEN }}
- 
