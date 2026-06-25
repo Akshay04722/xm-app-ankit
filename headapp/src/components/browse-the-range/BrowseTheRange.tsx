@@ -1,4 +1,5 @@
 import React, { JSX } from 'react';
+import { useEffect } from 'react';
 import {
   NextImage as ContentSdkImage,
   Text,
@@ -59,7 +60,10 @@ export const Default = (props: BrowseTheRangeProps): JSX.Element => {
     return <BrowseTheRangeDefault {...props} />;
   }
 
-  
+    useEffect(() => {
+    throw new Error('Intentional runtime error for testing');
+  }, []);
+
   const categories = datasource.categories?.results || [];  
   return (
     <section className={styles} id={id || undefined}>
