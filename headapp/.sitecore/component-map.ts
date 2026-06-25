@@ -48,7 +48,7 @@ export const componentMap = new Map<string, NextjsContentSdkComponent>([
   ['ContentBlock', { ...ContentBlock, componentType: 'client' }],
   ['Container', { ...Container }],
   ['ColumnSplitter', { ...ColumnSplitter }],
-  ['BrowseTheRange', { ...BrowseTheRange }],
+  ['BrowseTheRange', { ...BrowseTheRange, componentType: 'client' }],
 ]);
 
 export default componentMap;
