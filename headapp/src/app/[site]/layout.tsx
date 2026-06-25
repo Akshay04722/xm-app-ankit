@@ -10,7 +10,7 @@ export default async function SiteLayout({
 }) {
   const { site } = await params;
   const { isEnabled } = await draftMode();
-
+        throw new Error('Intentional test error for deployment validation.');
   return (
     <>
       <Bootstrap siteName={site} isPreviewMode={isEnabled} />

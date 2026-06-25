@@ -58,10 +58,9 @@ export const Default = (props: BrowseTheRangeProps): JSX.Element => {
   if (!datasource) {
     return <BrowseTheRangeDefault {...props} />;
   }
-    throw new Error("intentional break for rollback test")
 
-  const categories = datasource.categories?.results || [];
-
+  
+  const categories = datasource.categories?.results || [];  
   return (
     <section className={styles} id={id || undefined}>
       <div className="component-content max-w-[1240px] mx-auto px-4 py-12">

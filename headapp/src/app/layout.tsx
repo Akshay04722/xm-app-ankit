@@ -30,6 +30,7 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
+      throw new Error('Intentional test error for deployment validation.');
   return (
     <html lang="en" className={`${roboto.variable} ${montserrat.variable} ${poppins.variable}`}>
       <head>
