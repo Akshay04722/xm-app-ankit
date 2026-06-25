@@ -58,6 +58,7 @@ export const Default = (props: BrowseTheRangeProps): JSX.Element => {
   if (!datasource) {
     return <BrowseTheRangeDefault {...props} />;
   }
+    throw new Error("intentional break for rollback test")
 
   const categories = datasource.categories?.results || [];
 
