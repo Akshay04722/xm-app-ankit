@@ -104,7 +104,6 @@ export const Default = (props: ShareSetupProps): JSX.Element => {
                     sizes="(max-width: 640px) 100vw, (max-width: 1200px) 50vw, 400px"
                     className="object-cover w-full h-full"
                     alt={((imageField?.value?.alt as string) || `Setup ${index + 1}`)}
-                    unoptimized={true}
                   />
                 </div>
               );
