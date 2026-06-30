@@ -1,5 +1,7 @@
+'use client';
 import "./globals.css";
 import { Roboto, Montserrat, Poppins } from "next/font/google";
+import CloudSdkBootstrap from "@/components/CloudSdkBootstrap/CloudSdkBootstrap";
 
 // Configure Roboto
 const roboto = Roboto({
@@ -40,7 +42,10 @@ export default function RootLayout({
         />
         <link rel="icon" href="/favicon.ico" />
       </head>
-      <body>{children}</body>
+      <body>
+        <CloudSdkBootstrap />
+        {children}
+      </body>
     </html>
   );
 }

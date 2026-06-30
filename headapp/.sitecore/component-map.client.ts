@@ -7,6 +7,7 @@ import * as OurProducts from 'src/components/our-products/OurProducts';
 import * as Navigation from 'src/components/navigation/Navigation';
 import * as Inspirations from 'src/components/inspirations/Inspirations';
 import * as ContentBlock from 'src/components/content-block/ContentBlock';
+import * as CloudSdkBootstrap from 'src/components/CloudSdkBootstrap/CloudSdkBootstrap';
 import * as Blog from 'src/components/blog/Blog';
 
 export const componentMap = new Map<string, NextjsContentSdkComponent>([
@@ -17,6 +18,7 @@ export const componentMap = new Map<string, NextjsContentSdkComponent>([
   ['Navigation', { ...Navigation }],
   ['Inspirations', { ...Inspirations }],
   ['ContentBlock', { ...ContentBlock }],
+  ['CloudSdkBootstrap', { ...CloudSdkBootstrap }],
   ['Blog', { ...Blog }],
 ]);
 

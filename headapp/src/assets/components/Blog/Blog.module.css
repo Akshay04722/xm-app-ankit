@@ -5,11 +5,11 @@
 /* Layout & Grid Configuration */
 .blogContainer {
   width: 100%;
-  max-width: 90rem; /* 1440px (exact Figma Frame width) */
+  max-width: 77.6875rem; /* 1243px (exact active content width from Figma) */
   margin-left: auto;
   margin-right: auto;
-  padding-left: 6.0625rem; /* 97px left margin from Figma */
-  padding-right: 6.25rem; /* 100px right margin from Figma */
+  padding-left: 0;
+  padding-right: 0;
   padding-top: var(--spacing-xl, 2.5rem);
   padding-bottom: var(--spacing-xl, 2.5rem);
 }
@@ -131,7 +131,7 @@
 /* Pagination Component */
 .pagination {
   display: flex;
-  justify-content: center;
+  justify-content: flex-end; /* Aligned to the right edge from Figma */
   align-items: center;
   gap: 2.375rem; /* 38px spacing between pagination buttons */
   margin-top: 3.375rem; /* 54px spacing from bottom of list */
@@ -177,12 +177,20 @@
   width: 100%;
 }
 
+.sidebarWidgetCombined {
+  width: 100%;
+  background-color: var(--color-text-white, #FFFFFF);
+  padding-top: 1.375rem; /* 22px from Figma */
+  padding-bottom: 3.8125rem; /* 61px from Figma */
+  padding-left: 2.5625rem; /* 41px from Figma */
+  padding-right: 2.5625rem; /* 41px from Figma */
+  border-radius: 0.625rem; /* 10px matching other components */
+}
+
 .searchBox {
   position: relative;
   width: 100%;
-  max-width: 19.4375rem; /* 311px from Figma */
   height: 3.625rem; /* 58px from Figma */
-  margin-left: auto; /* Aligned to the right inside the 393px width */
 }
 
 .searchInput {
@@ -207,23 +215,30 @@
   cursor: pointer;
 }
 
-/* Widget General Styles */
-.widget {
+.categoriesWidget {
   width: 100%;
-  background-color: var(--color-text-white, #FFFFFF);
-  padding: 1rem;
+  margin-top: 2.6875rem; /* 43px gap between search box and categories title from Figma */
+  margin-left: 2.25rem; /* 36px offset to align categories name to x:77 from Figma */
+  margin-right: 1.5rem; /* 24px offset to align categories count to x:328 from Figma */
 }
 
 .widgetTitle {
   margin-top: 0;
-  margin-bottom: 1.625rem; /* 26px gap below title from Figma */
   font-family: var(--font-poppins, sans-serif);
   font-weight: 500;
   font-size: 1.5rem; /* 24px from Figma */
   color: var(--color-text-dark, #000000);
 }
 
-/* Categories Widget */
+.categoriesWidget .widgetTitle {
+  margin-bottom: 2.0625rem; /* 33px gap below title from Figma */
+}
+
+.recentPostsWidget .widgetTitle {
+  margin-bottom: 1.625rem; /* 26px gap below title from Figma */
+}
+
+/* Categories Widget list */
 .categoriesList {
   list-style: none;
   padding: 0;
@@ -260,6 +275,17 @@
 }
 
 /* Recent Posts Widget */
+.recentPostsWidget {
+  width: 100%;
+  background-color: var(--color-text-white, #FFFFFF);
+  padding-top: 1rem; /* 16px from Figma */
+  padding-bottom: 1rem; /* 16px from Figma */
+  padding-left: 4.75rem; /* 76px from Figma */
+  padding-right: 4.0625rem; /* 65px from Figma */
+  border-radius: 0.625rem; /* 10px matching other components */
+}
+
+/* Recent Posts Widget list */
 .recentPostsList {
   display: flex;
   flex-direction: column;
@@ -285,6 +311,7 @@
   display: flex;
   flex-direction: column;
   gap: 0.3125rem; /* 5px spacing */
+  flex: 1;
 }
 
 .recentPostTitle {
@@ -317,10 +344,10 @@
 }
 
 /* Responsive Overrides */
-@media (max-width: 1440px) {
+@media (max-width: 1280px) {
   .blogContainer {
-    padding-left: 3rem;
-    padding-right: 3rem;
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
   }
 }
 
@@ -335,11 +362,6 @@
     gap: 3rem;
   }
 
-  .searchBox {
-    margin-left: 0;
-    max-width: 100%;
-  }
-
   .sidebar {
     order: 2; /* Sidebar goes below the blog list on mobile/tablet */
     border-top: 1px solid var(--color-bg-beige, #F9F1E7);
@@ -348,6 +370,18 @@
 
   .leftColumn {
     order: 1;
+  }
+
+  .sidebarWidgetCombined,
+  .recentPostsWidget {
+    padding: 1.5rem !important;
+    height: auto !important;
+  }
+
+  .categoriesWidget {
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    margin-top: 1.5rem !important;
   }
 }
 
@@ -368,5 +402,6 @@
 
   .pagination {
     gap: 1rem;
+    justify-content: center; /* Center pagination on mobile */
   }
 }
