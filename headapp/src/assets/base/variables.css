@@ -66,6 +66,12 @@
   --color-gray-2: #616161;
   --color-bg-light: #FCF8F3;
 
+  /* // blog custom variables */
+  --color-text-dark: #000000;
+  --color-text-muted: #9F9F9F;
+  --color-primary-gold: #B88E2F;
+  --color-bg-beige: #F9F1E7;
+
   /* // shop-banner custom variables */
   --spacing-banner-height: 316px;
   --spacing-banner-spacing-sm: 2px;

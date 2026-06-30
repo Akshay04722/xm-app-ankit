@@ -25,6 +25,7 @@ import * as ContentBlock from 'src/components/content-block/ContentBlock';
 import * as Container from 'src/components/container/Container';
 import * as ColumnSplitter from 'src/components/column-splitter/ColumnSplitter';
 import * as BrowseTheRange from 'src/components/browse-the-range/BrowseTheRange';
+import * as Blog from 'src/components/blog/Blog';
 
 export const componentMap = new Map<string, NextjsContentSdkComponent>([
   ['BYOCWrapper', BYOCServerWrapper],
@@ -51,6 +52,7 @@ export const componentMap = new Map<string, NextjsContentSdkComponent>([
   ['Container', { ...Container }],
   ['ColumnSplitter', { ...ColumnSplitter }],
   ['BrowseTheRange', { ...BrowseTheRange }],
+  ['Blog', { ...Blog, componentType: 'client' }],
 ]);
 
 export default componentMap;

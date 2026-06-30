@@ -1,0 +1,372 @@
+/* ==============================================
+   BLOG COMPONENT SCOPED CSS - ACCURATE TO FIGMA
+   ============================================== */
+
+/* Layout & Grid Configuration */
+.blogContainer {
+  width: 100%;
+  max-width: 90rem; /* 1440px (exact Figma Frame width) */
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 6.0625rem; /* 97px left margin from Figma */
+  padding-right: 6.25rem; /* 100px right margin from Figma */
+  padding-top: var(--spacing-xl, 2.5rem);
+  padding-bottom: var(--spacing-xl, 2.5rem);
+}
+
+.mainLayout {
+  display: grid;
+  grid-template-columns: minmax(0, 51.25rem) 24.5625rem; /* 820px posts and 393px sidebar */
+  gap: 1.875rem; /* 30px horizontal gap from Figma (947 - 917) */
+  align-items: start;
+}
+
+/* Left Column: Blog Posts List */
+.leftColumn {
+  display: flex;
+  flex-direction: column;
+  gap: 3.375rem; /* 54px vertical gap below posts list */
+}
+
+.postsList {
+  display: flex;
+  flex-direction: column;
+  gap: 3.375rem; /* 54px spacing between posts */
+}
+
+.postCard {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+/* Images and Media */
+.imageWrapper {
+  width: 100%;
+  aspect-ratio: 817 / 500; /* Proportional aspect ratio from Figma */
+  max-height: 31.25rem; /* 500px maximum height */
+  border-radius: 0.625rem; /* 10px from Figma */
+  overflow: hidden;
+}
+
+/* Post Metadata Row */
+.metaRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 2.1875rem; /* 35px gap from Figma */
+  margin-top: 1.0625rem; /* 17px top spacing from Figma */
+  margin-bottom: 0.9375rem; /* 15px bottom spacing from Figma */
+}
+
+.metaItem {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem; /* 8px spacing */
+  font-family: var(--font-poppins, sans-serif);
+  font-size: var(--font-size-base, 1rem); /* 16px from Figma */
+  font-weight: 400;
+  color: var(--color-text-muted, #9F9F9F);
+}
+
+.metaItem svg {
+  width: 1.25rem;
+  height: 1.25rem;
+  color: var(--color-text-muted, #9F9F9F);
+  flex-shrink: 0;
+}
+
+/* Post Typography */
+.title {
+  margin-top: 0;
+  margin-bottom: 0.75rem; /* 12px gap from Figma */
+  font-family: var(--font-poppins, sans-serif);
+  font-weight: 500; /* 500 Medium from Figma */
+  font-size: 1.875rem; /* 30px from Figma */
+  line-height: 1.25;
+  color: var(--color-text-dark, #000000);
+}
+
+.description {
+  margin-top: 0;
+  margin-bottom: 1.875rem; /* 30px gap from Figma */
+  font-family: var(--font-poppins, sans-serif);
+  font-size: 0.9375rem; /* 15px from Figma */
+  line-height: 1.5; /* 1.5em from Figma */
+  color: var(--color-text-muted, #9F9F9F);
+  text-align: justify;
+}
+
+/* Post Interactive Elements (Underlined Link) */
+.linkContainer {
+  position: relative;
+  display: inline-flex;
+  flex-direction: column;
+  align-self: flex-start;
+}
+
+.readMoreLink {
+  font-family: var(--font-poppins, sans-serif);
+  font-size: var(--font-size-base, 1rem); /* 16px from Figma */
+  font-weight: 400;
+  color: var(--color-text-dark, #000000);
+  text-decoration: none;
+  padding-bottom: 0.75rem; /* 12px spacing above underline */
+  cursor: pointer;
+  transition: opacity 0.2s ease-in-out;
+}
+
+.readMoreLink:hover {
+  opacity: 0.8;
+}
+
+.underline {
+  display: block;
+  width: 4.8125rem; /* 77px line width from Figma */
+  height: 1px;
+  background-color: var(--color-text-dark, #000000);
+  margin-left: 0.375rem; /* 6px horizontal offset from Figma */
+}
+
+/* Pagination Component */
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 2.375rem; /* 38px spacing between pagination buttons */
+  margin-top: 3.375rem; /* 54px spacing from bottom of list */
+}
+
+.pageButton {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 3.75rem; /* 60px from Figma */
+  height: 3.75rem; /* 60px from Figma */
+  font-family: var(--font-poppins, sans-serif);
+  font-size: 1.25rem; /* 20px from Figma */
+  font-weight: 400;
+  color: var(--color-text-dark, #000000);
+  background-color: var(--color-bg-beige, #F9F1E7);
+  border: none;
+  border-radius: 0.625rem; /* 10px from Figma */
+  cursor: pointer;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.pageButton:hover {
+  background-color: #f1e4d3;
+}
+
+.activePage {
+  color: var(--color-text-white, #FFFFFF);
+  background-color: var(--color-primary-gold, #B88E2F) !important;
+  cursor: default;
+}
+
+.nextButton {
+  width: 6.125rem; /* 98px from Figma */
+  font-weight: 300; /* 300 Light from Figma */
+}
+
+/* Right Column: Sidebar */
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 2.5625rem; /* 41px gap between sidebar widgets from Figma */
+  width: 100%;
+}
+
+.searchBox {
+  position: relative;
+  width: 100%;
+  max-width: 19.4375rem; /* 311px from Figma */
+  height: 3.625rem; /* 58px from Figma */
+  margin-left: auto; /* Aligned to the right inside the 393px width */
+}
+
+.searchInput {
+  width: 100%;
+  height: 100%;
+  padding: 0.5rem 3.5rem 0.5rem 1rem;
+  border: 1px solid var(--color-text-muted, #9F9F9F);
+  border-radius: 0.625rem; /* 10px from Figma */
+  font-family: var(--font-poppins, sans-serif);
+  font-size: 1rem;
+  outline: none;
+}
+
+.searchButton {
+  position: absolute;
+  right: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: var(--color-text-dark, #000000);
+  cursor: pointer;
+}
+
+/* Widget General Styles */
+.widget {
+  width: 100%;
+  background-color: var(--color-text-white, #FFFFFF);
+  padding: 1rem;
+}
+
+.widgetTitle {
+  margin-top: 0;
+  margin-bottom: 1.625rem; /* 26px gap below title from Figma */
+  font-family: var(--font-poppins, sans-serif);
+  font-weight: 500;
+  font-size: 1.5rem; /* 24px from Figma */
+  color: var(--color-text-dark, #000000);
+}
+
+/* Categories Widget */
+.categoriesList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2.5625rem; /* 41px vertical gap from Figma */
+}
+
+.categoryItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: var(--font-poppins, sans-serif);
+  font-size: 1rem; /* 16px from Figma */
+  color: var(--color-text-muted, #9F9F9F);
+  transition: color 0.2s ease-in-out;
+}
+
+.categoryItem:hover {
+  color: var(--color-primary-gold, #B88E2F);
+}
+
+.activeCategory {
+  color: var(--color-primary-gold, #B88E2F) !important;
+}
+
+.categoryName {
+  font-weight: inherit;
+}
+
+.categoryCount {
+  font-weight: inherit;
+}
+
+/* Recent Posts Widget */
+.recentPostsList {
+  display: flex;
+  flex-direction: column;
+  gap: 2.4375rem; /* 39px vertical gap from Figma */
+}
+
+.recentPostCard {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem; /* 12px gap from Figma */
+  width: 100%;
+}
+
+.recentPostImageWrapper {
+  width: 5rem; /* 80px width from Figma */
+  height: 5rem; /* 80px height from Figma */
+  border-radius: 0.625rem; /* 10px from Figma */
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.recentPostContent {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3125rem; /* 5px spacing */
+}
+
+.recentPostTitle {
+  margin: 0;
+  font-family: var(--font-poppins, sans-serif);
+  font-size: 0.875rem; /* 14px from Figma */
+  font-weight: 400;
+  line-height: 1.25;
+}
+
+.recentPostLink {
+  color: var(--color-text-dark, #000000);
+  text-decoration: none;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  transition: opacity 0.2s;
+}
+
+.recentPostLink:hover {
+  opacity: 0.8;
+}
+
+.recentPostDate {
+  font-family: var(--font-poppins, sans-serif);
+  font-size: 0.75rem; /* 12px from Figma */
+  font-weight: 400;
+  color: var(--color-text-muted, #9F9F9F);
+}
+
+/* Responsive Overrides */
+@media (max-width: 1440px) {
+  .blogContainer {
+    padding-left: 3rem;
+    padding-right: 3rem;
+  }
+}
+
+@media (max-width: 1024px) {
+  .blogContainer {
+    padding-left: var(--spacing-md, 1rem);
+    padding-right: var(--spacing-md, 1rem);
+  }
+
+  .mainLayout {
+    grid-template-columns: 1fr;
+    gap: 3rem;
+  }
+
+  .searchBox {
+    margin-left: 0;
+    max-width: 100%;
+  }
+
+  .sidebar {
+    order: 2; /* Sidebar goes below the blog list on mobile/tablet */
+    border-top: 1px solid var(--color-bg-beige, #F9F1E7);
+    padding-top: 2rem;
+  }
+
+  .leftColumn {
+    order: 1;
+  }
+}
+
+@media (max-width: 768px) {
+  .title {
+    font-size: 1.5rem; /* 24px on mobile */
+  }
+
+  .metaRow {
+    gap: 1rem;
+    margin-top: 0.75rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .postsList {
+    gap: 2.5rem;
+  }
+
+  .pagination {
+    gap: 1rem;
+  }
+}

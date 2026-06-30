@@ -7,6 +7,7 @@ import * as OurProducts from 'src/components/our-products/OurProducts';
 import * as Navigation from 'src/components/navigation/Navigation';
 import * as Inspirations from 'src/components/inspirations/Inspirations';
 import * as ContentBlock from 'src/components/content-block/ContentBlock';
+import * as Blog from 'src/components/blog/Blog';
 
 export const componentMap = new Map<string, NextjsContentSdkComponent>([
   ['BYOCWrapper', BYOCClientWrapper],
@@ -16,6 +17,7 @@ export const componentMap = new Map<string, NextjsContentSdkComponent>([
   ['Navigation', { ...Navigation }],
   ['Inspirations', { ...Inspirations }],
   ['ContentBlock', { ...ContentBlock }],
+  ['Blog', { ...Blog }],
 ]);
 
 export default componentMap;
