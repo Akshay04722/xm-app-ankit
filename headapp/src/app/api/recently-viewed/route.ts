@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getRecentlyViewed, addRecentlyViewed } from '@/lib/cdpGuestApi';
+import { getRecentlyViewed, addRecentlyViewed } from '@/lib/Cdpguestapi';
 
 // Name of the cookie the Sitecore Cloud SDK sets for the guest reference.
 // VERIFY this against your actual deployed cookie — inspect Application > Cookies
