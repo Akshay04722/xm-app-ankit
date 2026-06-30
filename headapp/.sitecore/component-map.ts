@@ -4,10 +4,12 @@ import { BYOCServerWrapper, NextjsContentSdkComponent, FEaaSServerWrapper } from
 import { Form } from '@sitecore-content-sdk/nextjs';
 
 // end of built-in components
+import * as UnifiedSearch from 'src/components/unifiedSearch/UnifiedSearch';
 import * as Title from 'src/components/title/Title';
 import * as StructuredData from 'src/components/structured-data/StructuredData';
 import * as ShopBanner from 'src/components/shop-banner/ShopBanner';
 import * as ShareSetup from 'src/components/share-setup/ShareSetup';
+import * as SearchResults from 'src/components/searchResults/SearchResults';
 import * as RowSplitter from 'src/components/row-splitter/RowSplitter';
 import * as RichText from 'src/components/rich-text/RichText';
 import * as Promo from 'src/components/promo/Promo';
@@ -32,10 +34,12 @@ export const componentMap = new Map<string, NextjsContentSdkComponent>([
   ['BYOCWrapper', BYOCServerWrapper],
   ['FEaaSWrapper', FEaaSServerWrapper],
   ['Form', { ...Form, componentType: 'client' }],
+  ['UnifiedSearch', { ...UnifiedSearch, componentType: 'client' }],
   ['Title', { ...Title }],
   ['StructuredData', { ...StructuredData }],
   ['ShopBanner', { ...ShopBanner }],
   ['ShareSetup', { ...ShareSetup }],
+  ['SearchResults', { ...SearchResults, componentType: 'client' }],
   ['RowSplitter', { ...RowSplitter }],
   ['RichText', { ...RichText }],
   ['Promo', { ...Promo }],
