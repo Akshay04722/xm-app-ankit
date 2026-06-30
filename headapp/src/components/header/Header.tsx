@@ -26,7 +26,7 @@ const AccountIcon = () => (
     strokeWidth="1.5"
     strokeLinecap="round"
     strokeLinejoin="round"
-    aria-label="Account"
+    aria-hidden="true"
   >
     {/* mdi:account-alert-outline */}
     <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
@@ -48,7 +48,7 @@ const SearchIcon = () => (
     strokeWidth="1.8"
     strokeLinecap="round"
     strokeLinejoin="round"
-    aria-label="Search"
+    aria-hidden="true"
   >
     {/* akar-icons:search */}
     <circle cx="11" cy="11" r="7" />
@@ -67,7 +67,7 @@ const HeartIcon = () => (
     strokeWidth="1.8"
     strokeLinecap="round"
     strokeLinejoin="round"
-    aria-label="Wishlist"
+    aria-hidden="true"
   >
     {/* akar-icons:heart */}
     <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
@@ -85,7 +85,7 @@ const CartIcon = () => (
     strokeWidth="1.8"
     strokeLinecap="round"
     strokeLinejoin="round"
-    aria-label="Cart"
+    aria-hidden="true"
   >
     {/* ant-design:shopping-cart-outlined */}
     <circle cx="9" cy="21" r="1" />
@@ -147,7 +147,7 @@ export const Default = (props: HeaderProps): JSX.Element => {
       </nav>
 
       {/* Action Icons */}
-      <div className="header__icons" aria-label="User actions">
+      <div className="header__icons" role="group" aria-label="User actions">
         <button className="header__icon-btn" aria-label="Account">
           <AccountIcon />
         </button>

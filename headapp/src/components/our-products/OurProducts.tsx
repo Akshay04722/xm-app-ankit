@@ -124,7 +124,7 @@ export const Default = (props: OurProductsProps): JSX.Element => {
                     <ContentSdkImage
                       field={imageField}
                       className="object-cover w-full h-full transition-transform duration-500 group-hover:scale-105"
-                      alt={titleField?.value || "Product"}
+                      alt=""
                     />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center text-gray-400">
@@ -186,7 +186,7 @@ export const Default = (props: OurProductsProps): JSX.Element => {
                   className={`absolute inset-0 bg-[#3A3A3A]/72 flex flex-col items-center justify-center gap-6 p-4 transition-all duration-300 z-20 ${
                     hoveredIndex === index
                       ? "opacity-100 pointer-events-auto"
-                      : "opacity-0 pointer-events-none"
+                      : "opacity-0 pointer-events-none group-focus-within:opacity-100 group-focus-within:pointer-events-auto"
                   }`}
                 >
                   {/* CTA button (Add to cart) */}
@@ -212,6 +212,7 @@ export const Default = (props: OurProductsProps): JSX.Element => {
                         height="16"
                         viewBox="0 0 24 24"
                         fill="currentColor"
+                        aria-hidden="true"
                       >
                         <path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92c0-1.61-1.31-2.92-2.92-2.92z" />
                       </svg>
@@ -226,6 +227,7 @@ export const Default = (props: OurProductsProps): JSX.Element => {
                         fill="none"
                         stroke="currentColor"
                         strokeWidth="2"
+                        aria-hidden="true"
                       >
                         <path d="M16 3h5v5M8 21H3v-5M12 12V3M12 12h9M12 12v9M12 12H3" />
                       </svg>
@@ -238,6 +240,7 @@ export const Default = (props: OurProductsProps): JSX.Element => {
                         height="16"
                         viewBox="0 0 24 24"
                         fill="currentColor"
+                        aria-hidden="true"
                       >
                         <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
                       </svg>

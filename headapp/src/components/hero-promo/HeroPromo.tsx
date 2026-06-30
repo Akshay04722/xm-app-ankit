@@ -52,6 +52,7 @@ export const Default = (props: HeroPromoProps): React.JSX.Element => {
           <ContentSdkImage
             field={PromoIcon}
             className="w-full h-full object-cover object-center"
+            alt=""
           />
         </div>
       )}

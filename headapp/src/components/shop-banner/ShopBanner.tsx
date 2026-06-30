@@ -87,7 +87,7 @@ export const Default = (props: ShopBannerProps): React.JSX.Element => {
         )}
 
         {/* Breadcrumb Navigation */}
-        <div className={styles.breadcrumb}>
+        <nav className={styles.breadcrumb} aria-label="Breadcrumb">
           {PromoLink && (
             <CompatibleLink
               field={PromoLink}
@@ -122,9 +122,10 @@ export const Default = (props: ShopBannerProps): React.JSX.Element => {
               tag="span"
               field={PromoText2}
               className={styles.breadcrumbActive}
+              aria-current="page"
             />
           )}
-        </div>
+        </nav>
       </div>
     </section>
   );

@@ -157,6 +157,10 @@ export default function UnifiedSearch() {
                 className="search-input"
                 aria-label="Search blogs input"
                 aria-autocomplete="list"
+                role="combobox"
+                aria-expanded={showSuggestions && blogs.length > 0}
+                aria-controls={showSuggestions && blogs.length > 0 ? "suggestions-listbox" : undefined}
+                aria-activedescendant={focusedIndex >= 0 ? `suggestion-item-${focusedIndex}` : undefined}
               />
               <button type="submit" className="search-submit">
                 Search
@@ -172,11 +176,12 @@ export default function UnifiedSearch() {
 
           {showSuggestions && blogs.length > 0 && (
             <div
+              id="suggestions-listbox"
               className="search-suggestions"
               role="listbox"
               aria-label="Search suggestions"
             >
-              <span className="search-suggestions-header">
+              <span className="search-suggestions-header" role="presentation">
                 Recommended for you
               </span>
               {blogs.map((blog, idx) => {
@@ -190,6 +195,7 @@ export default function UnifiedSearch() {
                 return (
                   <button
                     key={blog.id}
+                    id={`suggestion-item-${idx}`}
                     type="button"
                     className="search-suggestion-card"
                     style={{

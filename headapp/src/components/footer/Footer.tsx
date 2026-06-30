@@ -1,3 +1,4 @@
+'use client';
 import React, { JSX } from 'react';
 import { ComponentProps } from 'lib/component-props';
 
@@ -65,7 +66,7 @@ export const Default = (props: FooterProps): JSX.Element => {
           {/* Column 4: Newsletter */}
           <div className="footer__col">
             <h3 className="footer__col-heading">Newsletter</h3>
-            <div className="footer__newsletter">
+            <form onSubmit={(e) => e.preventDefault()} className="footer__newsletter">
               <div className="footer__newsletter-field">
                 <input
                   type="email"
@@ -77,14 +78,14 @@ export const Default = (props: FooterProps): JSX.Element => {
                   SUBSCRIBE
                 </button>
               </div>
-            </div>
+            </form>
           </div>
         </div>
 
         {/* Bottom: divider + copyright */}
         <div className="footer__bottom">
           <div className="footer__divider" />
-          <p className="footer__copyright">2023 furino. All rights reverved</p>
+          <p className="footer__copyright">2023 furino. All rights reserved</p>
         </div>
       </div>
     </footer>

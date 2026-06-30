@@ -159,7 +159,7 @@ export const Default = (props: BlogProps): React.JSX.Element => {
                   >
                     {imageField && !!(imageField.value?.src || imageField.value?.mediaid) && (
                       <div className={styles.imageWrapper}>
-                        <ContentSdkImage field={imageField} className="w-full h-full object-cover" />
+                        <ContentSdkImage field={imageField} alt="" className="w-full h-full object-cover" />
                       </div>
                     )}
 
@@ -217,6 +217,7 @@ export const Default = (props: BlogProps): React.JSX.Element => {
                   className={`${styles.pageButton} ${validatedCurrentPage === pageNum ? styles.activePage : ''}`}
                   onClick={() => setCurrentPage(pageNum)}
                   aria-label={`Page ${pageNum}`}
+                  aria-current={validatedCurrentPage === pageNum ? 'page' : undefined}
                 >
                   {pageNum}
                 </button>
@@ -254,11 +255,27 @@ export const Default = (props: BlogProps): React.JSX.Element => {
                     <li
                       key={idx}
                       className={`${styles.categoryItem} ${selectedCategory === cat.name ? styles.activeCategory : ''}`}
-                      onClick={() => handleCategoryClick(cat.name)}
-                      style={{ cursor: 'pointer' }}
                     >
-                      <span className={styles.categoryName}>{cat.name}</span>
-                      <span className={styles.categoryCount}>{cat.count}</span>
+                      <button
+                        type="button"
+                        onClick={() => handleCategoryClick(cat.name)}
+                        aria-pressed={selectedCategory === cat.name}
+                        style={{
+                          display: 'flex',
+                          justifyContent: 'space-between',
+                          width: '100%',
+                          background: 'none',
+                          border: 'none',
+                          padding: 0,
+                          font: 'inherit',
+                          color: 'inherit',
+                          cursor: 'pointer',
+                          textAlign: 'left'
+                        }}
+                      >
+                        <span className={styles.categoryName}>{cat.name}</span>
+                        <span className={styles.categoryCount}>{cat.count}</span>
+                      </button>
                     </li>
                   ))}
                 </ul>
@@ -277,7 +294,7 @@ export const Default = (props: BlogProps): React.JSX.Element => {
                       {post.imageSrc && (
                         <div className={styles.recentPostImageWrapper}>
                           {/* plain <img> since this is a plain URL string, not an ImageField */}
-                          <img src={post.imageSrc} alt={post.title} className="w-full h-full object-cover" />
+                          <img src={post.imageSrc} alt="" className="w-full h-full object-cover" />
                         </div>
                       )}
                       <div className={styles.recentPostContent}>
@@ -294,7 +311,7 @@ export const Default = (props: BlogProps): React.JSX.Element => {
                     <div key={post.id} className={styles.recentPostCard}>
                       {post.image && !!(post.image.value?.src || post.image.value?.mediaid) && (
                         <div className={styles.recentPostImageWrapper}>
-                          <ContentSdkImage field={post.image} className="w-full h-full object-cover" />
+                          <ContentSdkImage field={post.image} alt="" className="w-full h-full object-cover" />
                         </div>
                       )}
                       <div className={styles.recentPostContent}>

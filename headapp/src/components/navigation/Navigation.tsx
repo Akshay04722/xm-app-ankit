@@ -67,14 +67,50 @@ const NavigationListItem: React.FC<NavigationListItemProps> = ({
     : null;
 
   return (
-    <li className={classNames} key={fields.Id} tabIndex={0}>
-      <div
-        className={`navigation-title ${hasChildren ? 'child' : ''}`}
-        onClick={() => setIsActive(!isActive)}
-      >
+    <li className={classNames} key={fields.Id}>
+      <div className={`navigation-title ${hasChildren ? 'child' : ''}`}>
         <CompatibleLink field={getLinkField(fields)} editable={page.mode.isEditing} onClick={handleClick}>
           {getTextContent(fields)}
         </CompatibleLink>
+        {hasChildren && (
+          <button
+            type="button"
+            className="submenu-toggle-btn"
+            onClick={(e) => {
+              e.stopPropagation();
+              setIsActive(!isActive);
+            }}
+            aria-expanded={isActive}
+            aria-label={isActive ? `Collapse sub-menu for ${fields.DisplayName}` : `Expand sub-menu for ${fields.DisplayName}`}
+            style={{
+              background: 'none',
+              border: 'none',
+              cursor: 'pointer',
+              padding: '4px 8px',
+              marginLeft: '4px',
+              color: 'inherit',
+              display: 'inline-flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          >
+            <svg
+              width="12"
+              height="12"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              style={{
+                transform: isActive ? 'rotate(180deg)' : 'rotate(0deg)',
+                transition: 'transform 0.2s',
+              }}
+              aria-hidden="true"
+            >
+              <path d="M6 9l6 6 6-6" />
+            </svg>
+          </button>
+        )}
       </div>
       {hasChildren && <ul className="clearfix">{children}</ul>}
     </li>
@@ -115,21 +151,22 @@ export const Default = ({ params, fields }: NavigationProps) => {
 
   return (
     <div className={`component navigation ${styles}`} id={id}>
-      <label className="menu-mobile-navigate-wrapper">
+      <div className="menu-mobile-navigate-wrapper">
         <input
+          id="mobile-menu-checkbox"
           type="checkbox"
           className="menu-mobile-navigate"
           checked={isMenuOpen}
           onChange={() => handleToggleMenu()}
           aria-label={isMenuOpen ? 'Close navigation menu' : 'Open navigation menu'}
         />
-        <div className="menu-humburger" />
+        <label htmlFor="mobile-menu-checkbox" className="menu-humburger" aria-label="Toggle menu" />
         <div className="component-content">
-          <nav>
+          <nav aria-label="Main navigation">
             <ul className="clearfix">{navigationItems}</ul>
           </nav>
         </div>
-      </label>
+      </div>
     </div>
   );
 };

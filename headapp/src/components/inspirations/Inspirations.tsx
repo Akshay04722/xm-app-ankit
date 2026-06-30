@@ -99,7 +99,7 @@ export const Default = (props: InspirationsProps): JSX.Element => {
   };
 
   return (
-    <section className={styles} id={id || undefined}>
+    <section className={styles} id={id || undefined} role="region" aria-roledescription="carousel" aria-label="Inspirations">
       <div className="max-w-[1440px] mx-auto py-11 lg:py-[44px] pl-4 lg:pl-[100px] pr-4 lg:pr-0 flex flex-col lg:flex-row items-center gap-10 lg:gap-[64px]">
         {/* Left Side: Title, Description, and CTA */}
         <div className="w-full lg:max-w-[422px] flex-shrink-0 flex flex-col items-start text-left">
@@ -153,6 +153,7 @@ export const Default = (props: InspirationsProps): JSX.Element => {
                     className={`relative flex-shrink-0 transition-all duration-500 ease-in-out overflow-hidden ${
                       isActive ? 'w-[404px] h-[582px]' : 'w-[372px] h-[486px]'
                     }`}
+                    aria-hidden={!isActive}
                   >
                     {/* Slide Image */}
                     {slideImageField?.value?.src ? (
@@ -191,14 +192,18 @@ export const Default = (props: InspirationsProps): JSX.Element => {
                           <Link
                             field={slideLinkField}
                             className="w-12 h-12 flex items-center justify-center bg-[#B88E2F] text-white transition-all duration-300 hover:bg-[#a67a24]"
+                            aria-label={`Explore details for ${slideTitleField?.value || 'slide'}`}
                           >
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
                               <path d="M5 12h14M12 5l7 7-7 7" />
                             </svg>
                           </Link>
                         ) : (
-                          <button className="w-12 h-12 flex items-center justify-center bg-[#B88E2F] text-white transition-all duration-300 hover:bg-[#a67a24]">
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <button
+                            className="w-12 h-12 flex items-center justify-center bg-[#B88E2F] text-white transition-all duration-300 hover:bg-[#a67a24]"
+                            aria-label={`Explore details for ${slideTitleField?.value || 'slide'}`}
+                          >
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
                               <path d="M5 12h14M12 5l7 7-7 7" />
                             </svg>
                           </button>
@@ -218,8 +223,9 @@ export const Default = (props: InspirationsProps): JSX.Element => {
                 style={{
                   transform: `translateX(-${activeIndex * 0}px)`, // Keep fixed relative to viewport/active slide if desired, or absolute on slider container
                 }}
+                aria-label="Next slide"
               >
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
                   <path d="M9 18l6-6-6-6" />
                 </svg>
               </button>
@@ -236,6 +242,8 @@ export const Default = (props: InspirationsProps): JSX.Element => {
                     key={index}
                     onClick={() => handleDotClick(index)}
                     className="focus:outline-none flex items-center justify-center"
+                    aria-label={`Go to slide ${index + 1}`}
+                    aria-pressed={isActive}
                   >
                     {isActive ? (
                       /* Active dot outer border + active center dot */

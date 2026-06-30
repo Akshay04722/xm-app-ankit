@@ -216,7 +216,7 @@ export default function SearchResults({
   return (
     <div className="search-results-shell">
       <div className="search-results-toolbar">
-        <h3 className="search-results-title">
+        <h3 className="search-results-title" aria-live="polite" role="status">
           {loading
             ? "Searching..."
             : results.length > 0
@@ -340,7 +340,7 @@ export default function SearchResults({
                     {item.image_url ? (
                       <img
                         src={item.image_url as string}
-                        alt={label}
+                        alt=""
                         className="search-result-image"
                       />
                     ) : (
@@ -373,6 +373,7 @@ export default function SearchResults({
                         <button
                           onClick={() => handleResultClick(item)}
                           className="search-result-cta"
+                          aria-label={`Read more about ${label}`}
                         >
                           Read More
                         </button>

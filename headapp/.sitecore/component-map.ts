@@ -52,7 +52,7 @@ export const componentMap = new Map<string, NextjsContentSdkComponent>([
   ['Image', { ...Image }],
   ['HeroPromo', { ...HeroPromo }],
   ['Header', { ...Header }],
-  ['Footer', { ...Footer }],
+  ['Footer', { ...Footer, componentType: 'client' }],
   ['ContentBlock', { ...ContentBlock, componentType: 'client' }],
   ['Container', { ...Container }],
   ['ColumnSplitter', { ...ColumnSplitter }],

@@ -8,6 +8,7 @@ import * as SearchResults from 'src/components/searchResults/SearchResults';
 import * as OurProducts from 'src/components/our-products/OurProducts';
 import * as Navigation from 'src/components/navigation/Navigation';
 import * as Inspirations from 'src/components/inspirations/Inspirations';
+import * as Footer from 'src/components/footer/Footer';
 import * as ContentBlock from 'src/components/content-block/ContentBlock';
 import * as CloudSdkBootstrap from 'src/components/CloudSdkBootstrap/CloudSdkBootstrap';
 import * as Blog from 'src/components/blog/Blog';
@@ -21,6 +22,7 @@ export const componentMap = new Map<string, NextjsContentSdkComponent>([
   ['OurProducts', { ...OurProducts }],
   ['Navigation', { ...Navigation }],
   ['Inspirations', { ...Inspirations }],
+  ['Footer', { ...Footer }],
   ['ContentBlock', { ...ContentBlock }],
   ['CloudSdkBootstrap', { ...CloudSdkBootstrap }],
   ['Blog', { ...Blog }],

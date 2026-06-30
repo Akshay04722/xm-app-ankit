@@ -100,7 +100,7 @@ export const Default = (props: BrowseTheRangeProps): JSX.Element => {
                       field={imageField}
                       sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, 380px"
                       className="object-cover w-full h-full transition-transform duration-500 group-hover:scale-105"
-                      alt={nameField?.value || 'Category'}
+                      alt=""
                     />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center text-gray-400">
