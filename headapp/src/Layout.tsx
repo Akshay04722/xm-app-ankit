@@ -5,7 +5,6 @@ import SitecoreStyles from "components/content-sdk/SitecoreStyles";
 import { DesignLibraryApp } from "@sitecore-content-sdk/nextjs";
 import { AppPlaceholder } from "@sitecore-content-sdk/nextjs";
 import componentMap from ".sitecore/component-map";
-import CDPProvider from "@/components/cdp/CDPProvider";
 import {
   generateWebSiteSchema,
   generateOrganizationSchema,
@@ -42,18 +41,17 @@ const Layout = ({ page, baseUrl: baseUrlProp }: LayoutProps): JSX.Element => {
   const websiteSchema = generateWebSiteSchema(
     "Skate Park",
     baseUrl,
-    "Skate Park demo site showcasing component examples"
+    "Skate Park demo site showcasing component examples",
   );
   const organizationSchema = generateOrganizationSchema(
     "Skate Park",
     baseUrl,
     undefined,
-    "Skate Park demo site showcasing component examples"
+    "Skate Park demo site showcasing component examples",
   );
 
   return (
     <>
-      <CDPProvider />
       <Scripts />
       <SitecoreStyles layoutData={layout} />
       <StructuredData id="website-schema" data={websiteSchema as JsonLdValue} />

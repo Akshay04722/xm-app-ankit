@@ -7,17 +7,13 @@ export async function getEngage() {
     return engage;
   }
 
-  // Add this
-  const cookieDomain =
-    window.location.hostname === "localhost"
-      ? "localhost"
-      : `.${window.location.hostname}`;
+  const cookieDomain = typeof window !== "undefined" ? window.location.hostname : "";
 
   engage = await init({
     clientKey: process.env.NEXT_PUBLIC_CDP_CLIENT_KEY!,
     targetURL: process.env.NEXT_PUBLIC_CDP_TARGET_URL!,
     pointOfSale: process.env.NEXT_PUBLIC_CDP_POINT_OF_SALE!,
-    cookieDomain, // Use the variable here
+    cookieDomain,
     cookieExpiryDays: 365,
     forceServerCookieMode: false,
     includeUTMParameters: true,

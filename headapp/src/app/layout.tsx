@@ -1,7 +1,7 @@
-'use client';
 import "./globals.css";
 import { Roboto, Montserrat, Poppins } from "next/font/google";
-import CloudSdkBootstrap from "@/components/CloudSdkBootstrap/CloudSdkBootstrap";
+import CloudSdkBootstrap from "src/components/CloudSdkBootstrap/CloudSdkBootstrap";
+import { CDPProvider } from "@/components/cdp/CDPProvider";
 
 // Configure Roboto
 const roboto = Roboto({
@@ -33,7 +33,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={`${roboto.variable} ${montserrat.variable} ${poppins.variable}`}>
+    <html
+      lang="en"
+      className={`${roboto.variable} ${montserrat.variable} ${poppins.variable}`}
+    >
       <head>
         <link
           rel="preconnect"
@@ -43,8 +46,10 @@ export default function RootLayout({
         <link rel="icon" href="/favicon.ico" />
       </head>
       <body>
-        <CloudSdkBootstrap />
-        {children}
+        <CDPProvider>
+          <CloudSdkBootstrap />
+          {children}
+        </CDPProvider>
       </body>
     </html>
   );

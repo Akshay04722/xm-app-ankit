@@ -78,8 +78,7 @@ export async function addRecentlyViewed(
   const entry: RecentlyViewedPost = { ...post, viewedAt: Date.now() };
   const deduped = existing.filter((p) => p.id !== entry.id);
   const next = [entry, ...deduped].slice(0, MAX_ITEMS);
-
-  const res = await fetch(`${CDP_BASE_URL}/v2.1/guests/${guestRef}/extensions/${EXTENSION_NAME}`, {
+  const res = await fetchWithRetry(`${CDP_BASE_URL}/v2.1/guests/${guestRef}/extensions/${EXTENSION_NAME}`, {
     method: 'PATCH',
     headers: {
       Authorization: authHeader(),
@@ -91,11 +90,10 @@ export async function addRecentlyViewed(
       [RECENTLY_VIEWED_KEY]: JSON.stringify(next),
     }),
   });
-
   if (!res.ok) {
     // If the extension doesn't exist yet for this guest, CDP may require POST instead of PATCH on first write
     if (res.status === 404) {
-      const createRes = await fetch(`${CDP_BASE_URL}/v2.1/guests/${guestRef}/extensions`, {
+      const createRes = await fetchWithRetry(`${CDP_BASE_URL}/v2.1/guests/${guestRef}/extensions`, {
         method: 'POST',
         headers: {
           Authorization: authHeader(),
@@ -108,7 +106,26 @@ export async function addRecentlyViewed(
         }),
       });
       if (!createRes.ok) {
-        console.warn('CDP create extension failed:', createRes.status, await createRes.text());
+        if (createRes.status === 409) {
+          // If it was created concurrently, retry the PATCH request once more
+          const retryPatchRes = await fetch(`${CDP_BASE_URL}/v2.1/guests/${guestRef}/extensions/${EXTENSION_NAME}`, {
+            method: 'PATCH',
+            headers: {
+              Authorization: authHeader(),
+              'Content-Type': 'application/json',
+              Accept: 'application/json',
+            },
+            body: JSON.stringify({
+              name: EXTENSION_NAME,
+              [RECENTLY_VIEWED_KEY]: JSON.stringify(next),
+            }),
+          });
+          if (!retryPatchRes.ok) {
+            console.warn('CDP retry PATCH after 409 failed:', retryPatchRes.status, await retryPatchRes.text());
+          }
+        } else {
+          console.warn('CDP create extension failed:', createRes.status, await createRes.text());
+        }
       }
     } else {
       console.warn('CDP addRecentlyViewed PATCH failed:', res.status, await res.text());
@@ -116,4 +133,12 @@ export async function addRecentlyViewed(
   }
 
   return next;
+}
+async function fetchWithRetry(url: string, options: RequestInit, retries = 2, delayMs = 800): Promise<Response> {
+  const res = await fetch(url, options);
+  if (res.status === 404 && retries > 0) {
+    await new Promise((r) => setTimeout(r, delayMs));
+    return fetchWithRetry(url, options, retries - 1, delayMs);
+  }
+  return res;
 }

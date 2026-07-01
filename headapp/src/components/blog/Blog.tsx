@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import React from 'react';
+import React from "react";
 import {
   NextImage as ContentSdkImage,
   Text as ContentSdkText,
@@ -8,12 +8,11 @@ import {
   Field,
   ImageField,
   LinkField,
-} from '@sitecore-content-sdk/nextjs';
-import { ComponentProps } from '@/lib/component-props';
-import { CompatibleLink } from '@/components/content-sdk/CompatibleLink';
-import styles from '../../assets/components/Blog/Blog.module.css';
-import { useRecentlyViewed } from '@/lib/useRecentlyViewed';
-import { getEngage } from "@/lib/cdp/engage";
+} from "@sitecore-content-sdk/nextjs";
+import { ComponentProps } from "@/lib/component-props";
+import { CompatibleLink } from "@/components/content-sdk/CompatibleLink";
+import styles from "../../assets/components/Blog/Blog.module.css";
+import { useRecentlyViewedCdp } from "@/lib/useRecentlyViewed";
 
 interface BlogPostItem {
   id?: string; // Sitecore item ID/GUID — add this to your GraphQL query if not present
@@ -40,23 +39,10 @@ type BlogProps = ComponentProps & { fields?: BlogFields };
 
 const NoDataFallback = ({ componentName }: { componentName: string }) => (
   <div className="p-8 border-2 border-dashed border-gray-300 text-center text-gray-500 rounded-lg my-4 bg-gray-50">
-    Missing datasource for component: <strong>{componentName}</strong>. Please associate a datasource item in Sitecore.
+    Missing datasource for component: <strong>{componentName}</strong>. Please
+    associate a datasource item in Sitecore.
   </div>
 );
-
-const handleReadMore = async (blog: BlogPostItem) => {
-  const engage = await getEngage();
-
-  await engage.pageView({
-    channel: "WEB",
-    currency: "USD",
-    extensionData: {
-      blogId: blog.id,
-      title: blog.title,
-      category: blog.category,
-    },
-  });
-};
 
 export const Default = (props: BlogProps): React.JSX.Element => {
   const { fields, params } = props;
@@ -64,58 +50,54 @@ export const Default = (props: BlogProps): React.JSX.Element => {
 
   const datasource = fields?.data?.datasource;
 
-  const [searchInput, setSearchInput] = React.useState('');
-  const [activeSearchQuery, setActiveSearchQuery] = React.useState('');
-  const [selectedCategory, setSelectedCategory] = React.useState<string | null>(null);
+  const [searchInput, setSearchInput] = React.useState("");
+  const [activeSearchQuery, setActiveSearchQuery] = React.useState("");
+  const [selectedCategory, setSelectedCategory] = React.useState<string | null>(
+    null,
+  );
   const [currentPage, setCurrentPage] = React.useState(1);
   const postsPerPage = 3;
 
   // CDP tracking + live "recently viewed" list
-  const { recentlyViewed, trackPostClick } = useRecentlyViewed();
+  const { recentlyViewed, trackPostClick } = useRecentlyViewedCdp();
 
   if (!datasource || !datasource.posts?.results?.length) {
     return <NoDataFallback componentName="Blog" />;
   }
 
   const posts = datasource.posts.results;
-  const containerClass = `${styles.blogContainer} ${paramsStyles || ''}`.trim();
+  const containerClass = `${styles.blogContainer} ${paramsStyles || ""}`.trim();
 
-  const categoryCounts = posts.reduce((acc: { [key: string]: number }, post) => {
-    const cat = post.category?.jsonValue?.value;
-    if (cat) acc[cat] = (acc[cat] || 0) + 1;
-    return acc;
-  }, {});
+  const categoryCounts = posts.reduce(
+    (acc: { [key: string]: number }, post) => {
+      const cat = post.category?.jsonValue?.value;
+      if (cat) acc[cat] = (acc[cat] || 0) + 1;
+      return acc;
+    },
+    {},
+  );
 
-  const categoriesList = Object.entries(categoryCounts).map(([name, count]) => ({ name, count }));
+  const categoriesList = Object.entries(categoryCounts).map(
+    ([name, count]) => ({ name, count }),
+  );
 
-  // Fallback list used only until the visitor has actually clicked something
-  const fallbackRecentPosts = posts.slice(0, 5).map((post) => ({
-    id: post.id || post.title?.jsonValue?.value || '',
-    title: post.title?.jsonValue?.value || '',
-    date: post.date?.jsonValue?.value || '03 Aug 2022',
-    image: post.image?.jsonValue,
-    href: post.link?.jsonValue?.value?.href,
+  const sidebarPosts = recentlyViewed.map((p) => ({
+    id: p.id,
+    title: p.title,
+    date: p.date,
+    imageSrc: p.imageSrc,
+    href: p.href,
   }));
 
-  const sidebarPosts =
-    recentlyViewed.length > 0
-      ? recentlyViewed.map((p) => ({
-        id: p.id,
-        title: p.title,
-        date: p.date,
-        imageSrc: p.imageSrc,
-        href: p.href,
-      }))
-      : null; // null => render fallbackRecentPosts with full ImageField support below
-
   const filteredPosts = posts.filter((post) => {
-    const titleText = post.title?.jsonValue?.value?.toLowerCase() || '';
-    const descText = post.description?.jsonValue?.value?.toLowerCase() || '';
+    const titleText = post.title?.jsonValue?.value?.toLowerCase() || "";
+    const descText = post.description?.jsonValue?.value?.toLowerCase() || "";
     const matchesSearch =
       !activeSearchQuery ||
       titleText.includes(activeSearchQuery.toLowerCase()) ||
       descText.includes(activeSearchQuery.toLowerCase());
-    const matchesCategory = !selectedCategory || post.category?.jsonValue?.value === selectedCategory;
+    const matchesCategory =
+      !selectedCategory || post.category?.jsonValue?.value === selectedCategory;
     return matchesSearch && matchesCategory;
   });
 
@@ -132,42 +114,32 @@ export const Default = (props: BlogProps): React.JSX.Element => {
   };
 
   const handleCategoryClick = (categoryName: string) => {
-    setSelectedCategory(selectedCategory === categoryName ? null : categoryName);
+    setSelectedCategory(
+      selectedCategory === categoryName ? null : categoryName,
+    );
     setCurrentPage(1);
   };
 
   const handleNextPage = () => {
-    if (validatedCurrentPage < totalPages) setCurrentPage(validatedCurrentPage + 1);
+    if (validatedCurrentPage < totalPages)
+      setCurrentPage(validatedCurrentPage + 1);
   };
 
   // Called whenever a post card/title/CTA is clicked
-  const handlePostClick = async (post: BlogPostItem) => {
-    // Existing local tracking
+  const handlePostClick = (post: BlogPostItem, e?: React.MouseEvent) => {
+    if (e) {
+      e.stopPropagation();
+    }
+    console.log("inside handlePostClick", post);
+    // Register the clicked post to recently viewed list
+
     trackPostClick({
       id: post.id || "",
       title: post.title?.jsonValue?.value || "",
-      date: post.date?.jsonValue?.value,
-      imageSrc: post.image?.jsonValue?.value?.src,
-      href: post.link?.jsonValue?.value?.href,
+      date: post.date?.jsonValue?.value || "",
+      imageSrc: post.image?.jsonValue?.value?.src || "",
+      href: post.link?.jsonValue?.value?.href || "",
     });
-
-    const engage = await getEngage();
-    console.log("engage", engage)
-    const response = await engage.pageView(
-      {
-        channel: "WEB",
-        currency: "USD",
-      },
-      {
-        blogId: post.id,
-        title: post.title?.jsonValue?.value,
-        category: post.category?.jsonValue?.value,
-        url: post.link?.jsonValue?.value?.href,
-      }
-    );
-
-    console.log("CDP Response:", response);
-    console.log("Browser ID:", engage.getBrowserId());
   };
 
   return (
@@ -189,13 +161,20 @@ export const Default = (props: BlogProps): React.JSX.Element => {
                   <article
                     key={index}
                     className={styles.postCard}
-                    onClick={() => handlePostClick(post)}
+                    onClick={(e) => handlePostClick(post, e)}
                   >
-                    {imageField && !!(imageField.value?.src || imageField.value?.mediaid) && (
-                      <div className={styles.imageWrapper}>
-                        <ContentSdkImage field={imageField} alt="" className="w-full h-full object-cover" />
-                      </div>
-                    )}
+                    {imageField &&
+                      !!(
+                        imageField.value?.src || imageField.value?.mediaid
+                      ) && (
+                        <div className={styles.imageWrapper}>
+                          <ContentSdkImage
+                            field={imageField}
+                            alt=""
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+                      )}
 
                     <div className={styles.metaRow}>
                       {authorField?.value && (
@@ -216,7 +195,11 @@ export const Default = (props: BlogProps): React.JSX.Element => {
                     </div>
 
                     {titleField?.value && (
-                      <ContentSdkText tag="h2" field={titleField} className={styles.title} />
+                      <ContentSdkText
+                        tag="h2"
+                        field={titleField}
+                        className={styles.title}
+                      />
                     )}
 
                     {descriptionField?.value && (
@@ -230,7 +213,7 @@ export const Default = (props: BlogProps): React.JSX.Element => {
                         <CompatibleLink
                           field={linkField}
                           className={styles.readMoreLink}
-                          onClick={() => handlePostClick(post)}
+                          onClick={(e) => handlePostClick(post, e)}
                         />
                         <span className={styles.underline} />
                       </div>
@@ -239,25 +222,35 @@ export const Default = (props: BlogProps): React.JSX.Element => {
                 );
               })
             ) : (
-              <div className="py-10 text-center text-gray-500">No posts found matching your search.</div>
+              <div className="py-10 text-center text-gray-500">
+                No posts found matching your search.
+              </div>
             )}
           </div>
 
           {totalPages > 1 && (
             <div className={styles.pagination}>
-              {Array.from({ length: totalPages }, (_, i) => i + 1).map((pageNum) => (
-                <button
-                  key={pageNum}
-                  className={`${styles.pageButton} ${validatedCurrentPage === pageNum ? styles.activePage : ''}`}
-                  onClick={() => setCurrentPage(pageNum)}
-                  aria-label={`Page ${pageNum}`}
-                  aria-current={validatedCurrentPage === pageNum ? 'page' : undefined}
-                >
-                  {pageNum}
-                </button>
-              ))}
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map(
+                (pageNum) => (
+                  <button
+                    key={pageNum}
+                    className={`${styles.pageButton} ${validatedCurrentPage === pageNum ? styles.activePage : ""}`}
+                    onClick={() => setCurrentPage(pageNum)}
+                    aria-label={`Page ${pageNum}`}
+                    aria-current={
+                      validatedCurrentPage === pageNum ? "page" : undefined
+                    }
+                  >
+                    {pageNum}
+                  </button>
+                ),
+              )}
               {validatedCurrentPage < totalPages && (
-                <button className={`${styles.pageButton} ${styles.nextButton}`} onClick={handleNextPage} aria-label="Next Page">
+                <button
+                  className={`${styles.pageButton} ${styles.nextButton}`}
+                  onClick={handleNextPage}
+                  aria-label="Next Page"
+                >
                   Next
                 </button>
               )}
@@ -276,7 +269,11 @@ export const Default = (props: BlogProps): React.JSX.Element => {
                 placeholder="Search posts..."
                 aria-label="Search posts"
               />
-              <button type="submit" className={styles.searchButton} aria-label="Search">
+              <button
+                type="submit"
+                className={styles.searchButton}
+                aria-label="Search"
+              >
                 Search
               </button>
             </form>
@@ -288,27 +285,29 @@ export const Default = (props: BlogProps): React.JSX.Element => {
                   {categoriesList.map((cat, idx) => (
                     <li
                       key={idx}
-                      className={`${styles.categoryItem} ${selectedCategory === cat.name ? styles.activeCategory : ''}`}
+                      className={`${styles.categoryItem} ${selectedCategory === cat.name ? styles.activeCategory : ""}`}
                     >
                       <button
                         type="button"
                         onClick={() => handleCategoryClick(cat.name)}
                         aria-pressed={selectedCategory === cat.name}
                         style={{
-                          display: 'flex',
-                          justifyContent: 'space-between',
-                          width: '100%',
-                          background: 'none',
-                          border: 'none',
+                          display: "flex",
+                          justifyContent: "space-between",
+                          width: "100%",
+                          background: "none",
+                          border: "none",
                           padding: 0,
-                          font: 'inherit',
-                          color: 'inherit',
-                          cursor: 'pointer',
-                          textAlign: 'left'
+                          font: "inherit",
+                          color: "inherit",
+                          cursor: "pointer",
+                          textAlign: "left",
                         }}
                       >
                         <span className={styles.categoryName}>{cat.name}</span>
-                        <span className={styles.categoryCount}>{cat.count}</span>
+                        <span className={styles.categoryCount}>
+                          {cat.count}
+                        </span>
                       </button>
                     </li>
                   ))}
@@ -322,42 +321,41 @@ export const Default = (props: BlogProps): React.JSX.Element => {
           <div className={styles.recentPostsWidget}>
             <h3 className={styles.widgetTitle}>Recent Posts</h3>
             <div className={styles.recentPostsList}>
-              {sidebarPosts
-                ? sidebarPosts.map((post) => (
+              {sidebarPosts.length > 0 ? (
+                sidebarPosts.map((post) => (
                   <div key={post.id} className={styles.recentPostCard}>
                     {post.imageSrc && (
                       <div className={styles.recentPostImageWrapper}>
                         {/* plain <img> since this is a plain URL string, not an ImageField */}
-                        <img src={post.imageSrc} alt="" className="w-full h-full object-cover" />
+                        <img
+                          src={post.imageSrc}
+                          alt=""
+                          className="w-full h-full object-cover"
+                        />
                       </div>
                     )}
                     <div className={styles.recentPostContent}>
                       <h4 className={styles.recentPostTitle}>
-                        <a href={post.href || '#'} className={styles.recentPostLink}>
+                        <a
+                          href={post.href || "#"}
+                          className={styles.recentPostLink}
+                        >
                           {post.title}
                         </a>
                       </h4>
-                      {post.date && <span className={styles.recentPostDate}>{post.date}</span>}
+                      {post.date && (
+                        <span className={styles.recentPostDate}>
+                          {post.date}
+                        </span>
+                      )}
                     </div>
                   </div>
                 ))
-                : fallbackRecentPosts.map((post) => (
-                  <div key={post.id} className={styles.recentPostCard}>
-                    {post.image && !!(post.image.value?.src || post.image.value?.mediaid) && (
-                      <div className={styles.recentPostImageWrapper}>
-                        <ContentSdkImage field={post.image} alt="" className="w-full h-full object-cover" />
-                      </div>
-                    )}
-                    <div className={styles.recentPostContent}>
-                      <h4 className={styles.recentPostTitle}>
-                        <a href={post.href || '#'} className={styles.recentPostLink}>
-                          {post.title}
-                        </a>
-                      </h4>
-                      <span className={styles.recentPostDate}>{post.date}</span>
-                    </div>
-                  </div>
-                ))}
+              ) : (
+                <div className="py-4 text-center text-sm text-gray-500">
+                  No recently viewed posts found.
+                </div>
+              )}
             </div>
           </div>
         </aside>
