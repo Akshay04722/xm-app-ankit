@@ -1,0 +1,95 @@
+name: CI/CD for Next.js XM Cloud with Vercel
+
+on:
+  push:
+    branches:
+      - '**'
+  pull_request:
+    branches:
+      - '**'
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v3
+      with:
+        ref: akshay-main
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: 24
+
+    - name: Install Dependencies
+      run: |
+        cd headapp
+        npm ci
+
+    - name: Create .env.local
+      run: |
+        cat > headapp/.env.local << 'EOF'
+        SITECORE_CONTEXT_ID=${{ secrets.SITECORE_CONTEXT_ID }}
+        SITECORE_API_HOST=${{ secrets.SITECORE_API_HOST }}
+        SITECORE_API_KEY=${{ secrets.SITECORE_API_KEY }}
+        SITECORE_EDGE_CONTEXT_ID=${{ secrets.SITECORE_EDGE_CONTEXT_ID }}
+        SITECORE_CLIENT_ID=${{ secrets.SITECORE_CLIENT_ID }}
+        SITECORE_CLIENT_SECRET=${{ secrets.SITECORE_CLIENT_SECRET }}
+        JSS_APP_NAME=akshayxmc
+        EOF
+
+    - name: Debug .env.local
+      run: cat headapp/.env.local
+
+    - name: Build Next.js App
+      run: |
+        cd headapp
+        npm run build || { echo "Build failed"; exit 1; }
+
+  deploy:
+    name: Deploy to Vercel
+    runs-on: ubuntu-latest
+    needs: build
+    if: |
+      github.event_name == 'push' ||
+      github.event_name == 'workflow_dispatch'
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v3
+      with:
+        ref: krunal-scxmc-practice
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: 24
+
+    - name: Install Vercel CLI
+      run: npm install -g vercel
+
+    - name: Create .env.local
+      run: |
+        cat > headapp/.env.local << 'EOF'
+        SITECORE_CONTEXT_ID=${{ secrets.SITECORE_CONTEXT_ID }}
+        SITECORE_API_HOST=${{ secrets.SITECORE_API_HOST }}
+        SITECORE_API_KEY=${{ secrets.SITECORE_API_KEY }}
+        SITECORE_EDGE_CONTEXT_ID=${{ secrets.SITECORE_EDGE_CONTEXT_ID }}
+        JSS_APP_NAME=akshayxmc
+        NEXT_PUBLIC_DEFAULT_SITE_NAME=akshayxmc
+        
+        EOF
+
+    - name: Pull Vercel Environment Information
+      run: |
+        cd headapp
+        vercel pull --yes --environment=production --token ${{ secrets.VERCEL_TOKEN }}
+
+    - name: Deploy to Vercel (Production)
+      run: |
+        cd headapp
+        vercel --token ${{ secrets.VERCEL_TOKEN }}

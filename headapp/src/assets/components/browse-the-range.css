@@ -1,0 +1,22 @@
+/* Browse The Range Component Styles */
+
+.browse-the-range .font-poppins {
+  font-family: 'Poppins', sans-serif;
+}
+
+.browse-the-range .group:hover .group-hover\:-translate-y-1 {
+  transform: translateY(-4px);
+}
+
+.browse-the-range .group:hover .group-hover\:scale-105 {
+  transform: scale(1.05);
+}
+
+.browse-the-range .group:hover .group-hover\:opacity-100 {
+  opacity: 1;
+}
+
+/* Custom premium hover text color if primary utility is not customized */
+.browse-the-range .group:hover h3 {
+  color: #b88e2f; /* Premium warm gold color */
+}

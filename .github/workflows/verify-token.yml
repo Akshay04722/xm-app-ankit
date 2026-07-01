@@ -1,0 +1,20 @@
+name: Verify Vercel Token
+ 
+on:
+  workflow_dispatch: # Allows manual trigger
+ 
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v3
+ 
+    - name: Check Vercel Token
+      run: |
+        if [ -z "${{ secrets.VERCEL_TOKEN }}" ]; then
+          echo "❌ VERCEL_TOKEN is not set!"
+          exit 1
+        else
+          echo "✅ VERCEL_TOKEN is set correctly!"
+        fi

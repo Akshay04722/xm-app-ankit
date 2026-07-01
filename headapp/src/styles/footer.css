@@ -1,0 +1,223 @@
+/* ==============================================
+   FOOTER COMPONENT STYLES — Figma: node 1147-192
+   ============================================== */
+
+.footer {
+  background-color: #ffffff;
+  border-top: 1px solid rgba(0, 0, 0, 0.17);
+  font-family: 'Poppins', sans-serif;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.footer__inner {
+  padding: 48px 100px 38px 100px;
+  max-width: 1440px;
+  margin: 0 auto;
+  box-sizing: border-box;
+}
+
+/* ── Columns layout ───────────────────────────── */
+.footer__columns {
+  display: flex;
+  align-items: flex-start;
+  gap: 0;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+
+/* ── Column 1: Brand + Address ────────────────── */
+.footer__col--brand {
+  flex: 0 0 285px;
+  max-width: 285px;
+}
+
+.footer__brand-name {
+  display: block;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 700;
+  font-size: 24px;
+  color: #000000;
+  text-decoration: none;
+  line-height: 36px;
+  margin-bottom: 50px;
+}
+
+.footer__address {
+  font-style: normal;
+  font-size: 16px;
+  font-weight: 400;
+  color: #9f9f9f;
+  line-height: 1.5;
+}
+
+/* ── Columns 2 & 3: Links / Help ──────────────── */
+.footer__col {
+  flex: 0 0 140px;
+}
+
+.footer__col-heading {
+  font-size: 16px;
+  font-weight: 500;
+  color: #9f9f9f;
+  margin: 0 0 55px 0;
+  font-family: 'Poppins', sans-serif;
+}
+
+.footer__col-links {
+  display: flex;
+  flex-direction: column;
+  gap: 46px;
+}
+
+.footer__col-link {
+  font-size: 16px;
+  font-weight: 500;
+  color: #000000;
+  text-decoration: none;
+  font-family: 'Poppins', sans-serif;
+  transition: opacity 0.2s ease;
+}
+
+.footer__col-link:hover {
+  opacity: 0.65;
+}
+
+/* ── Column 4: Newsletter ─────────────────────── */
+.footer__col:last-child {
+  flex: 0 0 286px;
+  max-width: 286px;
+}
+
+.footer__newsletter {
+  margin-top: 53px;
+}
+
+.footer__newsletter-field {
+  display: flex;
+  align-items: flex-end;
+  gap: 38px;
+  border-bottom: 1px solid #000000;
+  padding-bottom: 4px;
+}
+
+.footer__newsletter-input {
+  flex: 1;
+  border: none;
+  outline: none;
+  font-family: 'Poppins', sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  color: #9f9f9f;
+  background: transparent;
+  padding: 0;
+  line-height: 21px;
+}
+
+.footer__newsletter-input::placeholder {
+  color: #9f9f9f;
+}
+
+.footer__newsletter-btn {
+  background: none;
+  border: none;
+  border-bottom: 1px solid #000000;
+  padding: 0 0 4px 0;
+  cursor: pointer;
+  font-family: 'Poppins', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  color: #000000;
+  letter-spacing: 0.02em;
+  transition: opacity 0.2s ease;
+  white-space: nowrap;
+  margin-bottom: -5px;
+}
+
+.footer__newsletter-btn:hover {
+  opacity: 0.65;
+}
+
+/* ── Bottom: Divider + Copyright ──────────────── */
+.footer__bottom {
+  margin-top: 48px;
+}
+
+.footer__divider {
+  width: 100%;
+  height: 1px;
+  background-color: #d9d9d9;
+  margin-bottom: 35px;
+}
+
+.footer__copyright {
+  font-size: 16px;
+  font-weight: 400;
+  color: #000000;
+  margin: 0;
+}
+
+/* ── Responsive ───────────────────────────────── */
+@media (max-width: 1200px) {
+  .footer__inner {
+    padding: 48px 60px 38px 60px;
+  }
+
+  .footer__col--brand {
+    flex: 0 0 240px;
+    max-width: 240px;
+  }
+}
+
+@media (max-width: 900px) {
+  .footer__inner {
+    padding: 48px 32px 38px 32px;
+  }
+
+  .footer__columns {
+    gap: 40px;
+  }
+
+  .footer__col--brand {
+    flex: 0 0 100%;
+    max-width: 100%;
+  }
+
+  .footer__brand-name {
+    margin-bottom: 24px;
+  }
+
+  .footer__col {
+    flex: 1 1 140px;
+  }
+}
+
+@media (max-width: 600px) {
+  .footer__inner {
+    padding: 40px 24px 32px 24px;
+  }
+
+  .footer__columns {
+    flex-direction: column;
+    gap: 36px;
+  }
+
+  .footer__col,
+  .footer__col:last-child,
+  .footer__col--brand {
+    flex: 0 0 100%;
+    max-width: 100%;
+  }
+
+  .footer__col-heading {
+    margin-bottom: 24px;
+  }
+
+  .footer__col-links {
+    gap: 20px;
+  }
+
+  .footer__newsletter {
+    margin-top: 24px;
+  }
+}

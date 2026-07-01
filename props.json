@@ -1,0 +1,776 @@
+{
+  "fields": {
+    "data": {
+      "datasource": {
+        "title": {
+          "jsonValue": {
+            "value": "Browse The Range"
+          }
+        },
+        "subtitle": {
+          "jsonValue": {
+            "value": "Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+          }
+        },
+        "categories": {
+          "results": [
+            {
+              "nameField": {
+                "jsonValue": {
+                  "value": "Bedroom"
+                }
+              },
+              "image": {
+                "jsonValue": {
+                  "value": {}
+                }
+              },
+              "link": {
+                "jsonValue": {
+                  "value": {
+                    "href": ""
+                  }
+                }
+              }
+            },
+            {
+              "nameField": {
+                "jsonValue": {
+                  "value": "Dining"
+                }
+              },
+              "image": {
+                "jsonValue": {
+                  "value": {}
+                }
+              },
+              "link": {
+                "jsonValue": {
+                  "value": {
+                    "href": ""
+                  }
+                }
+              }
+            },
+            {
+              "nameField": {
+                "jsonValue": {
+                  "value": "Living"
+                }
+              },
+              "image": {
+                "jsonValue": {
+                  "value": {}
+                }
+              },
+              "link": {
+                "jsonValue": {
+                  "value": {
+                    "href": ""
+                  }
+                }
+              }
+            }
+          ]
+        }
+      }
+    }
+  },
+  "params": {
+    "styles": ""
+  },
+  "rendering": {
+    "uid": "c79b26de-f1c5-4309-8cd3-a5b22a81d26f",
+    "componentName": "BrowseTheRange",
+    "dataSource": "{E6F3B71D-3518-434D-83E4-186E7DA128BB}",
+    "fields": {
+      "data": {
+        "datasource": {
+          "title": {
+            "jsonValue": {
+              "value": "Browse The Range"
+            }
+          },
+          "subtitle": {
+            "jsonValue": {
+              "value": "Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+            }
+          },
+          "categories": {
+            "results": [
+              {
+                "nameField": {
+                  "jsonValue": {
+                    "value": "Bedroom"
+                  }
+                },
+                "image": {
+                  "jsonValue": {
+                    "value": {}
+                  }
+                },
+                "link": {
+                  "jsonValue": {
+                    "value": {
+                      "href": ""
+                    }
+                  }
+                }
+              },
+              {
+                "nameField": {
+                  "jsonValue": {
+                    "value": "Dining"
+                  }
+                },
+                "image": {
+                  "jsonValue": {
+                    "value": {}
+                  }
+                },
+                "link": {
+                  "jsonValue": {
+                    "value": {
+                      "href": ""
+                    }
+                  }
+                }
+              },
+              {
+                "nameField": {
+                  "jsonValue": {
+                    "value": "Living"
+                  }
+                },
+                "image": {
+                  "jsonValue": {
+                    "value": {}
+                  }
+                },
+                "link": {
+                  "jsonValue": {
+                    "value": {
+                      "href": ""
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        }
+      }
+    }
+  },
+  "page": {
+    "layout": {
+      "sitecore": {
+        "context": {
+          "pageEditing": false,
+          "site": {
+            "name": "akshayxmc"
+          },
+          "pageState": "normal",
+          "editMode": "chromes",
+          "language": "en",
+          "itemPath": "/",
+          "variantId": "_default"
+        },
+        "route": {
+          "name": "Home",
+          "displayName": "Home",
+          "fields": {
+            "pageDisplayDate": {
+              "value": "0001-01-01T00:00:00Z"
+            },
+            "pageReadTime": {
+              "value": ""
+            },
+            "taxAuthor": null,
+            "pageHeaderTitle": {
+              "value": ""
+            },
+            "pageShortTitle": {
+              "value": ""
+            },
+            "pageSubtitle": {
+              "value": ""
+            },
+            "pageSummary": {
+              "value": ""
+            },
+            "pageTitle": {
+              "value": ""
+            },
+            "pageThumbnail": {
+              "value": {}
+            },
+            "noFollow": {
+              "value": false
+            },
+            "noIndex": {
+              "value": false
+            },
+            "taxContentType": null,
+            "taxTopic": [],
+            "Page Design": {
+              "id": "9e55a9c6-bf1d-4b66-82c1-666c68de42ba",
+              "url": "/Presentation/Page-Designs/Default",
+              "name": "Default",
+              "displayName": "Default",
+              "fields": {
+                "PartialDesigns": [
+                  {
+                    "id": "1d87e46b-4c78-45d9-bc6d-3e958dd16155",
+                    "url": "/Presentation/Partial-Designs/Header",
+                    "name": "Header",
+                    "displayName": "Header",
+                    "fields": {
+                      "Signature": {
+                        "value": "header"
+                      },
+                      "Base Partial Design": null
+                    }
+                  },
+                  {
+                    "id": "295de1b1-8068-4b48-a101-8269b8eb6848",
+                    "url": "/Presentation/Partial-Designs/Footer",
+                    "name": "Footer",
+                    "displayName": "Footer",
+                    "fields": {
+                      "Signature": {
+                        "value": "footer"
+                      },
+                      "Base Partial Design": null
+                    }
+                  }
+                ]
+              }
+            },
+            "metadataAuthor": {
+              "value": ""
+            },
+            "metadataDescription": {
+              "value": ""
+            },
+            "metadataKeywords": {
+              "value": ""
+            },
+            "metadataTitle": {
+              "value": ""
+            },
+            "ogDescription": {
+              "value": ""
+            },
+            "ogImage": {
+              "value": {}
+            },
+            "ogTitle": {
+              "value": "$name"
+            }
+          },
+          "databaseName": "master",
+          "deviceId": "fe5d7fdf-89c0-4d99-9aa3-b5fbd009c9f3",
+          "itemId": "4b78a9a5-9fd5-40a0-9483-399298770a17",
+          "itemLanguage": "en",
+          "itemVersion": 1,
+          "layoutId": "96e5f4ba-a2cf-4a4c-a4e7-64da88226362",
+          "templateId": "13911025-e437-4409-8461-1b6dc843c6a7",
+          "templateName": "Article Page",
+          "placeholders": {
+            "headless-header": [
+              {
+                "uid": "1d87e46b-4c78-45d9-bc6d-3e958dd16155",
+                "componentName": "PartialDesignDynamicPlaceholder",
+                "dataSource": "",
+                "params": {
+                  "sid": "{1D87E46B-4C78-45D9-BC6D-3E958DD16155}",
+                  "ph": "headless-header",
+                  "sig": "sxa-header"
+                },
+                "placeholders": {
+                  "sxa-header": [
+                    {
+                      "uid": "a37e5528-98c0-4965-8fdf-85cd17ea1147",
+                      "componentName": "Header",
+                      "dataSource": "{B4BC8F46-5306-4F42-BFF1-910B0DB14738}",
+                      "fields": {
+                        "Logo Image": {
+                          "value": {}
+                        },
+                        "Navigation Links": [
+                          {
+                            "id": "db9103d3-797c-4868-bf3e-7404820d1171",
+                            "url": "/Data/Navigation/Header-Links/Home",
+                            "name": "Home",
+                            "displayName": "Home",
+                            "fields": {
+                              "Link": {
+                                "value": {
+                                  "text": "Home",
+                                  "linktype": "internal",
+                                  "class": "",
+                                  "title": "Home",
+                                  "target": "",
+                                  "querystring": "",
+                                  "id": "{4B78A9A5-9FD5-40A0-9483-399298770A17}",
+                                  "href": "/"
+                                }
+                              }
+                            }
+                          },
+                          {
+                            "id": "b26257a1-f1cb-4e4e-955d-633e7cc453d0",
+                            "url": "/Data/Navigation/Header-Links/Shop",
+                            "name": "Shop",
+                            "displayName": "Shop",
+                            "fields": {
+                              "Link": {
+                                "value": {
+                                  "href": "/shop",
+                                  "text": "Shop",
+                                  "linktype": "external",
+                                  "url": "/shop",
+                                  "anchor": "",
+                                  "title": "Shop",
+                                  "class": "",
+                                  "target": ""
+                                }
+                              }
+                            }
+                          },
+                          {
+                            "id": "4d63ee52-dd40-4f1a-8584-397a4b8c7dfb",
+                            "url": "/Data/Navigation/Header-Links/About",
+                            "name": "About",
+                            "displayName": "About",
+                            "fields": {
+                              "Link": {
+                                "value": {
+                                  "href": "/about",
+                                  "text": "About",
+                                  "linktype": "external",
+                                  "url": "/about",
+                                  "anchor": "",
+                                  "title": "About",
+                                  "class": "",
+                                  "target": ""
+                                }
+                              }
+                            }
+                          },
+                          {
+                            "id": "864dd04e-1f59-4132-bb13-478bc69bf106",
+                            "url": "/Data/Navigation/Header-Links/Contact",
+                            "name": "Contact",
+                            "displayName": "Contact",
+                            "fields": {
+                              "Link": {
+                                "value": {
+                                  "href": "/contact",
+                                  "text": "Contact",
+                                  "linktype": "external",
+                                  "url": "/contact",
+                                  "anchor": "",
+                                  "title": "Contact",
+                                  "class": "",
+                                  "target": ""
+                                }
+                              }
+                            }
+                          }
+                        ],
+                        "CTA Label": {
+                          "value": "Get Started"
+                        },
+                        "CTA Link": {
+                          "value": {
+                            "href": "/",
+                            "text": "Get Started",
+                            "linktype": "external",
+                            "url": "/",
+                            "anchor": "",
+                            "title": "",
+                            "class": "",
+                            "target": ""
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            ],
+            "headless-main": [
+              {
+                "uid": "b68a606e-f1c5-4309-8cd3-a5b22a81d26f",
+                "componentName": "HeroPromo",
+                "dataSource": "{3ACBC455-4B46-4C19-923B-3C24BD97CF4C}",
+                "params": {
+                  "FieldNames": "Default"
+                },
+                "fields": {
+                  "PromoText2": {
+                    "value": "<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut elit tellus, luctus nec ullamcorper mattis.</p>"
+                  },
+                  "PromoLink": {
+                    "value": {
+                      "href": "http://#",
+                      "text": "BUY Now",
+                      "linktype": "external",
+                      "url": "#"
+                    }
+                  },
+                  "PromoText3": {
+                    "value": "New Arrival"
+                  },
+                  "PromoText": {
+                    "value": "<h2>Discover Our <br/>New Collection</h2>"
+                  },
+                  "PromoIcon": {
+                    "value": {
+                      "src": "https://xmc-sourceved1d977-ankitxmclou91bb-devf710.sitecorecloud.io/-/media/Project/akshay/akshayxmc/scandinavian-interior-mockup-wall-decal-background-1.png?h=717&iar=0&w=1440&ttc=63917813482&tt=2FE1F539EE11152CD859D15F4A5CE644&hash=465678BEBCCC41A8DAB3BC78A115AEA3",
+                      "alt": "",
+                      "width": "1440",
+                      "height": "717"
+                    }
+                  },
+                  "PromoIcon2": {
+                    "value": {}
+                  }
+                }
+              },
+              {
+                "uid": "c79b26de-f1c5-4309-8cd3-a5b22a81d26f",
+                "componentName": "BrowseTheRange",
+                "dataSource": "{E6F3B71D-3518-434D-83E4-186E7DA128BB}",
+                "fields": {
+                  "data": {
+                    "datasource": {
+                      "title": {
+                        "jsonValue": {
+                          "value": "Browse The Range"
+                        }
+                      },
+                      "subtitle": {
+                        "jsonValue": {
+                          "value": "Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+                        }
+                      },
+                      "categories": {
+                        "results": [
+                          {
+                            "nameField": {
+                              "jsonValue": {
+                                "value": "Bedroom"
+                              }
+                            },
+                            "image": {
+                              "jsonValue": {
+                                "value": {}
+                              }
+                            },
+                            "link": {
+                              "jsonValue": {
+                                "value": {
+                                  "href": ""
+                                }
+                              }
+                            }
+                          },
+                          {
+                            "nameField": {
+                              "jsonValue": {
+                                "value": "Dining"
+                              }
+                            },
+                            "image": {
+                              "jsonValue": {
+                                "value": {}
+                              }
+                            },
+                            "link": {
+                              "jsonValue": {
+                                "value": {
+                                  "href": ""
+                                }
+                              }
+                            }
+                          },
+                          {
+                            "nameField": {
+                              "jsonValue": {
+                                "value": "Living"
+                              }
+                            },
+                            "image": {
+                              "jsonValue": {
+                                "value": {}
+                              }
+                            },
+                            "link": {
+                              "jsonValue": {
+                                "value": {
+                                  "href": ""
+                                }
+                              }
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
+            ],
+            "headless-footer": [
+              {
+                "uid": "295de1b1-8068-4b48-a101-8269b8eb6848",
+                "componentName": "PartialDesignDynamicPlaceholder",
+                "dataSource": "",
+                "params": {
+                  "sid": "{295DE1B1-8068-4B48-A101-8269B8EB6848}",
+                  "ph": "headless-footer",
+                  "sig": "sxa-footer"
+                },
+                "placeholders": {
+                  "sxa-footer": [
+                    {
+                      "uid": "e3f788aa-93fd-4c8e-ab32-d125c2b45829",
+                      "componentName": "Footer",
+                      "dataSource": "{1AD650DC-B386-4B6D-84D1-39F0690D36D7}",
+                      "fields": {
+                        "Logo Image": {
+                          "value": {}
+                        },
+                        "Footer Navigation Links": [
+                          {
+                            "id": "7f89135d-b89b-45b8-bc1c-88a1418f480e",
+                            "url": "/Data/Navigation/Footer-Links/Home",
+                            "name": "Home",
+                            "displayName": "Home",
+                            "fields": {
+                              "Link": {
+                                "value": {
+                                  "text": "Home",
+                                  "linktype": "internal",
+                                  "class": "",
+                                  "title": "Home",
+                                  "target": "",
+                                  "querystring": "",
+                                  "id": "{4B78A9A5-9FD5-40A0-9483-399298770A17}",
+                                  "href": "/"
+                                }
+                              }
+                            }
+                          },
+                          {
+                            "id": "155710ef-e69a-4fc0-b47c-3b9fc0ebcc7b",
+                            "url": "/Data/Navigation/Footer-Links/Shop",
+                            "name": "Shop",
+                            "displayName": "Shop",
+                            "fields": {
+                              "Link": {
+                                "value": {
+                                  "href": "/shop",
+                                  "text": "Shop",
+                                  "linktype": "external",
+                                  "url": "/shop",
+                                  "anchor": "",
+                                  "title": "Shop",
+                                  "class": "",
+                                  "target": ""
+                                }
+                              }
+                            }
+                          },
+                          {
+                            "id": "55962dd7-7c42-480a-b250-f79cd1f28d8d",
+                            "url": "/Data/Navigation/Footer-Links/About",
+                            "name": "About",
+                            "displayName": "About",
+                            "fields": {
+                              "Link": {
+                                "value": {
+                                  "href": "/about",
+                                  "text": "About",
+                                  "linktype": "external",
+                                  "url": "/about",
+                                  "anchor": "",
+                                  "title": "About",
+                                  "class": "",
+                                  "target": ""
+                                }
+                              }
+                            }
+                          },
+                          {
+                            "id": "e22c0dfc-8529-49db-82ca-5bcffebae571",
+                            "url": "/Data/Navigation/Footer-Links/Contact",
+                            "name": "Contact",
+                            "displayName": "Contact",
+                            "fields": {
+                              "Link": {
+                                "value": {
+                                  "href": "/contact",
+                                  "text": "Contact",
+                                  "linktype": "external",
+                                  "url": "/contact",
+                                  "anchor": "",
+                                  "title": "Contact",
+                                  "class": "",
+                                  "target": ""
+                                }
+                              }
+                            }
+                          },
+                          {
+                            "id": "3bd7b0ba-72fb-4be2-a0b0-7f53b611e7a6",
+                            "url": "/Data/Navigation/Footer-Links/Payment-Options",
+                            "name": "Payment Options",
+                            "displayName": "Payment Options",
+                            "fields": {
+                              "Link": {
+                                "value": {
+                                  "href": "/payment-options",
+                                  "text": "Payment Options",
+                                  "linktype": "external",
+                                  "url": "/payment-options",
+                                  "anchor": "",
+                                  "title": "Payment Options",
+                                  "class": "",
+                                  "target": ""
+                                }
+                              }
+                            }
+                          },
+                          {
+                            "id": "9f928d71-9930-465a-8ab7-fcca418aa819",
+                            "url": "/Data/Navigation/Footer-Links/Returns",
+                            "name": "Returns",
+                            "displayName": "Returns",
+                            "fields": {
+                              "Link": {
+                                "value": {
+                                  "href": "/returns",
+                                  "text": "Returns",
+                                  "linktype": "external",
+                                  "url": "/returns",
+                                  "anchor": "",
+                                  "title": "Returns",
+                                  "class": "",
+                                  "target": ""
+                                }
+                              }
+                            }
+                          },
+                          {
+                            "id": "5d17a357-32d7-4280-a1e0-a1f45d6b4afe",
+                            "url": "/Data/Navigation/Footer-Links/Privacy-Policies",
+                            "name": "Privacy Policies",
+                            "displayName": "Privacy Policies",
+                            "fields": {
+                              "Link": {
+                                "value": {
+                                  "href": "/privacy-policies",
+                                  "text": "Privacy Policies",
+                                  "linktype": "external",
+                                  "url": "/privacy-policies",
+                                  "anchor": "",
+                                  "title": "Privacy Policies",
+                                  "class": "",
+                                  "target": ""
+                                }
+                              }
+                            }
+                          }
+                        ],
+                        "Social Links": [
+                          {
+                            "id": "5c156795-6b6d-428c-b811-95ef755dd154",
+                            "url": "/Data/Navigation/Social-Links/Facebook",
+                            "name": "Facebook",
+                            "displayName": "Facebook",
+                            "fields": {
+                              "Link": {
+                                "value": {
+                                  "href": "https://facebook.com",
+                                  "text": "Facebook",
+                                  "linktype": "external",
+                                  "url": "https://facebook.com",
+                                  "anchor": "",
+                                  "title": "Facebook",
+                                  "class": "",
+                                  "target": "_blank"
+                                }
+                              }
+                            }
+                          },
+                          {
+                            "id": "566c8e7e-4550-4dae-ac42-bacb9fc4ab28",
+                            "url": "/Data/Navigation/Social-Links/Twitter",
+                            "name": "Twitter",
+                            "displayName": "Twitter",
+                            "fields": {
+                              "Link": {
+                                "value": {
+                                  "href": "https://twitter.com",
+                                  "text": "Twitter",
+                                  "linktype": "external",
+                                  "url": "https://twitter.com",
+                                  "anchor": "",
+                                  "title": "Twitter",
+                                  "class": "",
+                                  "target": "_blank"
+                                }
+                              }
+                            }
+                          },
+                          {
+                            "id": "d4d8fdf7-f07a-4e55-b3de-4367267bfce4",
+                            "url": "/Data/Navigation/Social-Links/LinkedIn",
+                            "name": "LinkedIn",
+                            "displayName": "LinkedIn",
+                            "fields": {
+                              "Link": {
+                                "value": {
+                                  "href": "https://linkedin.com",
+                                  "text": "LinkedIn",
+                                  "linktype": "external",
+                                  "url": "https://linkedin.com",
+                                  "anchor": "",
+                                  "title": "LinkedIn",
+                                  "class": "",
+                                  "target": "_blank"
+                                }
+                              }
+                            }
+                          }
+                        ],
+                        "Copyright Text": {
+                          "value": "2023 furino. All rights reverved"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        }
+      }
+    },
+    "siteName": "akshayxmc",
+    "locale": "en",
+    "mode": {
+      "name": "normal",
+      "isNormal": true,
+      "isPreview": false,
+      "isEditing": false,
+      "isDesignLibrary": false,
+      "designLibrary": {
+        "isVariantGeneration": false
+      }
+    }
+  },
+  "componentMap": {}
+}

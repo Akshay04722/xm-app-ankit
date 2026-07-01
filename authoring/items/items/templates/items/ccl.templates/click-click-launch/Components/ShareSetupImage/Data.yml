@@ -1,0 +1,16 @@
+---
+ID: "d5c31782-b7e1-4c28-98e3-f62bd86e41ab"
+Parent: "a2de7c4c-be88-410a-bd30-e18c5e638c4d"
+Template: "e269f8c1-be16-43b6-9285-b3e2a28b06c0"
+Path: "/sitecore/templates/Project/click-click-launch/Components/ShareSetupImage/Data"
+Languages:
+- Language: en
+  Versions:
+  - Version: 1
+    Fields:
+    - ID: "25bed78c-4957-4165-998a-ca1b52f67497"
+      Hint: __Created
+      Value: 20260616T154000Z
+    - ID: "8cdc337e-a112-42fb-bbb4-4143751e123f"
+      Hint: __Revision
+      Value: "6359d344-7cf1-4349-a7a8-3ff3392de03b"
