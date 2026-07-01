@@ -27,6 +27,7 @@ import * as ContentBlock from 'src/components/content-block/ContentBlock';
 import * as Container from 'src/components/container/Container';
 import * as ColumnSplitter from 'src/components/column-splitter/ColumnSplitter';
 import * as CloudSdkBootstrap from 'src/components/CloudSdkBootstrap/CloudSdkBootstrap';
+import * as CDPProvider from 'src/components/cdp/CDPProvider';
 import * as BrowseTheRange from 'src/components/browse-the-range/BrowseTheRange';
 import * as Blog from 'src/components/blog/Blog';
 
@@ -57,6 +58,7 @@ export const componentMap = new Map<string, NextjsContentSdkComponent>([
   ['Container', { ...Container }],
   ['ColumnSplitter', { ...ColumnSplitter }],
   ['CloudSdkBootstrap', { ...CloudSdkBootstrap, componentType: 'client' }],
+  ['CDPProvider', { ...CDPProvider, componentType: 'client' }],
   ['BrowseTheRange', { ...BrowseTheRange }],
   ['Blog', { ...Blog, componentType: 'client' }],
 ]);

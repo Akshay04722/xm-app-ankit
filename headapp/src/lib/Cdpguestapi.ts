@@ -44,6 +44,8 @@ export async function getRecentlyViewed(guestRef: string): Promise<RecentlyViewe
     cache: 'no-store',
   });
 
+  console.log('res', res);
+
   if (res.status === 404) return [];
   if (!res.ok) {
     console.warn('CDP getRecentlyViewed failed:', res.status, await res.text());

@@ -13,6 +13,7 @@ import { ComponentProps } from '@/lib/component-props';
 import { CompatibleLink } from '@/components/content-sdk/CompatibleLink';
 import styles from '../../assets/components/Blog/Blog.module.css';
 import { useRecentlyViewed } from '@/lib/useRecentlyViewed';
+import { getEngage } from "@/lib/cdp/engage";
 
 interface BlogPostItem {
   id?: string; // Sitecore item ID/GUID — add this to your GraphQL query if not present
@@ -42,6 +43,20 @@ const NoDataFallback = ({ componentName }: { componentName: string }) => (
     Missing datasource for component: <strong>{componentName}</strong>. Please associate a datasource item in Sitecore.
   </div>
 );
+
+const handleReadMore = async (blog: BlogPostItem) => {
+  const engage = await getEngage();
+
+  await engage.pageView({
+    channel: "WEB",
+    currency: "USD",
+    extensionData: {
+      blogId: blog.id,
+      title: blog.title,
+      category: blog.category,
+    },
+  });
+};
 
 export const Default = (props: BlogProps): React.JSX.Element => {
   const { fields, params } = props;
@@ -85,12 +100,12 @@ export const Default = (props: BlogProps): React.JSX.Element => {
   const sidebarPosts =
     recentlyViewed.length > 0
       ? recentlyViewed.map((p) => ({
-          id: p.id,
-          title: p.title,
-          date: p.date,
-          imageSrc: p.imageSrc,
-          href: p.href,
-        }))
+        id: p.id,
+        title: p.title,
+        date: p.date,
+        imageSrc: p.imageSrc,
+        href: p.href,
+      }))
       : null; // null => render fallbackRecentPosts with full ImageField support below
 
   const filteredPosts = posts.filter((post) => {
@@ -126,14 +141,33 @@ export const Default = (props: BlogProps): React.JSX.Element => {
   };
 
   // Called whenever a post card/title/CTA is clicked
-  const handlePostClick = (post: BlogPostItem) => {
+  const handlePostClick = async (post: BlogPostItem) => {
+    // Existing local tracking
     trackPostClick({
-      id: post.id || post.title?.jsonValue?.value || '',
-      title: post.title?.jsonValue?.value || '',
+      id: post.id || "",
+      title: post.title?.jsonValue?.value || "",
       date: post.date?.jsonValue?.value,
       imageSrc: post.image?.jsonValue?.value?.src,
       href: post.link?.jsonValue?.value?.href,
     });
+
+    const engage = await getEngage();
+    console.log("engage", engage)
+    const response = await engage.pageView(
+      {
+        channel: "WEB",
+        currency: "USD",
+      },
+      {
+        blogId: post.id,
+        title: post.title?.jsonValue?.value,
+        category: post.category?.jsonValue?.value,
+        url: post.link?.jsonValue?.value?.href,
+      }
+    );
+
+    console.log("CDP Response:", response);
+    console.log("Browser ID:", engage.getBrowserId());
   };
 
   return (
@@ -290,40 +324,40 @@ export const Default = (props: BlogProps): React.JSX.Element => {
             <div className={styles.recentPostsList}>
               {sidebarPosts
                 ? sidebarPosts.map((post) => (
-                    <div key={post.id} className={styles.recentPostCard}>
-                      {post.imageSrc && (
-                        <div className={styles.recentPostImageWrapper}>
-                          {/* plain <img> since this is a plain URL string, not an ImageField */}
-                          <img src={post.imageSrc} alt="" className="w-full h-full object-cover" />
-                        </div>
-                      )}
-                      <div className={styles.recentPostContent}>
-                        <h4 className={styles.recentPostTitle}>
-                          <a href={post.href || '#'} className={styles.recentPostLink}>
-                            {post.title}
-                          </a>
-                        </h4>
-                        {post.date && <span className={styles.recentPostDate}>{post.date}</span>}
+                  <div key={post.id} className={styles.recentPostCard}>
+                    {post.imageSrc && (
+                      <div className={styles.recentPostImageWrapper}>
+                        {/* plain <img> since this is a plain URL string, not an ImageField */}
+                        <img src={post.imageSrc} alt="" className="w-full h-full object-cover" />
                       </div>
+                    )}
+                    <div className={styles.recentPostContent}>
+                      <h4 className={styles.recentPostTitle}>
+                        <a href={post.href || '#'} className={styles.recentPostLink}>
+                          {post.title}
+                        </a>
+                      </h4>
+                      {post.date && <span className={styles.recentPostDate}>{post.date}</span>}
                     </div>
-                  ))
+                  </div>
+                ))
                 : fallbackRecentPosts.map((post) => (
-                    <div key={post.id} className={styles.recentPostCard}>
-                      {post.image && !!(post.image.value?.src || post.image.value?.mediaid) && (
-                        <div className={styles.recentPostImageWrapper}>
-                          <ContentSdkImage field={post.image} alt="" className="w-full h-full object-cover" />
-                        </div>
-                      )}
-                      <div className={styles.recentPostContent}>
-                        <h4 className={styles.recentPostTitle}>
-                          <a href={post.href || '#'} className={styles.recentPostLink}>
-                            {post.title}
-                          </a>
-                        </h4>
-                        <span className={styles.recentPostDate}>{post.date}</span>
+                  <div key={post.id} className={styles.recentPostCard}>
+                    {post.image && !!(post.image.value?.src || post.image.value?.mediaid) && (
+                      <div className={styles.recentPostImageWrapper}>
+                        <ContentSdkImage field={post.image} alt="" className="w-full h-full object-cover" />
                       </div>
+                    )}
+                    <div className={styles.recentPostContent}>
+                      <h4 className={styles.recentPostTitle}>
+                        <a href={post.href || '#'} className={styles.recentPostLink}>
+                          {post.title}
+                        </a>
+                      </h4>
+                      <span className={styles.recentPostDate}>{post.date}</span>
                     </div>
-                  ))}
+                  </div>
+                ))}
             </div>
           </div>
         </aside>

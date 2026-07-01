@@ -11,6 +11,7 @@ import * as Inspirations from 'src/components/inspirations/Inspirations';
 import * as Footer from 'src/components/footer/Footer';
 import * as ContentBlock from 'src/components/content-block/ContentBlock';
 import * as CloudSdkBootstrap from 'src/components/CloudSdkBootstrap/CloudSdkBootstrap';
+import * as CDPProvider from 'src/components/cdp/CDPProvider';
 import * as Blog from 'src/components/blog/Blog';
 
 export const componentMap = new Map<string, NextjsContentSdkComponent>([
@@ -25,6 +26,7 @@ export const componentMap = new Map<string, NextjsContentSdkComponent>([
   ['Footer', { ...Footer }],
   ['ContentBlock', { ...ContentBlock }],
   ['CloudSdkBootstrap', { ...CloudSdkBootstrap }],
+  ['CDPProvider', { ...CDPProvider }],
   ['Blog', { ...Blog }],
 ]);
 
