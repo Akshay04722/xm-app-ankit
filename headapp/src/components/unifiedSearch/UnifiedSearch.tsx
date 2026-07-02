@@ -1,21 +1,20 @@
 "use client";
 
-import React, { useEffect, useState, useRef } from "react";
-import { useRouter } from "next/router";
+import React, { useEffect, useState, useRef, Suspense } from "react";
+import { useSearchParams } from "next/navigation";
 import SearchResults from "@/components/searchResults/SearchResults";
 import { fetchSearchResults } from "@/lib/sitecoreSearch";
 import {
-  buildSuggestionList,
+  rankSearchItems,
   getItemLabel,
   SearchItem,
   highlightSearchTerm,
 } from "@/lib/searchUtils";
 
-export default function UnifiedSearch() {
-  const router = useRouter();
+function UnifiedSearchComponent() {
+  const searchParams = useSearchParams();
   const [keyword, setKeyword] = useState("");
   const [blogs, setBlogs] = useState<SearchItem[]>([]);
-  const [rawSuggestions, setRawSuggestions] = useState<SearchItem[]>([]);
   const [uuid, setUuid] = useState<string>("");
   const [searchTerm, setSearchTerm] = useState("");
   const [loadingSuggestions, setLoadingSuggestions] = useState(false);
@@ -33,14 +32,15 @@ export default function UnifiedSearch() {
     );
   }, []);
 
-  // Sync keyword from URL query param `q` on mount and router changes
+  // Sync keyword from URL query param `q` on mount and search params changes
   useEffect(() => {
-    if (!router.isReady) return;
-    if (typeof router.query.q === "string") {
-      setKeyword(router.query.q);
-      setSearchTerm(router.query.q);
+    if (!searchParams) return;
+    const q = searchParams.get("q");
+    if (q) {
+      setKeyword(q);
+      setSearchTerm(q);
     }
-  }, [router.isReady, router.query.q]);
+  }, [searchParams]);
 
   // Click outside suggestions dropdown handler
   useEffect(() => {
@@ -56,32 +56,14 @@ export default function UnifiedSearch() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  // Load suggestions catalog once on mount / uuid change
-  useEffect(() => {
-    if (!uuid) return;
-    const loadRawSuggestions = async () => {
-      try {
-        setLoadingSuggestions(true);
-        const data = await fetchSearchResults("1003", undefined, uuid);
-        const widget = data.widgets?.[0];
-        const items: SearchItem[] = widget?.content || [];
-        setRawSuggestions(items);
-      } catch (err) {
-        console.error("Error loading suggestion catalog:", err);
-        setRawSuggestions([]);
-      } finally {
-        setLoadingSuggestions(false);
-      }
-    };
-    loadRawSuggestions();
-  }, [uuid]);
-
-  // Client-side instant suggestion filtering (works with partial keywords >= 3 chars)
+  // Dynamic debounced search suggestions directly from the Sitecore Search API
   useEffect(() => {
     if (skipNextSuggestionRef.current) {
       skipNextSuggestionRef.current = false;
       return;
     }
+
+    if (!uuid) return;
 
     if (keyword.trim().length < 3) {
       setBlogs([]);
@@ -89,11 +71,28 @@ export default function UnifiedSearch() {
       return;
     }
 
-    const filtered = buildSuggestionList(rawSuggestions, keyword, 6);
-    setBlogs(filtered);
-    setShowSuggestions(filtered.length > 0);
-    setFocusedIndex(-1);
-  }, [keyword, rawSuggestions]);
+    const timer = setTimeout(async () => {
+      try {
+        setLoadingSuggestions(true);
+        // Call the API with the typed keyword to fetch suggestions directly from Sitecore Search index
+        const data = await fetchSearchResults("1003", keyword, uuid);
+        const widget = data.widgets?.[0];
+        const items: SearchItem[] = widget?.content || [];
+        const ranked = rankSearchItems(items, keyword);
+        setBlogs(ranked.slice(0, 6));
+        setShowSuggestions(ranked.length > 0);
+        setFocusedIndex(-1);
+      } catch (err) {
+        console.error("Error loading suggestions:", err);
+        setBlogs([]);
+        setShowSuggestions(false);
+      } finally {
+        setLoadingSuggestions(false);
+      }
+    }, 300);
+
+    return () => clearTimeout(timer);
+  }, [keyword, uuid]);
 
   const handleSelect = (blog: SearchItem) => {
     const label = getItemLabel(blog);
@@ -147,10 +146,26 @@ export default function UnifiedSearch() {
         <div className="search-input-panel">
           <form onSubmit={handleSearchSubmit} className="search-form">
             <div className="search-input-wrap">
-              <span className="search-input-icon">Blogs</span>
+              {/* Search icon */}
+              <span className="search-input-icon" aria-hidden="true">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  width="20"
+                  height="20"
+                >
+                  <circle cx="11" cy="11" r="8" />
+                  <path d="m21 21-4.35-4.35" />
+                </svg>
+              </span>
               <input
                 type="text"
-                placeholder="Search blogs..."
+                placeholder="Search blogs, articles, tutorials…"
                 value={keyword}
                 onChange={(e) => setKeyword(e.target.value)}
                 onKeyDown={handleKeyDown}
@@ -159,8 +174,16 @@ export default function UnifiedSearch() {
                 aria-autocomplete="list"
                 role="combobox"
                 aria-expanded={showSuggestions && blogs.length > 0}
-                aria-controls={showSuggestions && blogs.length > 0 ? "suggestions-listbox" : undefined}
-                aria-activedescendant={focusedIndex >= 0 ? `suggestion-item-${focusedIndex}` : undefined}
+                aria-controls={
+                  showSuggestions && blogs.length > 0
+                    ? "suggestions-listbox"
+                    : undefined
+                }
+                aria-activedescendant={
+                  focusedIndex >= 0
+                    ? `suggestion-item-${focusedIndex}`
+                    : undefined
+                }
               />
               <button type="submit" className="search-submit">
                 Search
@@ -169,8 +192,10 @@ export default function UnifiedSearch() {
           </form>
 
           {loadingSuggestions && keyword.trim().length >= 2 && (
-            <div style={{ padding: "10px", color: "#657892" }}>
-              Loading suggestions...
+            <div className="search-suggestions-loading" aria-live="polite">
+              <span className="search-suggestions-loading-dot" />
+              <span className="search-suggestions-loading-dot" />
+              <span className="search-suggestions-loading-dot" />
             </div>
           )}
 
@@ -181,14 +206,17 @@ export default function UnifiedSearch() {
               role="listbox"
               aria-label="Search suggestions"
             >
-              <span className="search-suggestions-header" role="presentation">
+              <span
+                className="search-suggestions-header"
+                role="presentation"
+              >
                 Recommended for you
               </span>
               {blogs.map((blog, idx) => {
                 const title = getItemLabel(blog);
                 const desc = (blog.description as string) || "";
 
-                // Highlight queries in dropdown suggestions
+                // Highlight query terms in dropdown suggestions
                 const highlightedTitle = highlightSearchTerm(title, keyword);
                 const highlightedDesc = highlightSearchTerm(desc, keyword);
 
@@ -197,16 +225,7 @@ export default function UnifiedSearch() {
                     key={blog.id}
                     id={`suggestion-item-${idx}`}
                     type="button"
-                    className="search-suggestion-card"
-                    style={{
-                      width: "100%",
-                      border: "none",
-                      background:
-                        idx === focusedIndex ? "#f0f5ff" : "transparent",
-                      textAlign: "left",
-                      display: "block",
-                      outline: "none",
-                    }}
+                    className={`search-suggestion-card${idx === focusedIndex ? " is-focused" : ""}`}
                     onClick={() => handleSelect(blog)}
                     role="option"
                     aria-selected={idx === focusedIndex}
@@ -235,5 +254,13 @@ export default function UnifiedSearch() {
 
       {searchTerm && <SearchResults rfkId="1001" keyword={searchTerm} />}
     </div>
+  );
+}
+
+export default function UnifiedSearch() {
+  return (
+    <Suspense fallback={<div className="search-suggestions-loading" />}>
+      <UnifiedSearchComponent />
+    </Suspense>
   );
 }

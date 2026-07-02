@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useRouter } from "next/router";
+import { useEffect, useRef, useState, Suspense } from "react";
+import { useSearchParams, usePathname } from "next/navigation";
 import { getCookie, setCookie } from "@/lib/cookies";
 import { fetchSearchResults } from "@/lib/sitecoreSearch";
 import {
@@ -13,18 +13,24 @@ import {
   highlightSearchTerm,
 } from "@/lib/searchUtils";
 
-export default function SearchResults({
+// Each unique keyword+facet combination triggers a fresh API call.
+// There is no local cache or keepPreviousData — every search hits the network.
+// Client-side ranking (rankSearchItems) is applied as a post-API scoring step.
+const FETCH_DEBOUNCE_MS = 400;
+
+function SearchResultsComponent({
   rfkId,
   keyword,
 }: {
   rfkId: string;
   keyword?: string;
 }) {
-  const router = useRouter();
+  const searchParams = useSearchParams();
+  const pathname = usePathname();
   const [results, setResults] = useState<SearchItem[]>([]);
-  const [rawResults, setRawResults] = useState<SearchItem[]>([]);
   const [facets, setFacets] = useState<SearchFacet[]>([]);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [selectedFacets, setSelectedFacets] = useState<
     Record<string, string[]>
   >({});
@@ -33,6 +39,9 @@ export default function SearchResults({
     const cookieValue = getCookie("bx_guest_ref");
     return cookieValue || `visitor-${Math.random().toString(36).slice(2, 11)}`;
   });
+
+  // Debounce timer ref — cancelled on unmount or when deps change
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const getClickCounts = (): Record<string, number> => {
     try {
@@ -63,29 +72,27 @@ export default function SearchResults({
       });
 
       const data = await res.json();
+
       console.log("Event published:", data);
     } catch (err) {
       console.error("Error publishing event:", err);
     }
   };
 
-  // 1️⃣ Load initial facets from URL query params once on mount
+  // 1️⃣ Load initial facets from URL query params once searchParams is available
   useEffect(() => {
-    if (!router.isReady) return;
-    const query = router.query;
+    if (!searchParams) return;
     const urlFacets: Record<string, string[]> = {};
     let hasFacets = false;
 
-    Object.keys(query).forEach((key) => {
+    searchParams.forEach((value, key) => {
       if (key.startsWith("f_")) {
         hasFacets = true;
         const facetName = key.substring(2);
-        const val = query[key];
-        if (Array.isArray(val)) {
-          urlFacets[facetName] = val;
-        } else if (typeof val === "string") {
-          urlFacets[facetName] = [val];
+        if (!urlFacets[facetName]) {
+          urlFacets[facetName] = [];
         }
+        urlFacets[facetName].push(value);
       }
     });
 
@@ -93,80 +100,93 @@ export default function SearchResults({
       setSelectedFacets(urlFacets);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [router.isReady]);
+  }, [searchParams]);
 
-  // Helper to update router query params shallowly
+  // Helper to update URL query params shallowly
   const updateUrlQuery = (
     keywordVal: string | undefined,
     facetsVal: Record<string, string[]>,
   ) => {
-    if (!router.isReady) return;
-
-    const newQuery: Record<string, string | string[]> = {};
+    const params = new URLSearchParams();
     if (keywordVal) {
-      newQuery.q = keywordVal;
+      params.set("q", keywordVal);
     }
 
     Object.entries(facetsVal).forEach(([facetName, values]) => {
-      if (values.length > 0) {
-        newQuery[`f_${facetName}`] = values;
-      }
+      values.forEach((value) => {
+        params.append(`f_${facetName}`, value);
+      });
     });
 
-    router.replace(
-      {
-        pathname: router.pathname,
-        query: newQuery,
-      },
-      undefined,
-      { shallow: true },
+    const newSearch = params.toString();
+    const newUrl = newSearch ? `${pathname}?${newSearch}` : pathname;
+    window.history.replaceState(
+      { ...window.history.state, as: newUrl, url: newUrl },
+      "",
+      newUrl,
     );
   };
 
   // 2️⃣ Sync state to URL whenever selectedFacets or keyword changes
   useEffect(() => {
-    if (!router.isReady) return;
     updateUrlQuery(keyword, selectedFacets);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [keyword, selectedFacets, router.isReady]);
+  }, [keyword, selectedFacets]);
 
-  // 3️⃣ Fetch from API only when rfkId or uuid changes (Caching raw results to support partial matches client-side)
+  // 3️⃣ Non-cached fetch: every keyword + facet change triggers a fresh API call.
+  // The keyphrase is passed to the Sitecore Discover API so results are
+  // server-filtered/ranked. Client-side rankSearchItems is applied as an
+  // additional scoring pass on the returned items.
+  // keepPreviousData is NOT used — each unique keyword/facet set fetches fresh.
   useEffect(() => {
-    const loadResults = async () => {
+    // Clear any pending debounce from the previous render cycle
+    if (debounceRef.current) {
+      clearTimeout(debounceRef.current);
+    }
+
+    debounceRef.current = setTimeout(async () => {
       try {
         setLoading(true);
-        // Query the API with undefined keyword to retrieve full content catalog,
-        // allowing prefix/substring client-side searches (e.g., 'abou' matching 'about')
-        const data = await fetchSearchResults(rfkId, undefined, uuid);
+        setError(null);
+
+        // Pass the keyword directly to the API — fresh network call every time.
+        const data = await fetchSearchResults(
+          rfkId,
+          keyword || undefined,
+          uuid,
+        );
         const widget = data.widgets?.[0];
-        const rawItems: SearchItem[] = widget?.content || [];
-        setRawResults(rawItems);
-        setFacets(widget?.facet || []);
+        const apiItems: SearchItem[] = widget?.content || [];
+        const apiFacets: SearchFacet[] = widget?.facet || [];
+
+        // Apply client-side facet filter + relevance ranking on API results
+        const facetFiltered = filterItemsByFacets(apiItems, selectedFacets);
+        const ranked = rankSearchItems(
+          facetFiltered,
+          keyword,
+          getClickCounts(),
+        );
+
+        setResults(ranked);
+        setFacets(apiFacets);
       } catch (err) {
         console.error("Error fetching search results:", err);
-        setRawResults([]);
+        setResults([]);
         setFacets([]);
+        setError("Something went wrong. Please try again.");
       } finally {
         setLoading(false);
       }
+    }, FETCH_DEBOUNCE_MS);
+
+    return () => {
+      if (debounceRef.current) {
+        clearTimeout(debounceRef.current);
+      }
     };
-
-    loadResults();
-  }, [rfkId, uuid]);
-
-  // 4️⃣ Client-side filtering & ranking (Fires instantly on facet/rawResults changes)
-  useEffect(() => {
-    const facetFilteredResults = filterItemsByFacets(
-      rawResults,
-      selectedFacets,
-    );
-    const rankedResults = rankSearchItems(
-      facetFilteredResults,
-      keyword,
-      getClickCounts(),
-    );
-    setResults(rankedResults);
-  }, [rawResults, selectedFacets, keyword]);
+    // Each unique keyword + selectedFacets + rfkId triggers a fresh fetch
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [rfkId, uuid, keyword, selectedFacets]);
 
   const toggleFacetValue = (facetName: string, facetValue: string) => {
     setSelectedFacets((prev) => {
@@ -213,24 +233,32 @@ export default function SearchResults({
     }
   };
 
+  const hasActiveFilters = Object.values(selectedFacets).some(
+    (vals) => vals.length > 0,
+  );
+
   return (
     <div className="search-results-shell">
       <div className="search-results-toolbar">
         <h3 className="search-results-title" aria-live="polite" role="status">
           {loading
-            ? "Searching..."
-            : results.length > 0
-              ? `Showing ${results.length} results`
-              : "No results"}
+            ? "Searching…"
+            : error
+              ? "Search error"
+              : results.length > 0
+                ? `Showing ${results.length} result${results.length === 1 ? "" : "s"}`
+                : keyword
+                  ? "No results"
+                  : ""}
         </h3>
-        {Object.values(selectedFacets).some((vals) => vals.length > 0) && (
+        {hasActiveFilters && (
           <button className="search-clear-filters" onClick={clearAllFilters}>
             Clear Filters
           </button>
         )}
       </div>
 
-      {Object.values(selectedFacets).some((vals) => vals.length > 0) && (
+      {hasActiveFilters && (
         <div className="search-active-filters">
           {Object.entries(selectedFacets).map(([facetName, values]) =>
             values.map((val) => (
@@ -265,7 +293,7 @@ export default function SearchResults({
                     return (
                       <button
                         key={value.id || `${facet.name}-${value.text}`}
-                        className={`search-facet-chip ${isSelected ? "is-selected" : ""}`}
+                        className={`search-facet-chip${isSelected ? " is-selected" : ""}`}
                         onClick={() => toggleFacetValue(facet.name, value.text)}
                         aria-pressed={isSelected}
                       >
@@ -276,7 +304,7 @@ export default function SearchResults({
                 </div>
               </div>
             ))}
-            {facets.length === 0 && (
+            {!loading && facets.length === 0 && (
               <p className="search-facet-empty">No filters available.</p>
             )}
           </div>
@@ -284,7 +312,13 @@ export default function SearchResults({
 
         {/* Right Column: Results panel */}
         <div className="search-results-panel">
-          {loading ? (
+          {error ? (
+            <div className="search-error-state">
+              <span className="search-error-kicker">Oops!</span>
+              <h4 className="search-error-title">Something went wrong</h4>
+              <p className="search-error-copy">{error}</p>
+            </div>
+          ) : loading ? (
             <div className="search-results-grid">
               {Array.from({ length: 6 }).map((_, idx) => (
                 <div
@@ -311,12 +345,9 @@ export default function SearchResults({
                   "Try checking your spelling, expanding your search term, or clearing some of your filters."
                 }
               </p>
-              {Object.values(selectedFacets).some(
-                (vals) => vals.length > 0,
-              ) && (
+              {hasActiveFilters && (
                 <button
-                  className="search-clear-filters"
-                  style={{ marginTop: "1.5rem" }}
+                  className="search-clear-filters search-clear-filters--spaced"
                   onClick={clearAllFilters}
                 >
                   Reset Filters
@@ -327,13 +358,21 @@ export default function SearchResults({
             <div className="search-results-grid">
               {results.map((item) => {
                 const label = getItemLabel(item);
-                const description = item.description || "No description.";
+                const description =
+                  (item.description as string) || "No description.";
 
-                const highlightedTitle = highlightSearchTerm(label, keyword);
-                const highlightedDesc = highlightSearchTerm(
-                  description as string,
-                  keyword,
-                );
+                // Prefer native API highlight fragments if available;
+                // otherwise fall back to client-side highlightSearchTerm().
+                const nativeHighlights = item.highlight as
+                  | Record<string, string>
+                  | undefined;
+                const highlightedTitle =
+                  nativeHighlights?.title ||
+                  nativeHighlights?.name ||
+                  highlightSearchTerm(label, keyword);
+                const highlightedDesc =
+                  nativeHighlights?.description ||
+                  highlightSearchTerm(description, keyword);
 
                 return (
                   <article key={item.id} className="search-result-card">
@@ -345,7 +384,18 @@ export default function SearchResults({
                       />
                     ) : (
                       <div className="search-result-image search-result-image-placeholder">
-                        Content
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="1.5"
+                          aria-hidden="true"
+                        >
+                          <rect x="3" y="3" width="18" height="18" rx="2" />
+                          <circle cx="8.5" cy="8.5" r="1.5" />
+                          <path d="m21 15-5-5L5 21" />
+                        </svg>
                       </div>
                     )}
                     <div className="search-result-body">
@@ -356,7 +406,7 @@ export default function SearchResults({
                           </span>
                         )}
                         {item.author && (
-                          <span className="search-result-tag subtle">
+                          <span className="search-result-tag search-result-tag--subtle">
                             {item.author as string}
                           </span>
                         )}
@@ -387,5 +437,42 @@ export default function SearchResults({
         </div>
       </div>
     </div>
+  );
+}
+
+export default function SearchResults(props: {
+  rfkId: string;
+  keyword?: string;
+}) {
+  return (
+    <Suspense
+      fallback={
+        <div className="search-results-layout">
+          <aside className="search-sidebar">
+            <div className="search-sidebar-title">Filters</div>
+            <div
+              className="search-skeleton-facet"
+              style={{ height: "40px", marginBottom: "1rem" }}
+            />
+            <div className="search-skeleton-facet" style={{ height: "40px" }} />
+          </aside>
+          <main className="search-main-panel">
+            <div className="search-results-header">
+              <div
+                className="search-skeleton-line"
+                style={{ width: "150px", height: "24px" }}
+              />
+            </div>
+            <div className="search-results-grid">
+              <div className="search-skeleton-card" />
+              <div className="search-skeleton-card" />
+              <div className="search-skeleton-card" />
+            </div>
+          </main>
+        </div>
+      }
+    >
+      <SearchResultsComponent {...props} />
+    </Suspense>
   );
 }
