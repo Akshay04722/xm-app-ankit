@@ -99,6 +99,8 @@ export const generateMetadata = async ({ params }: PageProps) => {
   // The same call as for rendering the page. Should be cached by default react behavior
   const page = await client.getPage(path ?? [], { site, locale });
   const fields = page?.layout.sitecore.route?.fields as RouteFields;
+  const itemId = page?.layout.sitecore.route?.itemId || "";
+  const templateName = page?.layout.sitecore.route?.templateName || "";
 
   // Parse keywords from comma-separated string to array
   const keywordsString = fields?.metadataKeywords?.value?.toString() || "";
@@ -106,25 +108,37 @@ export const generateMetadata = async ({ params }: PageProps) => {
     ? keywordsString.split(",").map((k: string) => k.trim())
     : [];
 
+  const title =
+    fields?.metadataTitle?.value?.toString() ||
+    fields?.pageTitle?.value?.toString() ||
+    fields?.Title?.value?.toString() ||
+    fields?.ogTitle?.value?.toString() ||
+    "Page";
+
+  const description =
+    fields?.metadataDescription?.value?.toString() ||
+    fields?.ogDescription?.value?.toString() ||
+    fields?.pageSummary?.value?.toString() ||
+    "Sitecore Next.js Skate Park Example";
+
   return {
-    title: fields?.Title?.value?.toString() || "Page",
-    description:
-      fields?.ogDescription?.value?.toString() ||
-      fields?.metadataDescription?.value?.toString() ||
-      "Sitecore Next.js Skate Park Example",
+    title,
+    description,
     keywords,
+    other: {
+      "sitecore-item-id": itemId,
+      "sitecore-item-template": templateName,
+    },
     ...(canonicalUrl && {
       alternates: {
         canonical: canonicalUrl,
       },
     }),
     openGraph: {
-      title: fields?.ogTitle?.value?.toString() || "Page",
-      description:
-        fields?.ogDescription?.value?.toString() ||
-        fields?.metadataDescription?.value?.toString() ||
-        "Sitecore Next.js Skate Park Example",
+      title: fields?.ogTitle?.value?.toString() || title,
+      description: fields?.ogDescription?.value?.toString() || description,
       url: canonicalUrl,
+      type: "website",
       images: fields?.ogImage?.value?.src || fields?.thumbnailImage?.value?.src,
     },
   };
