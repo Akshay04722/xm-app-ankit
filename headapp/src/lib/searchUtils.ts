@@ -273,3 +273,14 @@ export function rankSearchItems(
 export function buildSuggestionList(items: SearchItem[], keyword?: string, limit = 6): SearchItem[] {
   return rankSearchItems(items, keyword).slice(0, limit);
 }
+
+export function stripHtml(html: string): string {
+  if (!html) return "";
+  return html.replace(/<[^>]*>/g, "");
+}
+
+export function stripHtmlExceptHighlight(html: string): string {
+  if (!html) return "";
+  // Strip all HTML tags except <strong> and <mark>
+  return html.replace(/<(?!(\/?(strong|mark))\b)[^>]*>/gi, "");
+}

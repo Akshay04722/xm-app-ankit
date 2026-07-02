@@ -11,6 +11,8 @@ import {
   SearchFacet,
   SearchItem,
   highlightSearchTerm,
+  stripHtml,
+  stripHtmlExceptHighlight,
 } from "@/lib/searchUtils";
 
 // Each unique keyword+facet combination triggers a fresh API call.
@@ -360,6 +362,10 @@ function SearchResultsComponent({
                 const label = getItemLabel(item);
                 const description =
                   (item.description as string) || "No description.";
+                const cleanDescription =
+                  description !== "No description."
+                    ? stripHtml(description)
+                    : description;
 
                 // Prefer native API highlight fragments if available;
                 // otherwise fall back to client-side highlightSearchTerm().
@@ -370,9 +376,9 @@ function SearchResultsComponent({
                   nativeHighlights?.title ||
                   nativeHighlights?.name ||
                   highlightSearchTerm(label, keyword);
-                const highlightedDesc =
-                  nativeHighlights?.description ||
-                  highlightSearchTerm(description, keyword);
+                const highlightedDesc = nativeHighlights?.description
+                  ? stripHtmlExceptHighlight(nativeHighlights.description)
+                  : highlightSearchTerm(cleanDescription, keyword);
 
                 return (
                   <article key={item.id} className="search-result-card">

@@ -9,6 +9,7 @@ import {
   getItemLabel,
   SearchItem,
   highlightSearchTerm,
+  stripHtml,
 } from "@/lib/searchUtils";
 
 function UnifiedSearchComponent() {
@@ -215,10 +216,11 @@ function UnifiedSearchComponent() {
               {blogs.map((blog, idx) => {
                 const title = getItemLabel(blog);
                 const desc = (blog.description as string) || "";
+                const cleanDesc = stripHtml(desc);
 
                 // Highlight query terms in dropdown suggestions
                 const highlightedTitle = highlightSearchTerm(title, keyword);
-                const highlightedDesc = highlightSearchTerm(desc, keyword);
+                const highlightedDesc = highlightSearchTerm(cleanDesc, keyword);
 
                 return (
                   <button
@@ -238,7 +240,7 @@ function UnifiedSearchComponent() {
                       className="search-suggestion-title"
                       dangerouslySetInnerHTML={{ __html: highlightedTitle }}
                     />
-                    {desc && (
+                    {cleanDesc && (
                       <p
                         className="search-suggestion-description"
                         dangerouslySetInnerHTML={{ __html: highlightedDesc }}
