@@ -50,6 +50,52 @@ export const Default = (props: BlogProps): React.JSX.Element => {
 
   const datasource = fields?.data?.datasource;
 
+  const [posts, setPosts] = React.useState<BlogPostItem[]>([]);
+  const [loading, setLoading] = React.useState(true);
+
+  React.useEffect(() => {
+    if (datasource?.posts?.results?.length) {
+      setPosts(datasource.posts.results);
+      setLoading(false);
+    } else {
+      import("@/lib/sitecore-client").then((mod) => {
+        const client = mod.default;
+        const query = `
+          query BlogQuery($datasource: String!, $language: String!) {
+            datasource: item(path: $datasource, language: $language) {
+              posts: children(includeTemplateIDs: ["{1DB35138-F1D2-4EAA-A7E2-4B13FB9924DA}"]) {
+                results {
+                  id
+                  name
+                  title: field(name: "PromoText2") { jsonValue }
+                  description: field(name: "PromoText") { jsonValue }
+                  author: field(name: "PromoText3") { jsonValue }
+                  image: field(name: "PromoIcon") { jsonValue }
+                  link: field(name: "PromoLink") { jsonValue }
+                  category: field(name: "Category") { jsonValue }
+                  date: field(name: "Date") { jsonValue }
+                }
+              }
+            }
+          }
+        `;
+        client.getData(query, {
+          datasource: "/sitecore/content/akshay/akshayxmc/Home/Blog",
+          language: "en"
+        })
+        .then((res: any) => {
+          const results = res?.datasource?.posts?.results || [];
+          setPosts(results);
+          setLoading(false);
+        })
+        .catch((err) => {
+          console.error("Failed to fetch blog posts client-side:", err);
+          setLoading(false);
+        });
+      });
+    }
+  }, [datasource]);
+
   const [searchInput, setSearchInput] = React.useState("");
   const [activeSearchQuery, setActiveSearchQuery] = React.useState("");
   const [selectedCategory, setSelectedCategory] = React.useState<string | null>(
@@ -61,11 +107,18 @@ export const Default = (props: BlogProps): React.JSX.Element => {
   // CDP tracking + live "recently viewed" list
   const { recentlyViewed, trackPostClick } = useRecentlyViewedCdp();
 
-  if (!datasource || !datasource.posts?.results?.length) {
+  if (loading) {
+    return (
+      <div className="p-20 text-center text-gray-500 font-medium my-4 bg-gray-50 rounded-lg border-2 border-dashed border-gray-200">
+        Loading blog posts...
+      </div>
+    );
+  }
+
+  if (posts.length === 0) {
     return <NoDataFallback componentName="Blog" />;
   }
 
-  const posts = datasource.posts.results;
   const containerClass = `${styles.blogContainer} ${paramsStyles || ""}`.trim();
 
   const categoryCounts = posts.reduce(

@@ -29,6 +29,7 @@ import * as ColumnSplitter from 'src/components/column-splitter/ColumnSplitter';
 import * as CloudSdkBootstrap from 'src/components/CloudSdkBootstrap/CloudSdkBootstrap';
 import * as CDPProvider from 'src/components/cdp/CDPProvider';
 import * as BrowseTheRange from 'src/components/browse-the-range/BrowseTheRange';
+import * as BlogDetail from 'src/components/blog-detail/BlogDetail';
 import * as Blog from 'src/components/blog/Blog';
 
 export const componentMap = new Map<string, NextjsContentSdkComponent>([
@@ -60,6 +61,7 @@ export const componentMap = new Map<string, NextjsContentSdkComponent>([
   ['CloudSdkBootstrap', { ...CloudSdkBootstrap, componentType: 'client' }],
   ['CDPProvider', { ...CDPProvider, componentType: 'client' }],
   ['BrowseTheRange', { ...BrowseTheRange }],
+  ['BlogDetail', { ...BlogDetail, componentType: 'client' }],
   ['Blog', { ...Blog, componentType: 'client' }],
 ]);
 
