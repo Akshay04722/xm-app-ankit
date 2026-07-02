@@ -5,19 +5,19 @@
 /* Layout & Grid Configuration */
 .blogContainer {
   width: 100%;
-  max-width: 77.6875rem; /* 1243px (exact active content width from Figma) */
+  max-width: 1243px; /* Exact active content width from Figma */
   margin-left: auto;
   margin-right: auto;
   padding-left: 0;
   padding-right: 0;
-  padding-top: var(--spacing-xl, 2.5rem);
-  padding-bottom: var(--spacing-xl, 2.5rem);
+  padding-top: 106px; /* Spacing from Figma */
+  padding-bottom: 60px; /* Spacing from Figma */
 }
 
 .mainLayout {
   display: grid;
-  grid-template-columns: minmax(0, 51.25rem) 24.5625rem; /* 820px posts and 393px sidebar */
-  gap: 1.875rem; /* 30px horizontal gap from Figma (947 - 917) */
+  grid-template-columns: minmax(0, 817px) 393px; /* 817px posts and 393px sidebar from Figma */
+  gap: 33px; /* 33px horizontal gap from Figma */
   align-items: start;
 }
 
@@ -25,13 +25,13 @@
 .leftColumn {
   display: flex;
   flex-direction: column;
-  gap: 3.375rem; /* 54px vertical gap below posts list */
+  gap: 54px; /* Vertical gap below posts list */
 }
 
 .postsList {
   display: flex;
   flex-direction: column;
-  gap: 3.375rem; /* 54px spacing between posts */
+  gap: 54px; /* Spacing between posts */
 }
 
 .postCard {
@@ -44,8 +44,8 @@
 .imageWrapper {
   width: 100%;
   aspect-ratio: 817 / 500; /* Proportional aspect ratio from Figma */
-  max-height: 31.25rem; /* 500px maximum height */
-  border-radius: 0.625rem; /* 10px from Figma */
+  max-height: 500px; /* 500px maximum height */
+  border-radius: 10px; /* 10px from Figma */
   overflow: hidden;
 }
 
@@ -54,24 +54,24 @@
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 2.1875rem; /* 35px gap from Figma */
-  margin-top: 1.0625rem; /* 17px top spacing from Figma */
-  margin-bottom: 0.9375rem; /* 15px bottom spacing from Figma */
+  gap: 35px; /* 35px gap from Figma */
+  margin-top: 17px; /* 17px top spacing from Figma */
+  margin-bottom: 15px; /* 15px bottom spacing from Figma */
 }
 
 .metaItem {
   display: flex;
   align-items: center;
-  gap: 0.5rem; /* 8px spacing */
+  gap: 8px; /* 8px spacing */
   font-family: var(--font-poppins, sans-serif);
-  font-size: var(--font-size-base, 1rem); /* 16px from Figma */
+  font-size: 16px; /* 16px from Figma */
   font-weight: 400;
   color: var(--color-text-muted, #9F9F9F);
 }
 
 .metaItem svg {
-  width: 1.25rem;
-  height: 1.25rem;
+  width: 20px;
+  height: 20px;
   color: var(--color-text-muted, #9F9F9F);
   flex-shrink: 0;
 }
@@ -79,19 +79,19 @@
 /* Post Typography */
 .title {
   margin-top: 0;
-  margin-bottom: 0.75rem; /* 12px gap from Figma */
+  margin-bottom: 12px; /* 12px gap from Figma */
   font-family: var(--font-poppins, sans-serif);
   font-weight: 500; /* 500 Medium from Figma */
-  font-size: 1.875rem; /* 30px from Figma */
-  line-height: 1.25;
+  font-size: 30px; /* 30px from Figma */
+  line-height: 1.5; /* 45px line-height from Figma (45 / 30) */
   color: var(--color-text-dark, #000000);
 }
 
 .description {
   margin-top: 0;
-  margin-bottom: 1.875rem; /* 30px gap from Figma */
+  margin-bottom: 30px; /* 30px gap from Figma */
   font-family: var(--font-poppins, sans-serif);
-  font-size: 0.9375rem; /* 15px from Figma */
+  font-size: 15px; /* 15px from Figma */
   line-height: 1.5; /* 1.5em from Figma */
   color: var(--color-text-muted, #9F9F9F);
   text-align: justify;
@@ -107,11 +107,11 @@
 
 .readMoreLink {
   font-family: var(--font-poppins, sans-serif);
-  font-size: var(--font-size-base, 1rem); /* 16px from Figma */
+  font-size: 16px; /* 16px from Figma */
   font-weight: 400;
   color: var(--color-text-dark, #000000);
   text-decoration: none;
-  padding-bottom: 0.75rem; /* 12px spacing above underline */
+  padding-bottom: 12px; /* 12px spacing above underline */
   cursor: pointer;
   transition: opacity 0.2s ease-in-out;
 }
@@ -122,10 +122,10 @@
 
 .underline {
   display: block;
-  width: 4.8125rem; /* 77px line width from Figma */
+  width: 77px; /* 77px line width from Figma */
   height: 1px;
   background-color: var(--color-text-dark, #000000);
-  margin-left: 0.375rem; /* 6px horizontal offset from Figma */
+  margin-left: 6px; /* 6px horizontal offset from Figma */
 }
 
 /* Pagination Component */
@@ -133,23 +133,23 @@
   display: flex;
   justify-content: flex-end; /* Aligned to the right edge from Figma */
   align-items: center;
-  gap: 2.375rem; /* 38px spacing between pagination buttons */
-  margin-top: 3.375rem; /* 54px spacing from bottom of list */
+  gap: 38px; /* 38px spacing between pagination buttons */
+  margin-top: 54px; /* 54px spacing from bottom of list */
 }
 
 .pageButton {
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 3.75rem; /* 60px from Figma */
-  height: 3.75rem; /* 60px from Figma */
+  width: 60px; /* 60px from Figma */
+  height: 60px; /* 60px from Figma */
   font-family: var(--font-poppins, sans-serif);
-  font-size: 1.25rem; /* 20px from Figma */
+  font-size: 20px; /* 20px from Figma */
   font-weight: 400;
   color: var(--color-text-dark, #000000);
   background-color: var(--color-bg-beige, #F9F1E7);
   border: none;
-  border-radius: 0.625rem; /* 10px from Figma */
+  border-radius: 10px; /* 10px from Figma */
   cursor: pointer;
   transition: background-color 0.2s, color 0.2s;
 }
@@ -165,7 +165,7 @@
 }
 
 .nextButton {
-  width: 6.125rem; /* 98px from Figma */
+  width: 98px; /* 98px from Figma */
   font-weight: 300; /* 300 Light from Figma */
 }
 
@@ -173,40 +173,40 @@
 .sidebar {
   display: flex;
   flex-direction: column;
-  gap: 2.5625rem; /* 41px gap between sidebar widgets from Figma */
+  gap: 41px; /* 41px gap between sidebar widgets from Figma */
   width: 100%;
 }
 
 .sidebarWidgetCombined {
   width: 100%;
   background-color: var(--color-text-white, #FFFFFF);
-  padding-top: 1.375rem; /* 22px from Figma */
-  padding-bottom: 3.8125rem; /* 61px from Figma */
-  padding-left: 2.5625rem; /* 41px from Figma */
-  padding-right: 2.5625rem; /* 41px from Figma */
-  border-radius: 0.625rem; /* 10px matching other components */
+  padding-top: 22px; /* 22px from Figma */
+  padding-bottom: 61px; /* 61px from Figma */
+  padding-left: 41px; /* 41px from Figma */
+  padding-right: 41px; /* 41px from Figma */
+  border-radius: 10px; /* 10px matching other components */
 }
 
 .searchBox {
   position: relative;
   width: 100%;
-  height: 3.625rem; /* 58px from Figma */
+  height: 58px; /* 58px from Figma */
 }
 
 .searchInput {
   width: 100%;
   height: 100%;
-  padding: 0.5rem 3.5rem 0.5rem 1rem;
+  padding: 8px 56px 8px 17px;
   border: 1px solid var(--color-text-muted, #9F9F9F);
-  border-radius: 0.625rem; /* 10px from Figma */
+  border-radius: 10px; /* 10px from Figma */
   font-family: var(--font-poppins, sans-serif);
-  font-size: 1rem;
+  font-size: 16px;
   outline: none;
 }
 
 .searchButton {
   position: absolute;
-  right: 0.75rem;
+  right: 12px;
   top: 50%;
   transform: translateY(-50%);
   background: none;
@@ -217,25 +217,25 @@
 
 .categoriesWidget {
   width: 100%;
-  margin-top: 2.6875rem; /* 43px gap between search box and categories title from Figma */
-  margin-left: 2.25rem; /* 36px offset to align categories name to x:77 from Figma */
-  margin-right: 1.5rem; /* 24px offset to align categories count to x:328 from Figma */
+  margin-top: 43px; /* 43px gap between search box and categories title from Figma */
+  margin-left: 36px; /* 36px offset to align categories name to x:77 from Figma */
+  margin-right: 35px; /* 35px offset to align categories count to x:328 from Figma */
 }
 
 .widgetTitle {
   margin-top: 0;
   font-family: var(--font-poppins, sans-serif);
   font-weight: 500;
-  font-size: 1.5rem; /* 24px from Figma */
+  font-size: 24px; /* 24px from Figma */
   color: var(--color-text-dark, #000000);
 }
 
 .categoriesWidget .widgetTitle {
-  margin-bottom: 2.0625rem; /* 33px gap below title from Figma */
+  margin-bottom: 33px; /* 33px gap below title from Figma */
 }
 
 .recentPostsWidget .widgetTitle {
-  margin-bottom: 1.625rem; /* 26px gap below title from Figma */
+  margin-bottom: 26px; /* 26px gap below title from Figma */
 }
 
 /* Categories Widget list */
@@ -245,7 +245,7 @@
   margin: 0;
   display: flex;
   flex-direction: column;
-  gap: 2.5625rem; /* 41px vertical gap from Figma */
+  gap: 41px; /* 41px vertical gap from Figma */
 }
 
 .categoryItem {
@@ -253,7 +253,7 @@
   justify-content: space-between;
   align-items: center;
   font-family: var(--font-poppins, sans-serif);
-  font-size: 1rem; /* 16px from Figma */
+  font-size: 16px; /* 16px from Figma */
   color: var(--color-text-muted, #9F9F9F);
   transition: color 0.2s ease-in-out;
 }
@@ -278,31 +278,31 @@
 .recentPostsWidget {
   width: 100%;
   background-color: var(--color-text-white, #FFFFFF);
-  padding-top: 1rem; /* 16px from Figma */
-  padding-bottom: 1rem; /* 16px from Figma */
-  padding-left: 4.75rem; /* 76px from Figma */
-  padding-right: 4.0625rem; /* 65px from Figma */
-  border-radius: 0.625rem; /* 10px matching other components */
+  padding-top: 16px; /* 16px from Figma */
+  padding-bottom: 18px; /* 18px from Figma */
+  padding-left: 77px; /* 77px from Figma */
+  padding-right: 75px; /* 75px from Figma */
+  border-radius: 10px; /* 10px matching other components */
 }
 
 /* Recent Posts Widget list */
 .recentPostsList {
   display: flex;
   flex-direction: column;
-  gap: 2.4375rem; /* 39px vertical gap from Figma */
+  gap: 39px; /* 39px vertical gap from Figma */
 }
 
 .recentPostCard {
   display: flex;
   align-items: center;
-  gap: 0.75rem; /* 12px gap from Figma */
+  gap: 12px; /* 12px gap from Figma */
   width: 100%;
 }
 
 .recentPostImageWrapper {
-  width: 5rem; /* 80px width from Figma */
-  height: 5rem; /* 80px height from Figma */
-  border-radius: 0.625rem; /* 10px from Figma */
+  width: 80px; /* 80px width from Figma */
+  height: 80px; /* 80px height from Figma */
+  border-radius: 10px; /* 10px from Figma */
   overflow: hidden;
   flex-shrink: 0;
 }
@@ -310,14 +310,14 @@
 .recentPostContent {
   display: flex;
   flex-direction: column;
-  gap: 0.3125rem; /* 5px spacing */
+  gap: 5px; /* 5px spacing */
   flex: 1;
 }
 
 .recentPostTitle {
   margin: 0;
   font-family: var(--font-poppins, sans-serif);
-  font-size: 0.875rem; /* 14px from Figma */
+  font-size: 14px; /* 14px from Figma */
   font-weight: 400;
   line-height: 1.25;
 }
@@ -338,7 +338,7 @@
 
 .recentPostDate {
   font-family: var(--font-poppins, sans-serif);
-  font-size: 0.75rem; /* 12px from Figma */
+  font-size: 12px; /* 12px from Figma */
   font-weight: 400;
   color: var(--color-text-muted, #9F9F9F);
 }
@@ -346,26 +346,26 @@
 /* Responsive Overrides */
 @media (max-width: 1280px) {
   .blogContainer {
-    padding-left: 1.5rem;
-    padding-right: 1.5rem;
+    padding-left: 24px;
+    padding-right: 24px;
   }
 }
 
 @media (max-width: 1024px) {
   .blogContainer {
-    padding-left: var(--spacing-md, 1rem);
-    padding-right: var(--spacing-md, 1rem);
+    padding-left: 16px;
+    padding-right: 16px;
   }
 
   .mainLayout {
     grid-template-columns: 1fr;
-    gap: 3rem;
+    gap: 48px;
   }
 
   .sidebar {
     order: 2; /* Sidebar goes below the blog list on mobile/tablet */
     border-top: 1px solid var(--color-bg-beige, #F9F1E7);
-    padding-top: 2rem;
+    padding-top: 32px;
   }
 
   .leftColumn {
@@ -374,34 +374,34 @@
 
   .sidebarWidgetCombined,
   .recentPostsWidget {
-    padding: 1.5rem !important;
+    padding: 24px !important;
     height: auto !important;
   }
 
   .categoriesWidget {
     margin-left: 0 !important;
     margin-right: 0 !important;
-    margin-top: 1.5rem !important;
+    margin-top: 24px !important;
   }
 }
 
 @media (max-width: 768px) {
   .title {
-    font-size: 1.5rem; /* 24px on mobile */
+    font-size: 24px; /* 24px on mobile */
   }
 
   .metaRow {
-    gap: 1rem;
-    margin-top: 0.75rem;
-    margin-bottom: 0.75rem;
+    gap: 16px;
+    margin-top: 12px;
+    margin-bottom: 12px;
   }
 
   .postsList {
-    gap: 2.5rem;
+    gap: 40px;
   }
 
   .pagination {
-    gap: 1rem;
+    gap: 16px;
     justify-content: center; /* Center pagination on mobile */
   }
 }
