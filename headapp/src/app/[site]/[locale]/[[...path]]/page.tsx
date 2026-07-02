@@ -74,8 +74,8 @@ export const generateStaticParams = async () => {
     const defaultSite = scConfig.defaultSite;
     const allowedSites = defaultSite
       ? sites
-        .filter((site: SiteInfo) => site.name === defaultSite)
-        .map((site: SiteInfo) => site.name)
+          .filter((site: SiteInfo) => site.name === defaultSite)
+          .map((site: SiteInfo) => site.name)
       : sites.map((site: SiteInfo) => site.name);
 
     return await client.getAppRouterStaticParams(
@@ -116,7 +116,7 @@ export const generateMetadata = async ({ params }: PageProps) => {
     "Page";
 
   const description =
-    fields.content?.value?.toString() ||
+    fields.Content?.value ||
     fields?.metadataDescription?.value?.toString() ||
     fields?.ogDescription?.value?.toString() ||
     fields?.pageSummary?.value?.toString() ||

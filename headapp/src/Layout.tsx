@@ -1,5 +1,10 @@
 import React, { JSX } from "react";
-import { Field, ImageField, Page, RichTextField } from "@sitecore-content-sdk/nextjs";
+import {
+  Field,
+  ImageField,
+  Page,
+  RichTextField,
+} from "@sitecore-content-sdk/nextjs";
 import Scripts from "src/Scripts";
 import SitecoreStyles from "components/content-sdk/SitecoreStyles";
 import { DesignLibraryApp } from "@sitecore-content-sdk/nextjs";
@@ -30,7 +35,7 @@ export interface RouteFields {
   ogDescription?: Field;
   ogImage?: ImageField;
   thumbnailImage?: ImageField;
-  content?: RichTextField;
+  Content?: RichTextField;
 }
 
 const Layout = ({ page, baseUrl: baseUrlProp }: LayoutProps): JSX.Element => {
@@ -40,15 +45,15 @@ const Layout = ({ page, baseUrl: baseUrlProp }: LayoutProps): JSX.Element => {
   // Use request-derived baseUrl when provided so JSON-LD URLs match actual port/host
   const baseUrl = baseUrlProp ?? getBaseUrl();
   const websiteSchema = generateWebSiteSchema(
-    "Skate Park",
+    "Furniro",
     baseUrl,
-    "Skate Park demo site showcasing component examples",
+    "Furniro demo site showcasing component examples",
   );
   const organizationSchema = generateOrganizationSchema(
-    "Skate Park",
+    "Furniro",
     baseUrl,
     undefined,
-    "Skate Park demo site showcasing component examples",
+    "Furniro demo site showcasing component examples",
   );
 
   return (
