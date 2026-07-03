@@ -151,9 +151,9 @@ export const Default = (props: HeaderProps): JSX.Element => {
         <button className="header__icon-btn" aria-label="Account">
           <AccountIcon />
         </button>
-        <button className="header__icon-btn" aria-label="Search">
+        <a href="/Search" className="header__icon-btn" aria-label="Search">
           <SearchIcon />
-        </button>
+        </a>
         <button className="header__icon-btn" aria-label="Wishlist">
           <HeartIcon />
         </button>

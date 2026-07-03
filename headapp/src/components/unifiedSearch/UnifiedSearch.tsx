@@ -95,6 +95,11 @@ function UnifiedSearchComponent() {
   }, [keyword, uuid]);
 
   const handleSelect = (blog: SearchItem) => {
+    if (blog.url) {
+      window.location.href = blog.url;
+      setShowSuggestions(false);
+      return;
+    }
     const label = getItemLabel(blog);
     skipNextSuggestionRef.current = true;
     setKeyword(label);
@@ -221,12 +226,19 @@ function UnifiedSearchComponent() {
                 const highlightedDesc = highlightSearchTerm(desc, keyword);
 
                 return (
-                  <button
+                  <a
                     key={blog.id}
                     id={`suggestion-item-${idx}`}
-                    type="button"
+                    href={blog.url || "#"}
                     className={`search-suggestion-card${idx === focusedIndex ? " is-focused" : ""}`}
-                    onClick={() => handleSelect(blog)}
+                    onClick={(e) => {
+                      if (blog.url) {
+                        setShowSuggestions(false);
+                      } else {
+                        e.preventDefault();
+                        handleSelect(blog);
+                      }
+                    }}
                     role="option"
                     aria-selected={idx === focusedIndex}
                   >
@@ -244,7 +256,7 @@ function UnifiedSearchComponent() {
                         dangerouslySetInnerHTML={{ __html: highlightedDesc }}
                       />
                     )}
-                  </button>
+                  </a>
                 );
               })}
             </div>

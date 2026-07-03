@@ -219,6 +219,8 @@ mark.search-highlight {
   padding: 12px 20px;
   cursor: pointer;
   transition: background 0.15s ease;
+  text-decoration: none;
+  color: inherit;
 }
 
 .search-suggestion-card:hover,
