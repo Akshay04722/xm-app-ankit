@@ -1,13 +1,39 @@
 import React, { JSX } from 'react';
 import {
   NextImage as ContentSdkImage,
+  Link as ContentSdkLink,
   ImageField,
+  LinkField,
 } from '@sitecore-content-sdk/nextjs';
 import { ComponentProps } from 'lib/component-props';
+
+interface NavigationLinkItem {
+  id: string;
+  fields: {
+    link?: LinkField;
+    Link?: LinkField;
+    label?: {
+      value?: string;
+    };
+    Label?: {
+      value?: string;
+    };
+  };
+}
 
 interface Fields {
   'Logo Image'?: ImageField;
   LogoImage?: ImageField;
+  'Navigation Links'?: NavigationLinkItem[];
+  NavigationLinks?: NavigationLinkItem[];
+  'CTA Label'?: {
+    value?: string;
+  };
+  CtaLabel?: {
+    value?: string;
+  };
+  'CTA Link'?: LinkField;
+  CtaLink?: LinkField;
 }
 
 type HeaderProps = ComponentProps & {
@@ -118,36 +144,103 @@ export const Default = (props: HeaderProps): JSX.Element => {
 
   const logoImage = fields?.['Logo Image'] || fields?.LogoImage;
 
+  const dataSourcePath = props.rendering?.dataSource || '';
+  const getSiteNameFromPath = (path: string) => {
+    const parts = path.split('/');
+    if (parts[1] === 'sitecore' && parts[2] === 'content') {
+      return parts[3];
+    }
+    return '';
+  };
+  const siteName =
+    getSiteNameFromPath(dataSourcePath) ||
+    props.page?.siteName ||
+    'akshayxmc';
+
+  const navigationLinksField = fields?.['Navigation Links'] || fields?.NavigationLinks;
+  const navigationLinks = Array.isArray(navigationLinksField) ? navigationLinksField : [
+    {
+      id: 'default-home',
+      fields: {
+        link: { value: { href: '/' } },
+        label: { value: 'Home' },
+      },
+    },
+    {
+      id: 'default-shop',
+      fields: {
+        link: { value: { href: '/shop' } },
+        label: { value: 'Shop' },
+      },
+    },
+    {
+      id: 'default-about',
+      fields: {
+        link: { value: { href: '/About' } },
+        label: { value: 'About' },
+      },
+    },
+    {
+      id: 'default-contact',
+      fields: {
+        link: { value: { href: '/contact' } },
+        label: { value: 'Contact' },
+      },
+    },
+  ];
+
+  const ctaLinkField = fields?.['CTA Link'] || fields?.CtaLink || {
+    value: {
+      href: '/',
+      text: 'Get Started',
+    },
+  };
+  const ctaLabelText = fields?.['CTA Label']?.value || fields?.CtaLabel?.value || ctaLinkField.value?.text || ctaLinkField.value?.title || 'Get Started';
+
   return (
     <header className={styles} id={id}>
       {/* Logo */}
       <a href="/" className="header__logo" aria-label="Furniro Home">
         {logoImage?.value?.src ? (
-          <ContentSdkImage field={logoImage} alt="Furniro logo" />
+          <ContentSdkImage field={logoImage} alt="Logo" />
         ) : (
-          <LogoMark />
+          <>
+            <LogoMark />
+            <span className="header__logo-text">{siteName}</span>
+          </>
         )}
-        <span className="header__logo-text">Furniro</span>
       </a>
 
       {/* Navigation */}
       <nav className="header__nav" aria-label="Main navigation">
-        <a href="/" className="header__nav-link">
-          Home
-        </a>
-        <a href="/shop" className="header__nav-link">
-          Shop
-        </a>
-        <a href="/about" className="header__nav-link">
-          About
-        </a>
-        <a href="/contact" className="header__nav-link">
-          Contact
-        </a>
+        {navigationLinks.map((item) => {
+          const linkField = item?.fields?.link || item?.fields?.Link;
+          if (!linkField?.value?.href) return null;
+          const labelText = item?.fields?.label?.value || item?.fields?.Label?.value || linkField?.value?.text || linkField?.value?.title || 'Link';
+          return (
+            <ContentSdkLink
+              key={item.id}
+              field={linkField}
+              className="header__nav-link"
+            >
+              {labelText}
+            </ContentSdkLink>
+          );
+        })}
       </nav>
 
       {/* Action Icons */}
       <div className="header__icons" role="group" aria-label="User actions">
+        {/* CTA Link */}
+        {ctaLinkField && (ctaLinkField.value?.href || !(fields?.['CTA Link'] || fields?.CtaLink)) ? (
+          <ContentSdkLink
+            field={ctaLinkField}
+            className="header__nav-link header__cta"
+          >
+            {ctaLabelText}
+          </ContentSdkLink>
+        ) : null}
+
         <button className="header__icon-btn" aria-label="Account">
           <AccountIcon />
         </button>
