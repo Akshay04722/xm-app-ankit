@@ -274,10 +274,19 @@ export function buildSuggestionList(items: SearchItem[], keyword?: string, limit
   return rankSearchItems(items, keyword).slice(0, limit);
 }
 
-export function stripHtml(html: string): string {
+export function stripHtml(html?: string): string {
   if (!html) return "";
-  return html.replace(/<[^>]*>/g, "");
+  return html
+    .replace(/<[^>]*>/g, "")
+    .replace(/&nbsp;/g, " ")
+    .replace(/&amp;/g, "&")
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .replace(/&quot;/g, '"')
+    .replace(/&#039;/g, "'")
+    .trim();
 }
+
 
 export function stripHtmlExceptHighlight(html: string): string {
   if (!html) return "";

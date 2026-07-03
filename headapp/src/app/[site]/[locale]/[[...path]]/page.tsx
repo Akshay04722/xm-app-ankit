@@ -12,6 +12,7 @@ import Providers from "src/Providers";
 import { NextIntlClientProvider } from "next-intl";
 import { setRequestLocale } from "next-intl/server";
 import { getBaseUrl } from "src/lib/utils";
+import { stripHtml } from "src/lib/searchUtils";
 
 type PageProps = {
   params: Promise<{
@@ -115,12 +116,14 @@ export const generateMetadata = async ({ params }: PageProps) => {
     fields?.ogTitle?.value?.toString() ||
     "Page";
 
-  const description =
-    fields.Content?.value ||
+  const rawDescription =
+    fields.Content?.value?.toString() ||
     fields?.metadataDescription?.value?.toString() ||
     fields?.ogDescription?.value?.toString() ||
     fields?.pageSummary?.value?.toString() ||
     "Sitecore Next.js Skate Park Example";
+
+  const description = stripHtml(rawDescription);
 
   return {
     title,
