@@ -1,16 +1,16 @@
 "use client";
 
-import React, { JSX, useState, useEffect } from 'react';
+import React, { JSX, useState, useEffect } from "react";
 import {
   NextImage as ContentSdkImage,
   Link as ContentSdkLink,
   ImageField,
   LinkField,
-} from '@sitecore-content-sdk/nextjs';
-import { ComponentProps } from 'lib/component-props';
-import Link from 'next/link';
-import { useAuth } from '@/lib/AuthContext';
-import popoverStyles from '../../assets/components/HeaderPopover.module.css';
+} from "@sitecore-content-sdk/nextjs";
+import { ComponentProps } from "lib/component-props";
+import Link from "next/link";
+import { useAuth } from "@/lib/AuthContext";
+import popoverStyles from "../../assets/components/HeaderPopover.module.css";
 
 interface NavigationLinkItem {
   id: string;
@@ -27,17 +27,17 @@ interface NavigationLinkItem {
 }
 
 interface Fields {
-  'Logo Image'?: ImageField;
+  "Logo Image"?: ImageField;
   LogoImage?: ImageField;
-  'Navigation Links'?: NavigationLinkItem[];
+  "Navigation Links"?: NavigationLinkItem[];
   NavigationLinks?: NavigationLinkItem[];
-  'CTA Label'?: {
+  "CTA Label"?: {
     value?: string;
   };
   CtaLabel?: {
     value?: string;
   };
-  'CTA Link'?: LinkField;
+  "CTA Link"?: LinkField;
   CtaLink?: LinkField;
 }
 
@@ -139,13 +139,20 @@ const LogoMark = () => (
 );
 
 const getAvatarLetter = (email: string) => {
-  if (!email) return 'A';
+  if (!email) return "A";
   return email.charAt(0).toUpperCase();
 };
 
 const getAvatarColor = (email: string) => {
-  if (!email) return '#0f9d58';
-  const colors = ['#0f9d58', '#4285f4', '#db4437', '#f4b400', '#b88e2f', '#673ab7'];
+  if (!email) return "#0f9d58";
+  const colors = [
+    "#0f9d58",
+    "#4285f4",
+    "#db4437",
+    "#f4b400",
+    "#b88e2f",
+    "#673ab7",
+  ];
   let hash = 0;
   for (let i = 0; i < email.length; i++) {
     hash = email.charCodeAt(i) + ((hash << 5) - hash);
@@ -155,10 +162,10 @@ const getAvatarColor = (email: string) => {
 };
 
 const getGreetingName = (email: string) => {
-  if (!email) return 'User';
-  const prefix = email.split('@')[0];
+  if (!email) return "User";
+  const prefix = email.split("@")[0];
   const clean = prefix.split(/[._\d-]+/)[0];
-  if (!clean) return 'User';
+  if (!clean) return "User";
   return clean.charAt(0).toUpperCase() + clean.slice(1);
 };
 
@@ -170,10 +177,11 @@ export const Default = (props: HeaderProps): JSX.Element => {
 
   useEffect(() => {
     if (user) {
-      user.getIdTokenResult()
+      user
+        .getIdTokenResult()
         .then((idTokenResult) => {
           const role = idTokenResult.claims.role;
-          const isUserAdmin = idTokenResult.claims.isAdmin || role === 'admin';
+          const isUserAdmin = idTokenResult.claims.isAdmin || role === "admin";
           setIsAdmin(!!isUserAdmin);
         })
         .catch((err) => {
@@ -184,7 +192,7 @@ export const Default = (props: HeaderProps): JSX.Element => {
       setIsAdmin(false);
     }
   }, [user]);
-  
+
   const handleSignOut = async () => {
     try {
       await signOutUser();
@@ -195,7 +203,7 @@ export const Default = (props: HeaderProps): JSX.Element => {
 
   const renderPopover = () => {
     if (user) {
-      const email = user.email || '';
+      const email = user.email || "";
       const letter = getAvatarLetter(email);
       const color = getAvatarColor(email);
       const greetingName = getGreetingName(email);
@@ -218,12 +226,23 @@ export const Default = (props: HeaderProps): JSX.Element => {
 
           {/* Center Avatar */}
           <div className={popoverStyles.avatarContainer}>
-            <div className={popoverStyles.avatarCircle} style={{ '--avatar-bg': color } as React.CSSProperties}>
+            <div
+              className={popoverStyles.avatarCircle}
+              style={{ "--avatar-bg": color } as React.CSSProperties}
+            >
               {letter}
             </div>
             {/* Camera Overlay Icon */}
-            <div className={popoverStyles.cameraOverlay} title="Change Profile Picture">
-              <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor">
+            <div
+              className={popoverStyles.cameraOverlay}
+              title="Change Profile Picture"
+            >
+              <svg
+                viewBox="0 0 24 24"
+                width="14"
+                height="14"
+                fill="currentColor"
+              >
                 <path d="M12 8c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm8.94 3c-.46-4.17-3.77-7.48-7.94-7.94V1h-2v2.06C6.83 3.52 3.52 6.83 3.06 11H1v2h2.06c.46 4.17 3.77 7.48 7.94 7.94V23h2v-2.06c4.17-.46 7.48-3.77 7.94-7.94H23v-2h-2.06zM12 19c-3.87 0-7-3.13-7-7s3.13-7 7-7 7 3.13 7 7-3.13 7-7 7z" />
               </svg>
             </div>
@@ -237,7 +256,7 @@ export const Default = (props: HeaderProps): JSX.Element => {
             href="/sign-in"
             className={popoverStyles.manageButton}
             onClick={() => setIsPopupOpen(false)}
-            style={isAdmin ? { marginBottom: '16px' } : undefined}
+            style={isAdmin ? { marginBottom: "16px" } : undefined}
           >
             Manage your Account
           </Link>
@@ -263,7 +282,17 @@ export const Default = (props: HeaderProps): JSX.Element => {
               }}
             >
               {/* Exit/Sign Out Icon */}
-              <svg className={popoverStyles.exitIcon} viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <svg
+                className={popoverStyles.exitIcon}
+                viewBox="0 0 24 24"
+                width="20"
+                height="20"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
                 <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
                 <polyline points="16 17 21 12 16 7" />
                 <line x1="21" y1="12" x2="9" y2="12" />
@@ -274,9 +303,13 @@ export const Default = (props: HeaderProps): JSX.Element => {
 
           {/* Footer Policy Links */}
           <div className={popoverStyles.popoverFooter}>
-            <a href="#" className={popoverStyles.footerLink}>Privacy Policy</a>
+            <a href="#" className={popoverStyles.footerLink}>
+              Privacy Policy
+            </a>
             <span className={popoverStyles.footerDot}>•</span>
-            <a href="#" className={popoverStyles.footerLink}>Terms of Service</a>
+            <a href="#" className={popoverStyles.footerLink}>
+              Terms of Service
+            </a>
           </div>
         </div>
       );
@@ -295,8 +328,12 @@ export const Default = (props: HeaderProps): JSX.Element => {
           </button>
 
           <div className={popoverStyles.loggedOutCard}>
-            <h3 className={popoverStyles.loggedOutTitle}>You are not signed in</h3>
-            <p className={popoverStyles.loggedOutText}>Please sign in to access your account profile.</p>
+            <h3 className={popoverStyles.loggedOutTitle}>
+              You are not signed in
+            </h3>
+            <p className={popoverStyles.loggedOutText}>
+              Please sign in to access your account profile.
+            </p>
             <Link
               href="/sign-in"
               className={popoverStyles.signInBtn}
@@ -310,63 +347,69 @@ export const Default = (props: HeaderProps): JSX.Element => {
     }
   };
 
-  const styles = `header ${params?.styles || ''}`.trim();
+  const styles = `header ${params?.styles || ""}`.trim();
   const id = params?.RenderingIdentifier;
 
-  const logoImage = fields?.['Logo Image'] || fields?.LogoImage;
+  const logoImage = fields?.["Logo Image"] || fields?.LogoImage;
 
-  const dataSourcePath = props.rendering?.dataSource || '';
+  const dataSourcePath = props.rendering?.dataSource || "";
   const getSiteNameFromPath = (path: string) => {
-    const parts = path.split('/');
-    if (parts[1] === 'sitecore' && parts[2] === 'content') {
+    const parts = path.split("/");
+    if (parts[1] === "sitecore" && parts[2] === "content") {
       return parts[3];
     }
-    return '';
+    return "";
   };
-  const siteName =
-    getSiteNameFromPath(dataSourcePath) ||
-    props.page?.siteName ||
-    'akshayxmc';
+  const siteName = "Furnio";
 
-  const navigationLinksField = fields?.['Navigation Links'] || fields?.NavigationLinks;
-  const navigationLinks = Array.isArray(navigationLinksField) ? navigationLinksField : [
-    {
-      id: 'default-home',
-      fields: {
-        link: { value: { href: '/' } },
-        label: { value: 'Home' },
-      },
-    },
-    {
-      id: 'default-shop',
-      fields: {
-        link: { value: { href: '/shop' } },
-        label: { value: 'Shop' },
-      },
-    },
-    {
-      id: 'default-about',
-      fields: {
-        link: { value: { href: '/About' } },
-        label: { value: 'About' },
-      },
-    },
-    {
-      id: 'default-contact',
-      fields: {
-        link: { value: { href: '/contact' } },
-        label: { value: 'Contact' },
-      },
-    },
-  ];
+  const navigationLinksField =
+    fields?.["Navigation Links"] || fields?.NavigationLinks;
+  const navigationLinks = Array.isArray(navigationLinksField)
+    ? navigationLinksField
+    : [
+        {
+          id: "default-home",
+          fields: {
+            link: { value: { href: "/" } },
+            label: { value: "Home" },
+          },
+        },
+        {
+          id: "default-shop",
+          fields: {
+            link: { value: { href: "/shop" } },
+            label: { value: "Shop" },
+          },
+        },
+        {
+          id: "default-about",
+          fields: {
+            link: { value: { href: "/About" } },
+            label: { value: "About" },
+          },
+        },
+        {
+          id: "default-contact",
+          fields: {
+            link: { value: { href: "/contact" } },
+            label: { value: "Contact" },
+          },
+        },
+      ];
 
-  const ctaLinkField = fields?.['CTA Link'] || fields?.CtaLink || {
-    value: {
-      href: '/',
-      text: 'Get Started',
-    },
-  };
-  const ctaLabelText = fields?.['CTA Label']?.value || fields?.CtaLabel?.value || ctaLinkField.value?.text || ctaLinkField.value?.title || 'Get Started';
+  const ctaLinkField = fields?.["CTA Link"] ||
+    fields?.CtaLink || {
+      value: {
+        href: "/",
+        text: "Get Started",
+      },
+    };
+  const ctaLabelText =
+    fields?.["CTA Label"]?.value ||
+    fields?.CtaLabel?.value ||
+    ctaLinkField.value?.text ||
+    ctaLinkField.value?.title ||
+    "Get Started";
 
   return (
     <header className={styles} id={id}>
@@ -387,7 +430,12 @@ export const Default = (props: HeaderProps): JSX.Element => {
         {navigationLinks.map((item) => {
           const linkField = item?.fields?.link || item?.fields?.Link;
           if (!linkField?.value?.href) return null;
-          const labelText = item?.fields?.label?.value || item?.fields?.Label?.value || linkField?.value?.text || linkField?.value?.title || 'Link';
+          const labelText =
+            item?.fields?.label?.value ||
+            item?.fields?.Label?.value ||
+            linkField?.value?.text ||
+            linkField?.value?.title ||
+            "Link";
           return (
             <ContentSdkLink
               key={item.id}
@@ -403,7 +451,9 @@ export const Default = (props: HeaderProps): JSX.Element => {
       {/* Action Icons */}
       <div className="header__icons" role="group" aria-label="User actions">
         {/* CTA Link */}
-        {ctaLinkField && (ctaLinkField.value?.href || !(fields?.['CTA Link'] || fields?.CtaLink)) ? (
+        {ctaLinkField &&
+        (ctaLinkField.value?.href ||
+          !(fields?.["CTA Link"] || fields?.CtaLink)) ? (
           <ContentSdkLink
             field={ctaLinkField}
             className="header__nav-link header__cta"
@@ -419,9 +469,13 @@ export const Default = (props: HeaderProps): JSX.Element => {
               className={popoverStyles.headerAvatarCircle}
               onClick={() => setIsPopupOpen(!isPopupOpen)}
               aria-label="Account Menu"
-              style={{ '--avatar-bg': getAvatarColor(user.email || 'A') } as React.CSSProperties}
+              style={
+                {
+                  "--avatar-bg": getAvatarColor(user.email || "A"),
+                } as React.CSSProperties
+              }
             >
-              {getAvatarLetter(user.email || 'A')}
+              {getAvatarLetter(user.email || "A")}
             </button>
           ) : (
             <button
