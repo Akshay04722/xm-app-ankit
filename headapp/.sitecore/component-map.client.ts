@@ -4,32 +4,40 @@ import { BYOCClientWrapper, NextjsContentSdkComponent, FEaaSClientWrapper } from
 import { Form } from '@sitecore-content-sdk/nextjs';
 
 import * as UnifiedSearch from 'src/components/unifiedSearch/UnifiedSearch';
+import * as SignIn from 'src/components/sign-in/SignIn';
 import * as SearchResults from 'src/components/searchResults/SearchResults';
+import * as Register from 'src/components/register/Register';
 import * as OurProducts from 'src/components/our-products/OurProducts';
 import * as Navigation from 'src/components/navigation/Navigation';
 import * as Inspirations from 'src/components/inspirations/Inspirations';
+import * as Header from 'src/components/header/Header';
 import * as Footer from 'src/components/footer/Footer';
 import * as ContentBlock from 'src/components/content-block/ContentBlock';
 import * as CloudSdkBootstrap from 'src/components/CloudSdkBootstrap/CloudSdkBootstrap';
 import * as CDPProvider from 'src/components/cdp/CDPProvider';
 import * as BlogDetail from 'src/components/blog-detail/BlogDetail';
 import * as Blog from 'src/components/blog/Blog';
+import * as AdminDashboard from 'src/components/admin-dashboard/AdminDashboard';
 
 export const componentMap = new Map<string, NextjsContentSdkComponent>([
   ['BYOCWrapper', BYOCClientWrapper],
   ['FEaaSWrapper', FEaaSClientWrapper],
   ['Form', Form],
   ['UnifiedSearch', { ...UnifiedSearch }],
+  ['SignIn', { ...SignIn }],
   ['SearchResults', { ...SearchResults }],
+  ['Register', { ...Register }],
   ['OurProducts', { ...OurProducts }],
   ['Navigation', { ...Navigation }],
   ['Inspirations', { ...Inspirations }],
+  ['Header', { ...Header }],
   ['Footer', { ...Footer }],
   ['ContentBlock', { ...ContentBlock }],
   ['CloudSdkBootstrap', { ...CloudSdkBootstrap }],
   ['CDPProvider', { ...CDPProvider }],
   ['BlogDetail', { ...BlogDetail }],
   ['Blog', { ...Blog }],
+  ['AdminDashboard', { ...AdminDashboard }],
 ]);
 
 export default componentMap;

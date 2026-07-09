@@ -7,11 +7,13 @@ import { Form } from '@sitecore-content-sdk/nextjs';
 import * as UnifiedSearch from 'src/components/unifiedSearch/UnifiedSearch';
 import * as Title from 'src/components/title/Title';
 import * as StructuredData from 'src/components/structured-data/StructuredData';
+import * as SignIn from 'src/components/sign-in/SignIn';
 import * as ShopBanner from 'src/components/shop-banner/ShopBanner';
 import * as ShareSetup from 'src/components/share-setup/ShareSetup';
 import * as SearchResults from 'src/components/searchResults/SearchResults';
 import * as RowSplitter from 'src/components/row-splitter/RowSplitter';
 import * as RichText from 'src/components/rich-text/RichText';
+import * as Register from 'src/components/register/Register';
 import * as Promo from 'src/components/promo/Promo';
 import * as PartialDesignDynamicPlaceholder from 'src/components/partial-design-dynamic-placeholder/PartialDesignDynamicPlaceholder';
 import * as PageContent from 'src/components/page-content/PageContent';
@@ -31,6 +33,7 @@ import * as CDPProvider from 'src/components/cdp/CDPProvider';
 import * as BrowseTheRange from 'src/components/browse-the-range/BrowseTheRange';
 import * as BlogDetail from 'src/components/blog-detail/BlogDetail';
 import * as Blog from 'src/components/blog/Blog';
+import * as AdminDashboard from 'src/components/admin-dashboard/AdminDashboard';
 
 export const componentMap = new Map<string, NextjsContentSdkComponent>([
   ['BYOCWrapper', BYOCServerWrapper],
@@ -39,11 +42,13 @@ export const componentMap = new Map<string, NextjsContentSdkComponent>([
   ['UnifiedSearch', { ...UnifiedSearch, componentType: 'client' }],
   ['Title', { ...Title }],
   ['StructuredData', { ...StructuredData }],
+  ['SignIn', { ...SignIn, componentType: 'client' }],
   ['ShopBanner', { ...ShopBanner }],
   ['ShareSetup', { ...ShareSetup }],
   ['SearchResults', { ...SearchResults, componentType: 'client' }],
   ['RowSplitter', { ...RowSplitter }],
   ['RichText', { ...RichText }],
+  ['Register', { ...Register, componentType: 'client' }],
   ['Promo', { ...Promo }],
   ['PartialDesignDynamicPlaceholder', { ...PartialDesignDynamicPlaceholder }],
   ['PageContent', { ...PageContent }],
@@ -53,7 +58,7 @@ export const componentMap = new Map<string, NextjsContentSdkComponent>([
   ['Inspirations', { ...Inspirations, componentType: 'client' }],
   ['Image', { ...Image }],
   ['HeroPromo', { ...HeroPromo }],
-  ['Header', { ...Header }],
+  ['Header', { ...Header, componentType: 'client' }],
   ['Footer', { ...Footer, componentType: 'client' }],
   ['ContentBlock', { ...ContentBlock, componentType: 'client' }],
   ['Container', { ...Container }],
@@ -63,6 +68,7 @@ export const componentMap = new Map<string, NextjsContentSdkComponent>([
   ['BrowseTheRange', { ...BrowseTheRange }],
   ['BlogDetail', { ...BlogDetail, componentType: 'client' }],
   ['Blog', { ...Blog, componentType: 'client' }],
+  ['AdminDashboard', { ...AdminDashboard, componentType: 'client' }],
 ]);
 
 export default componentMap;

@@ -1,4 +1,6 @@
-import React, { JSX } from 'react';
+"use client";
+
+import React, { JSX, useState } from 'react';
 import {
   NextImage as ContentSdkImage,
   Link as ContentSdkLink,
@@ -6,6 +8,9 @@ import {
   LinkField,
 } from '@sitecore-content-sdk/nextjs';
 import { ComponentProps } from 'lib/component-props';
+import Link from 'next/link';
+import { useAuth } from '@/lib/AuthContext';
+import popoverStyles from '../../assets/components/HeaderPopover.module.css';
 
 interface NavigationLinkItem {
   id: string;
@@ -49,17 +54,13 @@ const AccountIcon = () => (
     viewBox="0 0 24 24"
     fill="none"
     stroke="currentColor"
-    strokeWidth="1.5"
+    strokeWidth="1.8"
     strokeLinecap="round"
     strokeLinejoin="round"
     aria-hidden="true"
   >
-    {/* mdi:account-alert-outline */}
-    <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
-    <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
+    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
     <circle cx="12" cy="7" r="4" />
-    <line x1="12" y1="12" x2="12" y2="16" />
-    <line x1="12" y1="19" x2="12.01" y2="19" />
   </svg>
 );
 
@@ -137,8 +138,148 @@ const LogoMark = () => (
   </svg>
 );
 
+const getAvatarLetter = (email: string) => {
+  if (!email) return 'A';
+  return email.charAt(0).toUpperCase();
+};
+
+const getAvatarColor = (email: string) => {
+  if (!email) return '#0f9d58';
+  const colors = ['#0f9d58', '#4285f4', '#db4437', '#f4b400', '#b88e2f', '#673ab7'];
+  let hash = 0;
+  for (let i = 0; i < email.length; i++) {
+    hash = email.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  const index = Math.abs(hash) % colors.length;
+  return colors[index];
+};
+
+const getGreetingName = (email: string) => {
+  if (!email) return 'User';
+  const prefix = email.split('@')[0];
+  const clean = prefix.split(/[._\d-]+/)[0];
+  if (!clean) return 'User';
+  return clean.charAt(0).toUpperCase() + clean.slice(1);
+};
+
 export const Default = (props: HeaderProps): JSX.Element => {
   const { fields, params } = props;
+  const { user, signOutUser } = useAuth();
+  const [isPopupOpen, setIsPopupOpen] = useState(false);
+  
+  const handleSignOut = async () => {
+    try {
+      await signOutUser();
+    } catch (err) {
+      console.error("Sign out failed:", err);
+    }
+  };
+
+  const renderPopover = () => {
+    if (user) {
+      const email = user.email || '';
+      const letter = getAvatarLetter(email);
+      const color = getAvatarColor(email);
+      const greetingName = getGreetingName(email);
+
+      return (
+        <div className={popoverStyles.accountPopover}>
+          {/* Close Button */}
+          <button
+            className={popoverStyles.closeButton}
+            onClick={() => setIsPopupOpen(false)}
+            aria-label="Close Account Menu"
+          >
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+              <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" />
+            </svg>
+          </button>
+
+          {/* Email Address */}
+          <div className={popoverStyles.headerEmail}>{email}</div>
+
+          {/* Center Avatar */}
+          <div className={popoverStyles.avatarContainer}>
+            <div className={popoverStyles.avatarCircle} style={{ '--avatar-bg': color } as React.CSSProperties}>
+              {letter}
+            </div>
+            {/* Camera Overlay Icon */}
+            <div className={popoverStyles.cameraOverlay} title="Change Profile Picture">
+              <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor">
+                <path d="M12 8c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm8.94 3c-.46-4.17-3.77-7.48-7.94-7.94V1h-2v2.06C6.83 3.52 3.52 6.83 3.06 11H1v2h2.06c.46 4.17 3.77 7.48 7.94 7.94V23h2v-2.06c4.17-.46 7.48-3.77 7.94-7.94H23v-2h-2.06zM12 19c-3.87 0-7-3.13-7-7s3.13-7 7-7 7 3.13 7 7-3.13 7-7 7z" />
+              </svg>
+            </div>
+          </div>
+
+          {/* Greeting */}
+          <h3 className={popoverStyles.greeting}>Hi, {greetingName}!</h3>
+
+          {/* Manage Account Pill Button */}
+          <Link
+            href="/sign-in"
+            className={popoverStyles.manageButton}
+            onClick={() => setIsPopupOpen(false)}
+          >
+            Manage your Account
+          </Link>
+
+          {/* Sign Out Button */}
+          <div className={popoverStyles.signOutButtonContainer}>
+            <button
+              className={popoverStyles.signOutBtn}
+              onClick={() => {
+                setIsPopupOpen(false);
+                handleSignOut();
+              }}
+            >
+              {/* Exit/Sign Out Icon */}
+              <svg className={popoverStyles.exitIcon} viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                <polyline points="16 17 21 12 16 7" />
+                <line x1="21" y1="12" x2="9" y2="12" />
+              </svg>
+              Sign out
+            </button>
+          </div>
+
+          {/* Footer Policy Links */}
+          <div className={popoverStyles.popoverFooter}>
+            <a href="#" className={popoverStyles.footerLink}>Privacy Policy</a>
+            <span className={popoverStyles.footerDot}>•</span>
+            <a href="#" className={popoverStyles.footerLink}>Terms of Service</a>
+          </div>
+        </div>
+      );
+    } else {
+      return (
+        <div className={popoverStyles.accountPopover}>
+          {/* Close Button */}
+          <button
+            className={popoverStyles.closeButton}
+            onClick={() => setIsPopupOpen(false)}
+            aria-label="Close Account Menu"
+          >
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+              <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" />
+            </svg>
+          </button>
+
+          <div className={popoverStyles.loggedOutCard}>
+            <h3 className={popoverStyles.loggedOutTitle}>You are not signed in</h3>
+            <p className={popoverStyles.loggedOutText}>Please sign in to access your account profile.</p>
+            <Link
+              href="/sign-in"
+              className={popoverStyles.signInBtn}
+              onClick={() => setIsPopupOpen(false)}
+            >
+              Sign In
+            </Link>
+          </div>
+        </div>
+      );
+    }
+  };
+
   const styles = `header ${params?.styles || ''}`.trim();
   const id = params?.RenderingIdentifier;
 
@@ -241,9 +382,29 @@ export const Default = (props: HeaderProps): JSX.Element => {
           </ContentSdkLink>
         ) : null}
 
-        <button className="header__icon-btn" aria-label="Account">
-          <AccountIcon />
-        </button>
+        {/* Account Dropdown Trigger and Popup */}
+        <div className={popoverStyles.popoverWrapper}>
+          {user ? (
+            <button
+              className={popoverStyles.headerAvatarCircle}
+              onClick={() => setIsPopupOpen(!isPopupOpen)}
+              aria-label="Account Menu"
+              style={{ '--avatar-bg': getAvatarColor(user.email || 'A') } as React.CSSProperties}
+            >
+              {getAvatarLetter(user.email || 'A')}
+            </button>
+          ) : (
+            <button
+              className="header__icon-btn"
+              onClick={() => setIsPopupOpen(!isPopupOpen)}
+              aria-label="Account Menu"
+            >
+              <AccountIcon />
+            </button>
+          )}
+
+          {isPopupOpen && renderPopover()}
+        </div>
         <a href="/Search" className="header__icon-btn" aria-label="Search">
           <SearchIcon />
         </a>

@@ -27,6 +27,8 @@ const poppins = Poppins({
   variable: "--font-poppins",
 });
 
+import { AuthProvider } from "@/lib/AuthContext";
+
 export default function RootLayout({
   children,
 }: {
@@ -46,11 +48,14 @@ export default function RootLayout({
         <link rel="icon" href="/favicon.ico" />
       </head>
       <body>
-        <CDPProvider>
-          <CloudSdkBootstrap />
-          {children}
-        </CDPProvider>
+        <AuthProvider>
+          <CDPProvider>
+            <CloudSdkBootstrap />
+            {children}
+          </CDPProvider>
+        </AuthProvider>
       </body>
     </html>
   );
 }
+
