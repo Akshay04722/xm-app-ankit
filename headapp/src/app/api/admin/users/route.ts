@@ -15,8 +15,8 @@ interface MappedUser {
   };
 }
 
-// Helper to authenticate owner
-async function authenticateOwner(req: NextRequest) {
+// Helper to authenticate admin users via custom claims
+async function authenticateAdmin(req: NextRequest) {
   
   if (!adminAuth) {
     throw new Error('Firebase Admin SDK is not initialized.');
@@ -30,13 +30,9 @@ async function authenticateOwner(req: NextRequest) {
   const token = authHeader.split('Bearer ')[1];
   const decodedToken = await adminAuth.verifyIdToken(token);
   
-  const ownerEmail = process.env.FIREBASE_OWNER_EMAIL || process.env.NEXT_PUBLIC_FIREBASE_OWNER_EMAIL;
-  if (!ownerEmail) {
-    throw new Error('FIREBASE_OWNER_EMAIL is not configured on the server.');
-  }
-
-  if (decodedToken.email !== ownerEmail) {
-    throw new Error('Access Denied: Only the Firebase Project Owner can perform this action.');
+  const isAdmin = decodedToken.isAdmin === true || decodedToken.role === 'admin';
+  if (!isAdmin) {
+    throw new Error('Access Denied: Only users with admin privileges can perform this action.');
   }
 
   return decodedToken;
@@ -44,7 +40,7 @@ async function authenticateOwner(req: NextRequest) {
 
 export async function GET(req: NextRequest) {
   try {
-    await authenticateOwner(req);
+    await authenticateAdmin(req);
 
     const { searchParams } = new URL(req.url);
     const search = searchParams.get('search')?.toLowerCase() || '';
@@ -87,7 +83,7 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   try {
-    await authenticateOwner(req);
+    await authenticateAdmin(req);
 
     const body = await req.json();
     const { targetUid, isAdmin } = body;
@@ -112,7 +108,7 @@ export async function POST(req: NextRequest) {
 
 export async function DELETE(req: NextRequest) {
   try {
-    const selfDecoded = await authenticateOwner(req);
+    const selfDecoded = await authenticateAdmin(req);
 
     const { searchParams } = new URL(req.url);
     const targetUid = searchParams.get('uid');
@@ -125,9 +121,9 @@ export async function DELETE(req: NextRequest) {
       return NextResponse.json({ error: 'Admin SDK not initialized' }, { status: 500 });
     }
 
-    // Prevent owner from deleting themselves (self-deletion safeguard)
+    // Prevent admin from deleting themselves (self-deletion safeguard)
     if (selfDecoded.uid === targetUid) {
-      return NextResponse.json({ error: 'Safety block: You cannot delete your own admin/owner account.' }, { status: 400 });
+      return NextResponse.json({ error: 'Safety block: You cannot delete your own admin account.' }, { status: 400 });
     }
 
     await adminAuth.deleteUser(targetUid);

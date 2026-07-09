@@ -28,6 +28,30 @@ export const Default: React.FC<ComponentProps> = () => {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [actionUid, setActionUid] = useState<string | null>(null); // tracks user undergoing update/delete
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [claimsLoading, setClaimsLoading] = useState(true);
+
+  // Check admin claims when user changes
+  useEffect(() => {
+    if (user) {
+      user.getIdTokenResult()
+        .then((idTokenResult) => {
+          const role = idTokenResult.claims.role;
+          const adminClaim = idTokenResult.claims.isAdmin || role === 'admin';
+          setIsAdmin(!!adminClaim);
+        })
+        .catch((err) => {
+          console.error('Error checking admin claims:', err);
+          setIsAdmin(false);
+        })
+        .finally(() => {
+          setClaimsLoading(false);
+        });
+    } else {
+      setIsAdmin(false);
+      setClaimsLoading(false);
+    }
+  }, [user]);
 
   // Debounce search input
   useEffect(() => {
@@ -36,9 +60,6 @@ export const Default: React.FC<ComponentProps> = () => {
     }, 500);
     return () => clearTimeout(handler);
   }, [search]);
-
-  const ownerEmail = process.env.NEXT_PUBLIC_FIREBASE_OWNER_EMAIL || 'akshaymistry047@gmail.com';
-  const isOwner = user && user.email === ownerEmail;
 
   // Fetch users
   const fetchUsers = async () => {
@@ -66,10 +87,10 @@ export const Default: React.FC<ComponentProps> = () => {
   };
 
   useEffect(() => {
-    if (isOwner) {
+    if (isAdmin) {
       fetchUsers();
     }
-  }, [isOwner, debouncedSearch]);
+  }, [isAdmin, debouncedSearch]);
 
   // Handle Toggle Claim
   const handleToggleAdmin = async (targetUid: string, currentIsAdmin: boolean) => {
@@ -146,7 +167,7 @@ export const Default: React.FC<ComponentProps> = () => {
     }
   };
 
-  if (authLoading) {
+  if (authLoading || claimsLoading) {
     return (
       <div className={styles.loadingContainer}>
         <div className={styles.spinner}></div>
@@ -155,7 +176,7 @@ export const Default: React.FC<ComponentProps> = () => {
     );
   }
 
-  if (!user || !isOwner) {
+  if (!user || !isAdmin) {
     return (
       <div className={styles.deniedContainer}>
         <div className={styles.deniedIcon}>
@@ -164,7 +185,7 @@ export const Default: React.FC<ComponentProps> = () => {
           </svg>
         </div>
         <h2>Access Denied</h2>
-        <p>This administrative dashboard is restricted to the Firebase Project Owner only.</p>
+        <p>This administrative dashboard is restricted to users with admin privileges only.</p>
         <Link href="/" className={styles.backHomeBtn}>
           Return Home
         </Link>

@@ -31,7 +31,7 @@ export const Default = (props: SignInProps): JSX.Element => {
   const datasource = fields?.data?.datasource;
   const id = params?.RenderingIdentifier;
 
-  const { user, signIn, signInWithGoogle, signOutUser, loading } = useAuth();
+  const { user, signIn, signInWithGoogle, signOutUser, sendResetEmail, loading } = useAuth();
   const router = useRouter();
 
   const [email, setEmail] = useState('');
@@ -39,6 +39,35 @@ export const Default = (props: SignInProps): JSX.Element => {
   const [formLoading, setFormLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
+  const [isForgotPassword, setIsForgotPassword] = useState(false);
+
+  const handleResetPassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError(null);
+    setSuccess(null);
+    setFormLoading(true);
+
+    try {
+      await sendResetEmail(email);
+      setSuccess("Password reset email sent! Please check your inbox.");
+      setEmail('');
+    } catch (err: any) {
+      console.error("Password reset failed:", err);
+      switch (err.code) {
+        case 'auth/invalid-email':
+          setError("Invalid email address format.");
+          break;
+        case 'auth/user-not-found':
+          setError("No user found with this email.");
+          break;
+        default:
+          setError(err.message || "Failed to send reset email. Please try again.");
+      }
+    } finally {
+      setFormLoading(false);
+    }
+  };
+
 
 
   const handleSignIn = async (e: React.FormEvent) => {
@@ -156,6 +185,55 @@ export const Default = (props: SignInProps): JSX.Element => {
               Sign Out
             </button>
           </div>
+        ) : isForgotPassword ? (
+          <div>
+            <div className={styles.signInHeader}>
+              <h2 className={styles.signInTitle}>Reset Password</h2>
+              <p className={styles.signInSubtitle}>Enter your email to receive a password reset link</p>
+            </div>
+
+            {error && <div className={styles.errorMessage}>{error}</div>}
+            {success && <div className={styles.successMessage}>{success}</div>}
+
+            <form onSubmit={handleResetPassword}>
+              <div className={styles.formGroup}>
+                <label className={styles.formLabel} htmlFor="email">Email Address</label>
+                <input
+                  id="email"
+                  type="email"
+                  className={styles.formInput}
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="Enter your email"
+                  required
+                  disabled={formLoading}
+                />
+              </div>
+
+              <button
+                type="submit"
+                disabled={formLoading}
+                className={styles.signInButton}
+              >
+                {formLoading ? 'Sending...' : 'Send Reset Link'}
+              </button>
+            </form>
+
+            <div className={styles.backToSignInContainer}>
+              Remembered your password?
+              <button
+                type="button"
+                onClick={() => {
+                  setIsForgotPassword(false);
+                  setError(null);
+                  setSuccess(null);
+                }}
+                className={styles.backToSignInButton}
+              >
+                Sign In
+              </button>
+            </div>
+          </div>
         ) : (
           <div>
             <div className={styles.signInHeader}>
@@ -182,7 +260,20 @@ export const Default = (props: SignInProps): JSX.Element => {
               </div>
 
               <div className={styles.formGroup}>
-                <label className={styles.formLabel} htmlFor="password">Password</label>
+                <div className={styles.passwordLabelContainer}>
+                  <label className={styles.formLabel} htmlFor="password" style={{ marginBottom: 0 }}>Password</label>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setIsForgotPassword(true);
+                      setError(null);
+                      setSuccess(null);
+                    }}
+                    className={styles.forgotPasswordLink}
+                  >
+                    Forgot Password?
+                  </button>
+                </div>
                 <input
                   id="password"
                   type="password"

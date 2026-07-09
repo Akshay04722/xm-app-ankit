@@ -1,6 +1,6 @@
 "use client";
 
-import React, { JSX, useState } from 'react';
+import React, { JSX, useState, useEffect } from 'react';
 import {
   NextImage as ContentSdkImage,
   Link as ContentSdkLink,
@@ -166,6 +166,24 @@ export const Default = (props: HeaderProps): JSX.Element => {
   const { fields, params } = props;
   const { user, signOutUser } = useAuth();
   const [isPopupOpen, setIsPopupOpen] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  useEffect(() => {
+    if (user) {
+      user.getIdTokenResult()
+        .then((idTokenResult) => {
+          const role = idTokenResult.claims.role;
+          const isUserAdmin = idTokenResult.claims.isAdmin || role === 'admin';
+          setIsAdmin(!!isUserAdmin);
+        })
+        .catch((err) => {
+          console.error("Error getting user claims:", err);
+          setIsAdmin(false);
+        });
+    } else {
+      setIsAdmin(false);
+    }
+  }, [user]);
   
   const handleSignOut = async () => {
     try {
@@ -219,9 +237,21 @@ export const Default = (props: HeaderProps): JSX.Element => {
             href="/sign-in"
             className={popoverStyles.manageButton}
             onClick={() => setIsPopupOpen(false)}
+            style={isAdmin ? { marginBottom: '16px' } : undefined}
           >
             Manage your Account
           </Link>
+
+          {/* Admin Dashboard Pill Button (Visible only to owners/admins) */}
+          {isAdmin && (
+            <Link
+              href="/admin"
+              className={popoverStyles.adminDashboardButton}
+              onClick={() => setIsPopupOpen(false)}
+            >
+              Admin Dashboard
+            </Link>
+          )}
 
           {/* Sign Out Button */}
           <div className={popoverStyles.signOutButtonContainer}>
