@@ -48,6 +48,25 @@ export const Default = (props: SignInProps): JSX.Element => {
     setFormLoading(true);
 
     try {
+      // First check if the email exists in the system
+      const checkRes = await fetch('/api/auth/check-email', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: email.trim() }),
+      });
+      const checkData = await checkRes.json();
+
+      if (!checkRes.ok) {
+        setError(checkData.error || 'Failed to verify email. Please try again.');
+        return;
+      }
+
+      if (!checkData.exists) {
+        setError('No account found with this email address. Please check and try again.');
+        return;
+      }
+
+      // Email exists, proceed with sending reset email
       await sendResetEmail(email);
       setSuccess("Password reset email sent! Please check your inbox.");
       setEmail('');
@@ -58,7 +77,7 @@ export const Default = (props: SignInProps): JSX.Element => {
           setError("Invalid email address format.");
           break;
         case 'auth/user-not-found':
-          setError("No user found with this email.");
+          setError("No account found with this email address.");
           break;
         default:
           setError(err.message || "Failed to send reset email. Please try again.");

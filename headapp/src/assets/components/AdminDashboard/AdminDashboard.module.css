@@ -238,6 +238,8 @@
 .deniedIcon {
   color: #e02424;
   margin-bottom: 20px;
+    display: flex;
+    justify-content: center;
 }
 
 .deniedContainer h2 {
