@@ -450,18 +450,6 @@ export const Default = (props: HeaderProps): JSX.Element => {
 
       {/* Action Icons */}
       <div className="header__icons" role="group" aria-label="User actions">
-        {/* CTA Link */}
-        {ctaLinkField &&
-        (ctaLinkField.value?.href ||
-          !(fields?.["CTA Link"] || fields?.CtaLink)) ? (
-          <ContentSdkLink
-            field={ctaLinkField}
-            className="header__nav-link header__cta"
-          >
-            {ctaLabelText}
-          </ContentSdkLink>
-        ) : null}
-
         {/* Account Dropdown Trigger and Popup */}
         <div className={popoverStyles.popoverWrapper}>
           {user ? (

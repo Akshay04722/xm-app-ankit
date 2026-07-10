@@ -8,6 +8,7 @@ import * as UnifiedSearch from 'src/components/unifiedSearch/UnifiedSearch';
 import * as Title from 'src/components/title/Title';
 import * as StructuredData from 'src/components/structured-data/StructuredData';
 import * as SignIn from 'src/components/sign-in/SignIn';
+import * as ShopProductsList from 'src/components/shop-products-list/ShopProductsList';
 import * as ShopBanner from 'src/components/shop-banner/ShopBanner';
 import * as ShareSetup from 'src/components/share-setup/ShareSetup';
 import * as SearchResults from 'src/components/searchResults/SearchResults';
@@ -43,6 +44,7 @@ export const componentMap = new Map<string, NextjsContentSdkComponent>([
   ['Title', { ...Title }],
   ['StructuredData', { ...StructuredData }],
   ['SignIn', { ...SignIn, componentType: 'client' }],
+  ['ShopProductsList', { ...ShopProductsList, componentType: 'client' }],
   ['ShopBanner', { ...ShopBanner }],
   ['ShareSetup', { ...ShareSetup }],
   ['SearchResults', { ...SearchResults, componentType: 'client' }],

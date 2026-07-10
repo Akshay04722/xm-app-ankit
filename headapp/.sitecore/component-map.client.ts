@@ -5,6 +5,7 @@ import { Form } from '@sitecore-content-sdk/nextjs';
 
 import * as UnifiedSearch from 'src/components/unifiedSearch/UnifiedSearch';
 import * as SignIn from 'src/components/sign-in/SignIn';
+import * as ShopProductsList from 'src/components/shop-products-list/ShopProductsList';
 import * as SearchResults from 'src/components/searchResults/SearchResults';
 import * as Register from 'src/components/register/Register';
 import * as OurProducts from 'src/components/our-products/OurProducts';
@@ -25,6 +26,7 @@ export const componentMap = new Map<string, NextjsContentSdkComponent>([
   ['Form', Form],
   ['UnifiedSearch', { ...UnifiedSearch }],
   ['SignIn', { ...SignIn }],
+  ['ShopProductsList', { ...ShopProductsList }],
   ['SearchResults', { ...SearchResults }],
   ['Register', { ...Register }],
   ['OurProducts', { ...OurProducts }],
