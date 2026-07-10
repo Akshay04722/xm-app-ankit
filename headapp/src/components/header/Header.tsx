@@ -409,7 +409,7 @@ export const Default = (props: HeaderProps): JSX.Element => {
     fields?.CtaLabel?.value ||
     ctaLinkField.value?.text ||
     ctaLinkField.value?.title ||
-    "Get Started";
+    "";
 
   return (
     <header className={styles} id={id}>
