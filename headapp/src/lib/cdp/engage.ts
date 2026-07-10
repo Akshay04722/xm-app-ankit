@@ -19,8 +19,5 @@ export async function getEngage() {
     includeUTMParameters: true,
   });
 
-  console.log("Browser ID:", engage.getBrowserId());
-  console.log("Guest ID:", engage.getGuestId?.());
-
   return engage;
 }

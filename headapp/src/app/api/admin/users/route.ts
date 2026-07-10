@@ -51,7 +51,6 @@ export async function GET(req: NextRequest) {
 
     // List up to 1000 users
     const listUsersResult = await adminAuth.listUsers(1000);
-    console.log(listUsersResult);
     let users: MappedUser[] = listUsersResult.users.map((userRecord: UserRecord) => ({
       uid: userRecord.uid,
       email: userRecord.email || '',

@@ -238,9 +238,11 @@ export const Default: React.FC<ComponentProps> = () => {
     return (
       <div className={styles.deniedContainer}>
         <div className={styles.deniedIcon}>
-          <svg viewBox="0 0 24 24" width="60" height="60" fill="currentColor">
-            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z" />
-          </svg>
+          <div className={styles.deniedIconWrapper}>
+            <svg viewBox="0 0 24 24" width="36" height="36" fill="none" stroke="currentColor" strokeWidth="2">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+            </svg>
+          </div>
         </div>
         <h2>Access Denied</h2>
         <p>
@@ -254,95 +256,162 @@ export const Default: React.FC<ComponentProps> = () => {
     );
   }
 
+  // Compute metrics
+  const totalUsers = users.length;
+  const adminCount = users.filter((u) => u.isAdmin).length;
+
   return (
     <div className={styles.dashboardContainer}>
+      {/* Breadcrumbs */}
+      <div className={styles.breadcrumbs}>
+        <Link href="/admin">Admin</Link>
+        <span className={styles.breadcrumbsSep}>/</span>
+        <span className={styles.breadcrumbsMuted}>Users Console</span>
+      </div>
+
       {/* Header section */}
       <div className={styles.dashboardHeader}>
-        <div className={styles.titleSection}>
-          <h1>Admin Users Console</h1>
-          <p>
-            Manage application users, set roles, and administer account
-            security.
-          </p>
+        <div className={styles.headerTop}>
+          <div className={styles.titleSection}>
+            <h1>Admin Users Console</h1>
+            <p>
+              Manage application users, set roles, and administer account
+              security.
+            </p>
+          </div>
+          <div className={styles.headerActions}>
+            <button
+              onClick={handleSyncProducts}
+              disabled={syncing}
+              style={{
+                backgroundColor: '#B88E2F',
+                color: '#ffffff',
+                border: 'none',
+                padding: '10px 20px',
+                fontSize: '14px',
+                fontWeight: '600',
+                borderRadius: '8px',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                transition: 'opacity 0.2s ease',
+                opacity: syncing ? 0.7 : 1
+              }}
+            >
+              {syncing ? (
+                <>
+                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" style={{ width: '16px', height: '16px', borderRadius: '50%', border: '2px solid white', borderTopColor: 'transparent', animation: 'spin 1s linear infinite' }}></div>
+                  Syncing...
+                </>
+              ) : (
+                <>
+                  <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+                    <path d="M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6 0 1.01-.25 1.97-.7 2.8l1.46 1.46C19.54 15.03 20 13.57 20 12c0-4.41-3.59-8-8-8zm-8 8c0 1.57.46 3.03 1.24 4.26L6.7 17.7C5.25 16.03 4 13.88 4 12c0-4.41 3.59-8 8-8v3l4-4-4-4v3c-4.41 0-8 3.59-8 8z" />
+                  </svg>
+                  Sync Products
+                </>
+              )}
+            </button>
+            <Link
+              href="/admin/add-product"
+              style={{
+                backgroundColor: '#ffffff',
+                color: '#B88E2F',
+                border: '1px solid #B88E2F',
+                padding: '10px 20px',
+                fontSize: '14px',
+                fontWeight: '600',
+                borderRadius: '8px',
+                textDecoration: 'none',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                transition: 'background-color 0.2s ease'
+              }}
+              onMouseOver={(e) => { e.currentTarget.style.backgroundColor = '#fdfaf5'; }}
+              onMouseOut={(e) => { e.currentTarget.style.backgroundColor = '#ffffff'; }}
+            >
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+                <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" />
+              </svg>
+              Add Product
+            </Link>
+          </div>
         </div>
-        <div className="flex gap-4 items-center" style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
-          <button
-            onClick={handleSyncProducts}
-            disabled={syncing}
-            style={{
-              backgroundColor: '#B88E2F',
-              color: '#ffffff',
-              border: 'none',
-              padding: '10px 20px',
-              fontSize: '14px',
-              fontWeight: '600',
-              borderRadius: '8px',
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '8px',
-              transition: 'opacity 0.2s ease',
-              opacity: syncing ? 0.7 : 1
-            }}
-          >
-            {syncing ? (
-              <>
-                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" style={{ width: '16px', height: '16px', borderRadius: '50%', border: '2px solid white', borderTopColor: 'transparent', animation: 'spin 1s linear infinite' }}></div>
-                Syncing...
-              </>
-            ) : (
-              <>
-                <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
-                  <path d="M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6 0 1.01-.25 1.97-.7 2.8l1.46 1.46C19.54 15.03 20 13.57 20 12c0-4.41-3.59-8-8-8zm-8 8c0 1.57.46 3.03 1.24 4.26L6.7 17.7C5.25 16.03 4 13.88 4 12c0-4.41 3.59-8 8-8v3l4-4-4-4v3c-4.41 0-8 3.59-8 8z" />
-                </svg>
-                Sync Products
-              </>
-            )}
-          </button>
-          <Link
-            href="/admin/add-product"
-            style={{
-              backgroundColor: '#ffffff',
-              color: '#B88E2F',
-              border: '1px solid #B88E2F',
-              padding: '10px 20px',
-              fontSize: '14px',
-              fontWeight: '600',
-              borderRadius: '8px',
-              textDecoration: 'none',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '8px',
-              transition: 'background-color 0.2s ease'
-            }}
-            onMouseOver={(e) => { e.currentTarget.style.backgroundColor = '#fdfaf5'; }}
-            onMouseOut={(e) => { e.currentTarget.style.backgroundColor = '#ffffff'; }}
-          >
-            <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
-              <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" />
+
+        <div className={styles.headerControls}>
+          <div className={styles.searchWrapper}>
+            <svg className={styles.searchIcon} viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2.5">
+              <circle cx="11" cy="11" r="8" />
+              <path d="M21 21l-4.35-4.35" />
             </svg>
-            Add Product
-          </Link>
+            <input
+              type="text"
+              className={styles.searchInput}
+              placeholder="Search email, name or UID..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            />
+          </div>
         </div>
-        <div className={styles.searchWrapper}>
-          <input
-            type="text"
-            className={styles.searchInput}
-            placeholder="Search email, name or UID..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-          />
+      </div>
+
+      {/* Metrics Grid */}
+      <div className={styles.metricsGrid}>
+        <div className={styles.metricCard}>
+          <div className={styles.metricIconWrapper}>
+            <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+            </svg>
+          </div>
+          <div className={styles.metricContent}>
+            <span className={styles.metricValue}>{totalUsers}</span>
+            <span className={styles.metricLabel}>Total Users</span>
+          </div>
+        </div>
+
+        <div className={styles.metricCard}>
+          <div className={styles.metricIconWrapper}>
+            <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+            </svg>
+          </div>
+          <div className={styles.metricContent}>
+            <span className={styles.metricValue}>{adminCount}</span>
+            <span className={styles.metricLabel}>Administrators</span>
+          </div>
+        </div>
+
+        <div className={styles.metricCard}>
+          <div className={`${styles.metricIconWrapper} ${styles.statusGreen}`}>
+            <span className={styles.pulseDot}></span>
+          </div>
+          <div className={styles.metricContent}>
+            <span className={styles.statusIndicator}>
+              Online
+            </span>
+            <span className={styles.metricLabel}>Database Status</span>
+          </div>
         </div>
       </div>
 
       {/* Dynamic Alerts */}
       {success && (
         <div className={`${styles.alert} ${styles.alertSuccess}`}>
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="3">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+          </svg>
           {success}
         </div>
       )}
       {error && (
-        <div className={`${styles.alert} ${styles.alertError}`}>{error}</div>
+        <div className={`${styles.alert} ${styles.alertError}`}>
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="3">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+          </svg>
+          {error}
+        </div>
       )}
 
       {/* Table section */}
@@ -359,7 +428,7 @@ export const Default: React.FC<ComponentProps> = () => {
                 <th>User Profile</th>
                 <th>Created At</th>
                 <th>Last Login</th>
-                <th>Role</th>
+                <th>Role Switcher</th>
                 <th>Actions</th>
               </tr>
             </thead>
@@ -416,17 +485,16 @@ export const Default: React.FC<ComponentProps> = () => {
                     {/* Role / Custom Claim Switcher */}
                     <td>
                       <div className={styles.roleToggleWrapper}>
-                        <label className={styles.checkboxLabel}>
+                        <label className={styles.switch}>
                           <input
                             type="checkbox"
-                            className={styles.checkboxInput}
                             checked={u.isAdmin}
                             disabled={
                               actionUid === u.uid || u.email === user.email
                             }
                             onChange={() => handleToggleAdmin(u.uid, u.isAdmin)}
                           />
-                          <span>Is Admin</span>
+                          <span className={styles.slider}></span>
                         </label>
                         <span
                           className={`${styles.roleBadge} ${u.isAdmin ? styles.roleAdmin : styles.roleUser}`}
@@ -445,11 +513,13 @@ export const Default: React.FC<ComponentProps> = () => {
                       >
                         <svg
                           viewBox="0 0 24 24"
-                          width="16"
-                          height="16"
-                          fill="currentColor"
+                          width="14"
+                          height="14"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2.5"
                         >
-                          <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z" />
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                         </svg>
                         Delete
                       </button>

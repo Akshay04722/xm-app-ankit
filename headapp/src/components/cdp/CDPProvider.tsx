@@ -64,7 +64,6 @@ export function CDPProvider({ children }: { children: ReactNode }) {
 
         if (cancelled) return;
         const ref = await engage?.getGuestId();
-        console.log("ref", ref);
         if (!ref) return;
         setGuestRef(ref);
 
@@ -98,7 +97,6 @@ export function CDPProvider({ children }: { children: ReactNode }) {
     async (post: Omit<RecentlyViewedPost, "viewedAt">) => {
       const engage = await getEngage();
       let ref = await engage.getGuestId();
-      console.log("trackPostClick ref", ref);
       if (!ref) return;
 
       setRecentlyViewed((prev) => {

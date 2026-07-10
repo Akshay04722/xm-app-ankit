@@ -149,19 +149,20 @@ export const Default = (props: BlogProps): React.JSX.Element => {
             }
           }
         `;
-        client.getData(query, {
-          datasource: "/sitecore/content/akshay/akshayxmc/Home/Blog",
-          language: "en"
-        })
-        .then((res: any) => {
-          const results = res?.datasource?.posts?.results || [];
-          setPosts(results);
-          setLoading(false);
-        })
-        .catch((err) => {
-          console.error("Failed to fetch blog posts client-side:", err);
-          setLoading(false);
-        });
+        client
+          .getData(query, {
+            datasource: "/sitecore/content/akshay/akshayxmc/Home/Blog",
+            language: "en",
+          })
+          .then((res: any) => {
+            const results = res?.datasource?.posts?.results || [];
+            setPosts(results);
+            setLoading(false);
+          })
+          .catch((err) => {
+            console.error("Failed to fetch blog posts client-side:", err);
+            setLoading(false);
+          });
       });
     }
   }, [datasource]);
@@ -204,15 +205,16 @@ export const Default = (props: BlogProps): React.JSX.Element => {
     ([name, count]) => ({ name, count }),
   );
 
-  const rawSidebarPosts = recentlyViewed.length > 0
-    ? recentlyViewed
-    : (posts || []).slice(0, 5).map(p => ({
-        id: p.id || '',
-        title: p.title?.jsonValue?.value || '',
-        date: p.date?.jsonValue?.value || '',
-        imageSrc: p.image?.jsonValue?.value?.src || '',
-        href: p.link?.jsonValue?.value?.href || '',
-      }));
+  const rawSidebarPosts =
+    recentlyViewed.length > 0
+      ? recentlyViewed
+      : (posts || []).slice(0, 5).map((p) => ({
+          id: p.id || "",
+          title: p.title?.jsonValue?.value || "",
+          date: p.date?.jsonValue?.value || "",
+          imageSrc: p.image?.jsonValue?.value?.src || "",
+          href: p.link?.jsonValue?.value?.href || "",
+        }));
 
   const sidebarPosts = rawSidebarPosts.map((p) => ({
     id: p.id,
@@ -263,7 +265,6 @@ export const Default = (props: BlogProps): React.JSX.Element => {
     if (e) {
       e.stopPropagation();
     }
-    console.log("inside handlePostClick", post);
     // Register the clicked post to recently viewed list
 
     trackPostClick({

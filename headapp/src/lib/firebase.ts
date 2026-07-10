@@ -11,6 +11,5 @@ const firebaseConfig = {
   measurementId: "G-GGWHTZZSCY"
 };
 console
-console.log(firebaseConfig);
 const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
 export const auth = getAuth(app);

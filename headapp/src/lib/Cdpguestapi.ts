@@ -44,7 +44,6 @@ export async function getRecentlyViewed(guestRef: string): Promise<RecentlyViewe
     cache: 'no-store',
   });
 
-  console.log('res', res);
 
   if (res.status === 404) return [];
   if (!res.ok) {

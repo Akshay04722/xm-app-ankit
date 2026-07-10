@@ -74,8 +74,6 @@ function SearchResultsComponent({
       });
 
       const data = await res.json();
-
-      console.log("Event published:", data);
     } catch (err) {
       console.error("Error publishing event:", err);
     }
