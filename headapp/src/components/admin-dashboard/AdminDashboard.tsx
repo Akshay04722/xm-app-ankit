@@ -30,6 +30,7 @@ export const Default: React.FC<ComponentProps> = () => {
   const [actionUid, setActionUid] = useState<string | null>(null); // tracks user undergoing update/delete
   const [isAdmin, setIsAdmin] = useState(false);
   const [claimsLoading, setClaimsLoading] = useState(true);
+  const [syncing, setSyncing] = useState(false);
 
   // Check admin claims when user changes
   useEffect(() => {
@@ -53,6 +54,46 @@ export const Default: React.FC<ComponentProps> = () => {
       setClaimsLoading(false);
     }
   }, [user]);
+
+  // Sync Products handler
+  const handleSyncProducts = async () => {
+    if (!user) return;
+    try {
+      setSyncing(true);
+      setError(null);
+      setSuccess(null);
+      const idToken = await user.getIdToken();
+      
+      // Determine siteName dynamically from the path, falling back to NEXT_PUBLIC_DEFAULT_SITE_NAME
+      const pathname = typeof window !== "undefined" ? window.location.pathname : "";
+      const segments = pathname.split("/").filter(Boolean);
+      const knownSites = ["ankitxmc", "akshayxmc", "krunalxmc"];
+      const defaultSite = process.env.NEXT_PUBLIC_DEFAULT_SITE_NAME || "akshayxmc";
+      const siteName = segments.find(s => knownSites.includes(s.toLowerCase())) || defaultSite;
+      
+      const res = await fetch(`/api/admin/sync?site=${siteName}`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${idToken}`,
+        },
+      });
+      
+      const data = await res.json();
+      if (res.ok) {
+        setSuccess("Firestore products successfully synced and published in Sitecore!");
+        setTimeout(() => setSuccess(null), 5000);
+      } else {
+        setError(data.error || "Failed to sync products to Sitecore.");
+        setTimeout(() => setError(null), 5000);
+      }
+    } catch (err: any) {
+      setError(err.message || "An error occurred during synchronization.");
+      setTimeout(() => setError(null), 5000);
+    } finally {
+      setSyncing(false);
+    }
+  };
+
 
   // Debounce search input
   useEffect(() => {
@@ -223,6 +264,65 @@ export const Default: React.FC<ComponentProps> = () => {
             Manage application users, set roles, and administer account
             security.
           </p>
+        </div>
+        <div className="flex gap-4 items-center" style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
+          <button
+            onClick={handleSyncProducts}
+            disabled={syncing}
+            style={{
+              backgroundColor: '#B88E2F',
+              color: '#ffffff',
+              border: 'none',
+              padding: '10px 20px',
+              fontSize: '14px',
+              fontWeight: '600',
+              borderRadius: '8px',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              transition: 'opacity 0.2s ease',
+              opacity: syncing ? 0.7 : 1
+            }}
+          >
+            {syncing ? (
+              <>
+                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" style={{ width: '16px', height: '16px', borderRadius: '50%', border: '2px solid white', borderTopColor: 'transparent', animation: 'spin 1s linear infinite' }}></div>
+                Syncing...
+              </>
+            ) : (
+              <>
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+                  <path d="M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6 0 1.01-.25 1.97-.7 2.8l1.46 1.46C19.54 15.03 20 13.57 20 12c0-4.41-3.59-8-8-8zm-8 8c0 1.57.46 3.03 1.24 4.26L6.7 17.7C5.25 16.03 4 13.88 4 12c0-4.41 3.59-8 8-8v3l4-4-4-4v3c-4.41 0-8 3.59-8 8z" />
+                </svg>
+                Sync Products
+              </>
+            )}
+          </button>
+          <Link
+            href="/admin/add-product"
+            style={{
+              backgroundColor: '#ffffff',
+              color: '#B88E2F',
+              border: '1px solid #B88E2F',
+              padding: '10px 20px',
+              fontSize: '14px',
+              fontWeight: '600',
+              borderRadius: '8px',
+              textDecoration: 'none',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              transition: 'background-color 0.2s ease'
+            }}
+            onMouseOver={(e) => { e.currentTarget.style.backgroundColor = '#fdfaf5'; }}
+            onMouseOut={(e) => { e.currentTarget.style.backgroundColor = '#ffffff'; }}
+          >
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+              <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" />
+            </svg>
+            Add Product
+          </Link>
         </div>
         <div className={styles.searchWrapper}>
           <input
