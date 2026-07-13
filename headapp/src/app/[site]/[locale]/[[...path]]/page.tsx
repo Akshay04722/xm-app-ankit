@@ -20,7 +20,11 @@ import { stripHtml } from "src/lib/searchUtils";
  * to the Sitecore content item at /Shop/Products/SS001
  */
 function resolveProductPath(path: string[]): string[] {
-  if (path.length >= 2 && path[0]?.toLowerCase() === "shop" && path[path.length - 1]?.includes("--")) {
+  if (
+    path.length >= 2 &&
+    path[0]?.toLowerCase() === "shop" &&
+    path[path.length - 1]?.includes("--")
+  ) {
     const sku = path[path.length - 1].split("--")[0];
     return ["Shop", "Products", sku];
   }
@@ -29,7 +33,12 @@ function resolveProductPath(path: string[]): string[] {
 
 async function fetchPage(resolvedPath: string[], site: string, locale: string) {
   let page = await client.getPage(resolvedPath, { site, locale });
-  if (!page && resolvedPath.length === 3 && resolvedPath[0] === "Shop" && resolvedPath[1] === "Products") {
+  if (
+    !page &&
+    resolvedPath.length === 3 &&
+    resolvedPath[0] === "Shop" &&
+    resolvedPath[1] === "Products"
+  ) {
     const sku = resolvedPath[2];
     try {
       const query = `
@@ -51,18 +60,21 @@ async function fetchPage(resolvedPath: string[], site: string, locale: string) {
       `;
       const result = (await (client as any).graphQLClient.request(query, {
         sku,
-        language: locale
+        language: locale,
       })) as { search?: { results?: any[] } };
       const rendered = result?.search?.results?.[0]?.rendered;
       if (rendered?.sitecore) {
         page = {
           layout: rendered,
           locale,
-          mode: 'normal'
+          mode: "normal",
         } as any;
       }
     } catch (err) {
-      console.error("Failed to resolve product page via GraphQL fallback:", err);
+      console.error(
+        "Failed to resolve product page via GraphQL fallback:",
+        err,
+      );
     }
   }
   return page;
@@ -166,6 +178,7 @@ export const generateMetadata = async ({ params }: PageProps) => {
     : [];
 
   const title =
+    fields?.ProductTitle?.value?.toString() ||
     fields?.metadataTitle?.value?.toString() ||
     fields?.pageTitle?.value?.toString() ||
     fields?.Title?.value?.toString() ||
@@ -173,12 +186,12 @@ export const generateMetadata = async ({ params }: PageProps) => {
     "Page";
 
   const rawDescription =
-    fields.Content?.value?.toString() ||
+    fields?.Content?.value?.toString() ||
+    fields?.LongDescription?.value?.toString() ||
     fields?.metadataDescription?.value?.toString() ||
     fields?.ogDescription?.value?.toString() ||
     fields?.pageSummary?.value?.toString() ||
     "Sitecore Next.js Skate Park Example";
-
   const description = stripHtml(rawDescription);
 
   return {
