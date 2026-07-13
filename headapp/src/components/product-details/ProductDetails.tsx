@@ -63,7 +63,7 @@ export const Default = (props: ProductDetailsProps): JSX.Element => {
   }
 
   // ---------- Extract fields from route (context item) ----------
-  const title = routeFields.Title?.value || route?.name || "";
+  const title = routeFields.ProductTitle?.value || route?.name || "";
   const sku = routeFields.SKU?.value || "";
   const shortDesc = stripHtml(routeFields.ShortDescription?.value || "");
   const longDesc = stripHtml(routeFields.LongDescription?.value || "");

@@ -155,15 +155,9 @@ export async function POST(req: NextRequest) {
             ? String(product.galleryImages).split(',').map((g: string) => g.trim())
             : [];
       const GalleryImages = rawGalleryImages.filter(Boolean).join('|');
-
-      console.log('AvailableSizes',AvailableSizes);
-      console.log('AvailableColors',AvailableColors);
-      console.log('Category',Category);
-      console.log('Tags',Tags);
-      console.log('GalleryImages', GalleryImages);
-
+      
       const sitecorePayload = {
-        Title: product.title || '',
+        ProductTitle: product.title || '',
         SKU: sku,
         ShortDescription: product.shortDescription || '',
         LongDescription: product.longDescription || '',
@@ -178,7 +172,7 @@ export async function POST(req: NextRequest) {
         Category,
         Tags,
       };
-
+      console.log("sitecorePayload",sitecorePayload)
       // Check if product item already exists under Products folder
       const productItemPath = `${productsFolderPath}/${itemName}`;
       const existingItemId = await getSitecoreItemIdByPath(productItemPath);

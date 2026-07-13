@@ -30,13 +30,7 @@ interface Product {
 
 interface ShopProductsListProps extends ComponentProps {
   fields: {
-    data?: {
-      datasource?: {
-        products?: {
-          results: any[];
-        };
-      };
-    };
+    items?: any[];
   };
 }
 
@@ -104,37 +98,49 @@ export const Default = (props: ShopProductsListProps): JSX.Element => {
 
   // Parse products from fields datasource when it mounts or fields change
   useEffect(() => {
-    const results = fields?.data?.datasource?.products?.results || [];
+    const results = fields?.items || [];
 
     const parsedProducts: Product[] = results.map((r: any) => {
-      // Parse sizes
-      const sizeNodes = r.availableSizes?.jsonValue || [];
-      const sizesList = sizeNodes.map((node: any) => node.name);
+      const f = r.fields || {};
 
-      // Parse colors
-      const colorNodes = r.availableColors?.jsonValue || [];
+      // Parse sizes — array of Size items; value lives at fields.Value.value
+      const sizeNodes = f.AvailableSizes || [];
+      const sizesList = sizeNodes.map(
+        (node: any) =>
+          node.fields?.Value?.value || node.displayName || node.name,
+      );
+
+      // Parse colors — array of Color items
+      const colorNodes = f.AvailableColors || [];
       const colorsList = colorNodes.map((node: any) => ({
-        name: node.name,
+        name: node.fields?.Name?.value || node.displayName || node.name,
         hex: node.fields?.HexCode?.value || "#cccccc",
       }));
 
-      // Parse category
-      const categoryName = r.category?.jsonValue?.[0]?.name || "Uncategorized";
+      // Parse category — array of Category items, take the first
+      const categoryNodes = f.Category || [];
+      const categoryName =
+        categoryNodes[0]?.fields?.Name?.value ||
+        categoryNodes[0]?.displayName ||
+        "Uncategorized";
 
-      // Parse tags
-      const tagNodes = r.tags?.jsonValue || [];
-      const tagsList = tagNodes.map((node: any) => node.name);
+      // Parse tags — array of Tag items
+      const tagNodes = f.Tags || [];
+      const tagsList = tagNodes.map(
+        (node: any) =>
+          node.fields?.Name?.value || node.displayName || node.name,
+      );
 
       return {
         id: r.id,
         name: r.name,
-        title: r.title?.jsonValue?.value || r.name,
-        sku: r.sku?.jsonValue?.value || "",
-        shortDescription: r.shortDescription?.jsonValue?.value || "",
-        price: parseFloat(r.price?.jsonValue?.value || "0"),
-        discountPrice: parseFloat(r.discountPrice?.jsonValue?.value || "0"),
-        isNew: r.isNew?.jsonValue?.value === true,
-        mainImage: r.mainImage?.jsonValue?.value || "",
+        title: f.ProductTitle?.value || r.displayName || r.name,
+        sku: f.SKU?.value || "",
+        shortDescription: f.ShortDescription?.value || "",
+        price: parseFloat(f.Price?.value ?? 0),
+        discountPrice: parseFloat(f.DiscountPrice?.value ?? 0),
+        isNew: f.IsNew?.value === true,
+        mainImage: f.MainImage?.value || "",
         sizes: sizesList,
         colors: colorsList,
         category: categoryName,
@@ -147,7 +153,7 @@ export const Default = (props: ShopProductsListProps): JSX.Element => {
     // Extract unique categories, sizes, and colors for filters
     const categorySet = new Set<string>();
     const sizeSet = new Set<string>();
-    const colorMap = new Map<string, string>(); // name -> hex
+    const colorMap = new Map<string, string>();
 
     parsedProducts.forEach((p) => {
       if (p.category) categorySet.add(p.category);
@@ -236,7 +242,7 @@ export const Default = (props: ShopProductsListProps): JSX.Element => {
     selectedPriceRange,
   ]);
 
-  if (!fields?.data?.datasource) {
+  if (!fields?.items) {
     return <NoDataFallback componentName="ShopProductsList" />;
   }
 
@@ -846,7 +852,7 @@ export const Default = (props: ShopProductsListProps): JSX.Element => {
                 <div className={styles.overlay}>
                   <button className={styles.addToCartBtn}>Add to cart</button>
                   <Link
-                    href={`${pathname}/${product.name}`}
+                    href={`${pathname}/products/${product.sku}--${product.title}`}
                     className={styles.viewDetailsBtn}
                   >
                     Details
