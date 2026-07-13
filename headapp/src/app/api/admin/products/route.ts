@@ -97,3 +97,42 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: error.message || 'Server error' }, { status: 400 });
   }
 }
+
+export async function GET(req: NextRequest) {
+  try {
+    await authenticateAdmin(req);
+    const db = getFirestore();
+    const snapshot = await db.collection('products').get();
+    const products = snapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data()
+    }));
+    return NextResponse.json({ success: true, products });
+  } catch (error: any) {
+    console.error('GET /api/admin/products error:', error);
+    return NextResponse.json({ error: error.message || 'Server error' }, { status: 400 });
+  }
+}
+
+export async function DELETE(req: NextRequest) {
+  try {
+    await authenticateAdmin(req);
+    const { searchParams } = new URL(req.url);
+    const sku = searchParams.get('sku');
+
+    if (!sku) {
+      return NextResponse.json({ error: 'SKU is required' }, { status: 400 });
+    }
+
+    const db = getFirestore();
+    await db.collection('products').doc(sku.trim()).delete();
+
+    return NextResponse.json({
+      success: true,
+      message: `Product ${sku} has been successfully deleted from Firestore.`
+    });
+  } catch (error: any) {
+    console.error('DELETE /api/admin/products error:', error);
+    return NextResponse.json({ error: error.message || 'Server error' }, { status: 400 });
+  }
+}

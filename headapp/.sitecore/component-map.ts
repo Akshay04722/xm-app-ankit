@@ -16,6 +16,7 @@ import * as RowSplitter from 'src/components/row-splitter/RowSplitter';
 import * as RichText from 'src/components/rich-text/RichText';
 import * as Register from 'src/components/register/Register';
 import * as Promo from 'src/components/promo/Promo';
+import * as ProductDetails from 'src/components/product-details/ProductDetails';
 import * as PartialDesignDynamicPlaceholder from 'src/components/partial-design-dynamic-placeholder/PartialDesignDynamicPlaceholder';
 import * as PageContent from 'src/components/page-content/PageContent';
 import * as OurProducts from 'src/components/our-products/OurProducts';
@@ -52,6 +53,7 @@ export const componentMap = new Map<string, NextjsContentSdkComponent>([
   ['RichText', { ...RichText }],
   ['Register', { ...Register, componentType: 'client' }],
   ['Promo', { ...Promo }],
+  ['ProductDetails', { ...ProductDetails, componentType: 'client' }],
   ['PartialDesignDynamicPlaceholder', { ...PartialDesignDynamicPlaceholder }],
   ['PageContent', { ...PageContent }],
   ['OurProducts', { ...OurProducts, componentType: 'client' }],

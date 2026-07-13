@@ -14,6 +14,60 @@ import { setRequestLocale } from "next-intl/server";
 import { getBaseUrl } from "src/lib/utils";
 import { stripHtml } from "src/lib/searchUtils";
 
+/**
+ * Resolve product detail URLs: Shop/{SKU}--{Title} → Shop/Products/{SKU}
+ * This allows clean product URLs like /Shop/SS001--Syltherine to map
+ * to the Sitecore content item at /Shop/Products/SS001
+ */
+function resolveProductPath(path: string[]): string[] {
+  if (path.length >= 2 && path[0]?.toLowerCase() === "shop" && path[path.length - 1]?.includes("--")) {
+    const sku = path[path.length - 1].split("--")[0];
+    return ["Shop", "Products", sku];
+  }
+  return path;
+}
+
+async function fetchPage(resolvedPath: string[], site: string, locale: string) {
+  let page = await client.getPage(resolvedPath, { site, locale });
+  if (!page && resolvedPath.length === 3 && resolvedPath[0] === "Shop" && resolvedPath[1] === "Products") {
+    const sku = resolvedPath[2];
+    try {
+      const query = `
+        query ProductSearch($sku: String!, $language: String!) {
+          search(
+            where: {
+              AND: [
+                { name: "_templates", value: "{7D33D96A-F36D-4DF9-9091-88DD28A680D5}" }
+                { name: "SKU", value: $sku }
+                { name: "_language", value: $language }
+              ]
+            }
+          ) {
+            results {
+              rendered
+            }
+          }
+        }
+      `;
+      const result = (await (client as any).graphQLClient.request(query, {
+        sku,
+        language: locale
+      })) as { search?: { results?: any[] } };
+      const rendered = result?.search?.results?.[0]?.rendered;
+      if (rendered?.sitecore) {
+        page = {
+          layout: rendered,
+          locale,
+          mode: 'normal'
+        } as any;
+      }
+    } catch (err) {
+      console.error("Failed to resolve product page via GraphQL fallback:", err);
+    }
+  }
+  return page;
+}
+
 type PageProps = {
   params: Promise<{
     site: string;
@@ -42,7 +96,8 @@ export default async function Page({ params, searchParams }: PageProps) {
       page = await client.getPreview(editingParams);
     }
   } else {
-    page = await client.getPage(path ?? [], { site, locale });
+    const resolvedPath = resolveProductPath(path ?? []);
+    page = await fetchPage(resolvedPath, site, locale);
   }
 
   // If the page is not found, return a 404
@@ -98,7 +153,8 @@ export const generateMetadata = async ({ params }: PageProps) => {
   const canonicalUrl = baseUrl ? `${baseUrl}${pathSegment}` : undefined;
 
   // The same call as for rendering the page. Should be cached by default react behavior
-  const page = await client.getPage(path ?? [], { site, locale });
+  const resolvedPath = resolveProductPath(path ?? []);
+  const page = await fetchPage(resolvedPath, site, locale);
   const fields = page?.layout.sitecore.route?.fields as RouteFields;
   const itemId = page?.layout.sitecore.route?.itemId || "";
   const templateName = page?.layout.sitecore.route?.templateName || "";

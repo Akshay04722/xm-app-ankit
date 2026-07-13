@@ -8,6 +8,7 @@ import * as SignIn from 'src/components/sign-in/SignIn';
 import * as ShopProductsList from 'src/components/shop-products-list/ShopProductsList';
 import * as SearchResults from 'src/components/searchResults/SearchResults';
 import * as Register from 'src/components/register/Register';
+import * as ProductDetails from 'src/components/product-details/ProductDetails';
 import * as OurProducts from 'src/components/our-products/OurProducts';
 import * as Navigation from 'src/components/navigation/Navigation';
 import * as Inspirations from 'src/components/inspirations/Inspirations';
@@ -29,6 +30,7 @@ export const componentMap = new Map<string, NextjsContentSdkComponent>([
   ['ShopProductsList', { ...ShopProductsList }],
   ['SearchResults', { ...SearchResults }],
   ['Register', { ...Register }],
+  ['ProductDetails', { ...ProductDetails }],
   ['OurProducts', { ...OurProducts }],
   ['Navigation', { ...Navigation }],
   ['Inspirations', { ...Inspirations }],

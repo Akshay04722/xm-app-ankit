@@ -557,3 +557,255 @@
     max-width: 100%;
   }
 }
+
+/* Console Switcher / Tab Headers */
+.tabSelector {
+  display: flex;
+  gap: 16px;
+  border-bottom: 2px solid #f4f5f7;
+  margin-bottom: 32px;
+}
+
+.tabSelectorBtn {
+  background: none;
+  border: none;
+  padding: 12px 24px;
+  font-size: 16px;
+  font-weight: 700;
+  color: #898989;
+  cursor: pointer;
+  position: relative;
+  transition: color 0.25s ease;
+}
+
+.tabSelectorBtnActive {
+  color: #B88E2F;
+}
+
+.tabSelectorBtnActive::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background-color: #B88E2F;
+}
+
+/* Modal Popup Styles */
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  animation: fadeIn 0.25s ease;
+}
+
+.modalContent {
+  background-color: #ffffff;
+  border-radius: 20px;
+  width: 100%;
+  max-width: 720px;
+  max-height: 90vh;
+  overflow-y: auto;
+  padding: 36px;
+  border: 1px solid #f3f1eb;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+  animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+  from { transform: translateY(20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.modalHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 28px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #f4f5f7;
+}
+
+.modalHeader h2 {
+  font-size: 24px;
+  font-weight: 800;
+  color: #1a1a1a;
+  margin: 0;
+}
+
+.closeBtn {
+  background: none;
+  border: none;
+  color: #898989;
+  cursor: pointer;
+  transition: color 0.15s ease;
+}
+
+.closeBtn:hover {
+  color: #dc2626;
+}
+
+/* Form Styles */
+.formGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  margin-bottom: 24px;
+}
+
+.formGridFull {
+  grid-column: span 2;
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.formGroup label {
+  font-size: 13px;
+  font-weight: 700;
+  color: #3a3a3a;
+}
+
+.formInput, .formTextarea, .formSelect {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  font-size: 14px;
+  color: #1a1a1a;
+  background-color: #fcfcfc;
+  transition: all 0.15s ease;
+}
+
+.formInput:focus, .formTextarea:focus, .formSelect:focus {
+  outline: none;
+  border-color: #B88E2F;
+  background-color: #ffffff;
+  box-shadow: 0 0 0 3px rgba(184, 142, 47, 0.08);
+}
+
+.checkboxGroup {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 4px;
+}
+
+.checkboxLabel {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #3a3a3a;
+  cursor: pointer;
+  background-color: #fdfbf7;
+  padding: 6px 12px;
+  border: 1px solid #f6f3eb;
+  border-radius: 6px;
+  transition: all 0.15s ease;
+}
+
+.checkboxLabel:hover {
+  border-color: #ecdcb9;
+  background-color: #fffaf0;
+}
+
+.checkboxLabel input {
+  cursor: pointer;
+}
+
+.formActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 32px;
+  padding-top: 20px;
+  border-top: 1px solid #f4f5f7;
+}
+
+.submitBtn {
+  background-color: #B88E2F;
+  color: #ffffff;
+  border: none;
+  padding: 10px 24px;
+  font-size: 14px;
+  font-weight: 700;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: opacity 0.15s ease;
+}
+
+.submitBtn:hover {
+  opacity: 0.9;
+}
+
+.cancelBtn {
+  background-color: #ffffff;
+  color: #898989;
+  border: 1px solid #e5e7eb;
+  padding: 10px 24px;
+  font-size: 14px;
+  font-weight: 700;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.cancelBtn:hover {
+  background-color: #f9fafb;
+  color: #3a3a3a;
+}
+
+/* Edit & Delete Action Buttons for Products */
+.editBtn {
+  background-color: transparent;
+  color: #B88E2F;
+  border: 1px solid #f5ecdb;
+  padding: 8px 14px;
+  font-size: 13px;
+  font-weight: 600;
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.20s ease;
+}
+
+.editBtn:hover {
+  background-color: #B88E2F;
+  color: #ffffff;
+  border-color: #B88E2F;
+}
+
+.productImageCell {
+  width: 44px;
+  height: 44px;
+  border-radius: 8px;
+  overflow: hidden;
+  background-color: #f4f5f7;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  border: 1px solid #e5e7eb;
+}
+
+.productImageCell img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}

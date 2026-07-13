@@ -5,6 +5,7 @@ import styles from "./ShopProductsList.module.css";
 import { ComponentProps } from "@/lib/component-props";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import client from "@/lib/sitecore-client";
 
 interface ProductColor {
   name: string;
@@ -49,6 +50,7 @@ const NoDataFallback = ({ componentName }: { componentName: string }) => (
 
 export const Default = (props: ShopProductsListProps): JSX.Element => {
   const { fields } = props;
+  console.log("fields", fields);
   const pathname = usePathname();
   const [products, setProducts] = useState<Product[]>([]);
   const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
@@ -159,7 +161,9 @@ export const Default = (props: ShopProductsListProps): JSX.Element => {
 
     setCategories(Array.from(categorySet));
     setSizes(Array.from(sizeSet));
-    setColors(Array.from(colorMap.entries()).map(([name, hex]) => ({ name, hex })));
+    setColors(
+      Array.from(colorMap.entries()).map(([name, hex]) => ({ name, hex })),
+    );
   }, [fields]);
 
   // Filter and sort effect
@@ -173,28 +177,30 @@ export const Default = (props: ShopProductsListProps): JSX.Element => {
         (p) =>
           p.title.toLowerCase().includes(query) ||
           p.shortDescription.toLowerCase().includes(query) ||
-          p.sku.toLowerCase().includes(query)
+          p.sku.toLowerCase().includes(query),
       );
     }
 
     // Apply Category Filter
     if (selectedCategory !== "all") {
       result = result.filter(
-        (p) => p.category.toLowerCase() === selectedCategory.toLowerCase()
+        (p) => p.category.toLowerCase() === selectedCategory.toLowerCase(),
       );
     }
 
     // Apply Size Filter
     if (selectedSize !== "all") {
       result = result.filter((p) =>
-        p.sizes.some((s) => s.toLowerCase() === selectedSize.toLowerCase())
+        p.sizes.some((s) => s.toLowerCase() === selectedSize.toLowerCase()),
       );
     }
 
     // Apply Color Filter
     if (selectedColor !== "all") {
       result = result.filter((p) =>
-        p.colors.some((c) => c.name.toLowerCase() === selectedColor.toLowerCase())
+        p.colors.some(
+          (c) => c.name.toLowerCase() === selectedColor.toLowerCase(),
+        ),
       );
     }
 
@@ -220,7 +226,15 @@ export const Default = (props: ShopProductsListProps): JSX.Element => {
 
     setFilteredProducts(result);
     setCurrentPage(1); // reset to first page on filter change
-  }, [products, searchQuery, sortBy, selectedCategory, selectedSize, selectedColor, selectedPriceRange]);
+  }, [
+    products,
+    searchQuery,
+    sortBy,
+    selectedCategory,
+    selectedSize,
+    selectedColor,
+    selectedPriceRange,
+  ]);
 
   if (!fields?.data?.datasource) {
     return <NoDataFallback componentName="ShopProductsList" />;
@@ -485,7 +499,9 @@ export const Default = (props: ShopProductsListProps): JSX.Element => {
                     onClick={() => setSelectedCategory(cat)}
                   >
                     <span>{cat}</span>
-                    <span className={styles.countBadge}>{getCategoryCount(cat)}</span>
+                    <span className={styles.countBadge}>
+                      {getCategoryCount(cat)}
+                    </span>
                   </button>
                 ))}
               </div>
@@ -523,10 +539,21 @@ export const Default = (props: ShopProductsListProps): JSX.Element => {
                   onClick={() => setSelectedColor("all")}
                   title="All Colors"
                 >
-                  {selectedColor === "all" && <span style={{ color: "#333", fontSize: "10px", fontWeight: "bold" }}>All</span>}
+                  {selectedColor === "all" && (
+                    <span
+                      style={{
+                        color: "#333",
+                        fontSize: "10px",
+                        fontWeight: "bold",
+                      }}
+                    >
+                      All
+                    </span>
+                  )}
                 </button>
                 {colors.map((col) => {
-                  const isActive = selectedColor.toLowerCase() === col.name.toLowerCase();
+                  const isActive =
+                    selectedColor.toLowerCase() === col.name.toLowerCase();
                   return (
                     <button
                       key={col.name}
@@ -538,7 +565,12 @@ export const Default = (props: ShopProductsListProps): JSX.Element => {
                       {isActive && (
                         <span
                           className={styles.colorCheckmark}
-                          style={{ color: col.hex.toLowerCase() === "#ffffff" ? "#000" : "#fff" }}
+                          style={{
+                            color:
+                              col.hex.toLowerCase() === "#ffffff"
+                                ? "#000"
+                                : "#fff",
+                          }}
                         >
                           ✓
                         </span>
@@ -682,7 +714,7 @@ export const Default = (props: ShopProductsListProps): JSX.Element => {
               ? Math.round(
                   ((product.discountPrice - product.price) /
                     product.discountPrice) *
-                    100
+                    100,
                 )
               : 0;
 
@@ -752,7 +784,9 @@ export const Default = (props: ShopProductsListProps): JSX.Element => {
                             : "border border-gray-300 text-gray-700 hover:border-gray-400"
                         }`}
                       >
-                        {compareProducts.some((p) => p.id === product.id) ? "In Compare" : "Compare"}
+                        {compareProducts.some((p) => p.id === product.id)
+                          ? "In Compare"
+                          : "Compare"}
                       </button>
                       <span className="text-xs text-gray-500">
                         SKU: {product.sku}
@@ -811,7 +845,10 @@ export const Default = (props: ShopProductsListProps): JSX.Element => {
                 {/* Hover Overlay */}
                 <div className={styles.overlay}>
                   <button className={styles.addToCartBtn}>Add to cart</button>
-                  <Link href={`${pathname}/${product.name}`} className={styles.viewDetailsBtn}>
+                  <Link
+                    href={`${pathname}/${product.name}`}
+                    className={styles.viewDetailsBtn}
+                  >
                     Details
                   </Link>
 
@@ -830,7 +867,11 @@ export const Default = (props: ShopProductsListProps): JSX.Element => {
                     </button>
                     <button
                       className={styles.actionBtn}
-                      style={compareProducts.some((p) => p.id === product.id) ? { color: "#b88e2f" } : undefined}
+                      style={
+                        compareProducts.some((p) => p.id === product.id)
+                          ? { color: "#b88e2f" }
+                          : undefined
+                      }
                       onClick={() => handleToggleCompare(product)}
                     >
                       <svg
@@ -1011,7 +1052,9 @@ export const Default = (props: ShopProductsListProps): JSX.Element => {
                                 No Image
                               </div>
                             )}
-                            <h4 className={styles.compareCardTitle}>{p.title}</h4>
+                            <h4 className={styles.compareCardTitle}>
+                              {p.title}
+                            </h4>
                             <span className={styles.compareCardPrice}>
                               {formatPrice(p.price)}
                             </span>
@@ -1042,7 +1085,9 @@ export const Default = (props: ShopProductsListProps): JSX.Element => {
 
                     {/* 4. Description Row */}
                     <div className={rowClass}>
-                      <div className={styles.compareCellHeader}>Description</div>
+                      <div className={styles.compareCellHeader}>
+                        Description
+                      </div>
                       {compareProducts.map((p) => (
                         <div key={p.id} className={styles.compareCell}>
                           {p.shortDescription || "-"}
@@ -1052,7 +1097,9 @@ export const Default = (props: ShopProductsListProps): JSX.Element => {
 
                     {/* 5. Sizes Row */}
                     <div className={rowClass}>
-                      <div className={styles.compareCellHeader}>Available Sizes</div>
+                      <div className={styles.compareCellHeader}>
+                        Available Sizes
+                      </div>
                       {compareProducts.map((p) => (
                         <div key={p.id} className={styles.compareCell}>
                           {p.sizes.length > 0 ? (
@@ -1072,7 +1119,9 @@ export const Default = (props: ShopProductsListProps): JSX.Element => {
 
                     {/* 6. Colors Row */}
                     <div className={rowClass}>
-                      <div className={styles.compareCellHeader}>Available Colors</div>
+                      <div className={styles.compareCellHeader}>
+                        Available Colors
+                      </div>
                       {compareProducts.map((p) => (
                         <div key={p.id} className={styles.compareCell}>
                           {p.colors.length > 0 ? (
