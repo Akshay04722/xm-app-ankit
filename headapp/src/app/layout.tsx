@@ -28,6 +28,8 @@ const poppins = Poppins({
 });
 
 import { AuthProvider } from "@/lib/AuthContext";
+import { CartProvider } from "@/lib/CartContext";
+import CartDrawer from "@/components/cart-drawer/CartDrawer";
 
 export default function RootLayout({
   children,
@@ -50,12 +52,16 @@ export default function RootLayout({
       <body>
         <AuthProvider>
           <CDPProvider>
-            <CloudSdkBootstrap />
-            {children}
+            <CartProvider>
+              <CloudSdkBootstrap />
+              {children}
+              <CartDrawer />
+            </CartProvider>
           </CDPProvider>
         </AuthProvider>
       </body>
     </html>
   );
 }
+
 

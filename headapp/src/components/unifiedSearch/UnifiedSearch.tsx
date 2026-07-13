@@ -11,6 +11,7 @@ import {
   highlightSearchTerm,
   stripHtml,
 } from "@/lib/searchUtils";
+import { useCart } from "@/lib/CartContext";
 
 function UnifiedSearchComponent() {
   const searchParams = useSearchParams();
@@ -21,6 +22,35 @@ function UnifiedSearchComponent() {
   const [loadingSuggestions, setLoadingSuggestions] = useState(false);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [focusedIndex, setFocusedIndex] = useState(-1);
+
+  const [products, setProducts] = useState<any[]>([]);
+  const { addToCart } = useCart();
+
+  useEffect(() => {
+    fetch("/api/products")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.success) {
+          setProducts(data.products);
+        }
+      })
+      .catch((err) => console.error("Error loading products for unified search:", err));
+  }, []);
+
+  const findProduct = (item: SearchItem) => {
+    const match = item.url?.match(/products\/([A-Za-z0-9-]+)--/);
+    const sku = match ? match[1] : "";
+    if (sku) {
+      const prod = products.find((p) => p.sku?.toLowerCase() === sku.toLowerCase());
+      if (prod) return prod;
+    }
+    const cleanTitle = (item.title || item.name || "").toLowerCase().trim();
+    return products.find(
+      (p) =>
+        p.title?.toLowerCase().trim() === cleanTitle ||
+        p.name?.toLowerCase().trim() === cleanTitle
+    );
+  };
 
   const containerRef = useRef<HTMLDivElement>(null);
   const skipNextSuggestionRef = useRef(false);
@@ -227,12 +257,16 @@ function UnifiedSearchComponent() {
                 const highlightedTitle = highlightSearchTerm(title, keyword);
                 const highlightedDesc = highlightSearchTerm(cleanDesc, keyword);
 
+                const isProduct = blog.type?.toLowerCase() === "product";
+                const product = isProduct ? findProduct(blog) : null;
+                const priceFormatted = product ? `Rp ${product.price.toLocaleString("id-ID")}` : "";
+
                 return (
                   <a
                     key={blog.id}
                     id={`suggestion-item-${idx}`}
                     href={blog.url || "#"}
-                    className={`search-suggestion-card${idx === focusedIndex ? " is-focused" : ""}`}
+                    className={`search-suggestion-card${idx === focusedIndex ? " is-focused" : ""} ${isProduct ? "flex items-center gap-4" : ""}`}
                     onClick={(e) => {
                       if (blog.url) {
                         setShowSuggestions(false);
@@ -244,19 +278,61 @@ function UnifiedSearchComponent() {
                     role="option"
                     aria-selected={idx === focusedIndex}
                   >
-                    <div className="search-suggestion-meta">
-                      {blog.type && <span>{blog.type as string}</span>}
-                      {blog.author && <span>by {blog.author as string}</span>}
-                    </div>
-                    <h5
-                      className="search-suggestion-title"
-                      dangerouslySetInnerHTML={{ __html: highlightedTitle }}
-                    />
-                    {cleanDesc && (
-                      <p
-                        className="search-suggestion-description"
-                        dangerouslySetInnerHTML={{ __html: highlightedDesc }}
+                    {isProduct && product?.mainImage && (
+                      <img
+                        src={product.mainImage}
+                        alt=""
+                        className="w-12 h-12 object-cover rounded flex-shrink-0 bg-gray-50 border border-gray-100"
                       />
+                    )}
+                    <div className="flex-1 min-w-0">
+                      <div className="search-suggestion-meta">
+                        {blog.type && <span>{blog.type as string}</span>}
+                        {blog.author && <span>by {blog.author as string}</span>}
+                        {isProduct && product?.sku && <span className="text-[#B88E2F]">SKU: {product.sku}</span>}
+                      </div>
+                      <h5
+                        className="search-suggestion-title truncate"
+                        dangerouslySetInnerHTML={{ __html: highlightedTitle }}
+                      />
+                      {isProduct && product ? (
+                        <div className="text-xs font-semibold text-gray-900 mt-1">
+                          {priceFormatted}
+                          {product.discountPrice > 0 && (
+                            <span className="text-gray-400 line-through ml-2 font-normal">
+                              Rp {product.discountPrice.toLocaleString("id-ID")}
+                            </span>
+                          )}
+                        </div>
+                      ) : (
+                        cleanDesc && (
+                          <p
+                            className="search-suggestion-description"
+                            dangerouslySetInnerHTML={{ __html: highlightedDesc }}
+                          />
+                        )
+                      )}
+                    </div>
+                    {isProduct && product && (
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          addToCart({
+                            id: product.id,
+                            sku: product.sku,
+                            title: product.title,
+                            price: product.price,
+                            discountPrice: product.discountPrice,
+                            image: product.mainImage,
+                          });
+                          setShowSuggestions(false);
+                        }}
+                        className="flex-shrink-0 bg-[#B88E2F] hover:bg-[#a37924] text-white text-xs font-semibold px-2.5 py-1.5 rounded transition-colors"
+                      >
+                        Add to Cart
+                      </button>
                     )}
                   </a>
                 );

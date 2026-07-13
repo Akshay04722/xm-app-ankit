@@ -10,6 +10,7 @@ import {
 import { ComponentProps } from "lib/component-props";
 import Link from "next/link";
 import { useAuth } from "@/lib/AuthContext";
+import { useCart } from "@/lib/CartContext";
 import popoverStyles from "../../assets/components/HeaderPopover.module.css";
 
 interface NavigationLinkItem {
@@ -172,6 +173,7 @@ const getGreetingName = (email: string) => {
 export const Default = (props: HeaderProps): JSX.Element => {
   const { fields, params } = props;
   const { user, signOutUser } = useAuth();
+  const { totalItems, setCartOpen } = useCart();
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
 
@@ -483,8 +485,17 @@ export const Default = (props: HeaderProps): JSX.Element => {
         <button className="header__icon-btn" aria-label="Wishlist">
           <HeartIcon />
         </button>
-        <button className="header__icon-btn" aria-label="Shopping cart">
+        <button
+          className="header__icon-btn relative"
+          aria-label="Shopping cart"
+          onClick={() => setCartOpen(true)}
+        >
           <CartIcon />
+          {totalItems > 0 && (
+            <span className="absolute -top-1 -right-1 bg-[#B88E2F] text-white text-[10px] min-w-[18px] h-[18px] px-1 rounded-full flex items-center justify-center font-bold">
+              {totalItems}
+            </span>
+          )}
         </button>
       </div>
     </header>

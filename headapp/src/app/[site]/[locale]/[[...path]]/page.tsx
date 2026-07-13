@@ -192,6 +192,7 @@ export const generateMetadata = async ({ params }: PageProps) => {
     fields?.ogDescription?.value?.toString() ||
     fields?.pageSummary?.value?.toString() ||
     "Sitecore Next.js Skate Park Example";
+  console.log("Layout fields", fields);
   const description = stripHtml(rawDescription);
 
   return {
@@ -212,7 +213,10 @@ export const generateMetadata = async ({ params }: PageProps) => {
       description: fields?.ogDescription?.value?.toString() || description,
       url: canonicalUrl,
       type: "website",
-      images: fields?.ogImage?.value?.src || fields?.thumbnailImage?.value?.src,
+      images:
+        fields?.MainImage?.value ||
+        fields?.ogImage?.value?.src ||
+        fields?.thumbnailImage?.value?.src,
     },
   };
 };

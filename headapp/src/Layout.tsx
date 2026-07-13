@@ -36,6 +36,7 @@ export interface RouteFields {
   ogTitle?: Field;
   ogDescription?: Field;
   ogImage?: ImageField;
+  MainImage?: ImageField;
   thumbnailImage?: ImageField;
   Content?: RichTextField;
 }

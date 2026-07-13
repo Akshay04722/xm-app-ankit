@@ -14,6 +14,7 @@ import {
   stripHtml,
   stripHtmlExceptHighlight,
 } from "@/lib/searchUtils";
+import { useCart } from "@/lib/CartContext";
 
 // Each unique keyword+facet combination triggers a fresh API call.
 // There is no local cache or keepPreviousData — every search hits the network.
@@ -36,6 +37,35 @@ function SearchResultsComponent({
   const [selectedFacets, setSelectedFacets] = useState<
     Record<string, string[]>
   >({});
+
+  const [products, setProducts] = useState<any[]>([]);
+  const { addToCart } = useCart();
+
+  useEffect(() => {
+    fetch("/api/products")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.success) {
+          setProducts(data.products);
+        }
+      })
+      .catch((err) => console.error("Error loading products for search results page:", err));
+  }, []);
+
+  const findProduct = (item: SearchItem) => {
+    const match = item.url?.match(/products\/([A-Za-z0-9-]+)--/);
+    const sku = match ? match[1] : "";
+    if (sku) {
+      const prod = products.find((p) => p.sku?.toLowerCase() === sku.toLowerCase());
+      if (prod) return prod;
+    }
+    const cleanTitle = (item.title || item.name || "").toLowerCase().trim();
+    return products.find(
+      (p) =>
+        p.title?.toLowerCase().trim() === cleanTitle ||
+        p.name?.toLowerCase().trim() === cleanTitle
+    );
+  };
 
   const [uuid] = useState<string>(() => {
     const cookieValue = getCookie("bx_guest_ref");
@@ -378,9 +408,21 @@ function SearchResultsComponent({
                   ? stripHtmlExceptHighlight(nativeHighlights.description)
                   : highlightSearchTerm(cleanDescription, keyword);
 
+                const isProduct = item.type?.toLowerCase() === "product";
+                const product = isProduct ? findProduct(item) : null;
+                const priceFormatted = product ? `Rp ${product.price.toLocaleString("id-ID")}` : "";
+                const discountPriceFormatted = product && product.discountPrice > 0 ? `Rp ${product.discountPrice.toLocaleString("id-ID")}` : "";
+                const detailUrl = item.url ? item.url.replace(/^https?:\/\/[^\/]+/, "") : "#";
+
                 return (
                   <article key={item.id} className="search-result-card">
-                    {item.image_url ? (
+                    {isProduct && product?.mainImage ? (
+                      <img
+                        src={product.mainImage}
+                        alt=""
+                        className="search-result-image animate-fade-in"
+                      />
+                    ) : item.image_url ? (
                       <img
                         src={item.image_url as string}
                         alt=""
@@ -409,6 +451,11 @@ function SearchResultsComponent({
                             {item.type as string}
                           </span>
                         )}
+                        {isProduct && product?.sku && (
+                          <span className="search-result-tag search-result-tag--subtle">
+                            SKU: {product.sku}
+                          </span>
+                        )}
                         {item.author && (
                           <span className="search-result-tag search-result-tag--subtle">
                             {item.author as string}
@@ -423,14 +470,53 @@ function SearchResultsComponent({
                         className="search-result-description"
                         dangerouslySetInnerHTML={{ __html: highlightedDesc }}
                       />
+                      {isProduct && product && (
+                        <div className="flex items-center gap-2 mt-1">
+                          <span className="text-base font-bold text-gray-900">
+                            {priceFormatted}
+                          </span>
+                          {product.discountPrice > 0 && (
+                            <span className="text-sm line-through text-gray-400 font-normal">
+                              {discountPriceFormatted}
+                            </span>
+                          )}
+                        </div>
+                      )}
                       <div className="search-result-footer">
-                        <button
-                          onClick={() => handleResultClick(item)}
-                          className="search-result-cta"
-                          aria-label={`Read more about ${label}`}
-                        >
-                          Read More
-                        </button>
+                        {isProduct && product ? (
+                          <div className="flex gap-2 w-full mt-2">
+                            <button
+                              onClick={() => {
+                                handleResultClick(item);
+                                addToCart({
+                                  id: product.id,
+                                  sku: product.sku,
+                                  title: product.title,
+                                  price: product.price,
+                                  discountPrice: product.discountPrice,
+                                  image: product.mainImage,
+                                });
+                              }}
+                              className="flex-1 bg-[#B88E2F] hover:bg-[#a37924] text-white text-xs font-semibold py-2 px-3 rounded text-center transition-colors cursor-pointer"
+                            >
+                              Add to Cart
+                            </button>
+                            <a
+                              href={detailUrl}
+                              className="flex-1 border border-[#B88E2F] text-[#B88E2F] hover:bg-[#B88E2F] hover:text-white text-xs font-semibold py-2 px-3 rounded text-center transition-colors flex items-center justify-center decoration-none"
+                            >
+                              Details
+                            </a>
+                          </div>
+                        ) : (
+                          <button
+                            onClick={() => handleResultClick(item)}
+                            className="search-result-cta"
+                            aria-label={`Read more about ${label}`}
+                          >
+                            Read More
+                          </button>
+                        )}
                       </div>
                     </div>
                   </article>
