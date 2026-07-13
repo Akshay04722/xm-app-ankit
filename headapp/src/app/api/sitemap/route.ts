@@ -10,11 +10,54 @@ const { GET: originalGET } = createSitemapRouteHandler({
   sites,
 });
 
+export async function fetchProducts() {
+  const query = `
+    query AllProducts {
+      search(
+        where: {
+          AND: [
+            { name: "_templates", value: "{7D33D96A-F36D-4DF9-9091-88DD28A680D5}" }
+            { name: "_language", value: "en" }
+          ]
+        }
+        first: 100
+      ) {
+        results {
+          sku: field(name: "SKU") { value }
+          productTitle: field(name: "ProductTitle") { value }
+        }
+      }
+    }
+  `;
+
+  try {
+    const result = await (client as any).graphQLClient.request(query) as {
+      search?: {
+        results?: Array<{
+          sku?: { value?: string };
+          productTitle?: { value?: string };
+        }>;
+      };
+    };
+    const results = result?.search?.results || [];
+    return results
+      .map((item) => ({
+        sku: item.sku?.value || '',
+        title: item.productTitle?.value || '',
+      }))
+      .filter((item) => item.sku && item.title);
+  } catch (err) {
+    console.error('Failed to fetch products for sitemap:', err);
+    return [];
+  }
+}
+
 /**
  * API route for generating sitemap.xml
  *
  * This Next.js API route handler dynamically generates, intercepts, and serves the sitemap XML.
- * It replaces the internal Sitecore Cloud URLs with the current public hostname.
+ * It replaces the internal Sitecore Cloud URLs with the current public hostname, and appends
+ * dynamic product URLs.
  */
 export async function GET(request: NextRequest) {
   const response = await originalGET(request);
@@ -43,7 +86,22 @@ export async function GET(request: NextRequest) {
     ? xmlText.replaceAll(sitecoreDomain, actualHost)
     : xmlText;
 
-  return new Response(updatedXml, {
+  // Fetch dynamic products and append to sitemap
+  const products = await fetchProducts();
+  const lastmod = new Date().toISOString().split('T')[0];
+  const productUrlsXml = products
+    .map((p) => {
+      const encodedTitle = encodeURIComponent(p.title);
+      const url = `${actualHost}/shop/products/${p.sku}--${encodedTitle}`;
+      return `  <url>\n    <loc>${url}</loc>\n    <lastmod>${lastmod}</lastmod>\n    <changefreq>daily</changefreq>\n    <priority>0.8</priority>\n  </url>`;
+    })
+    .join('\n');
+
+  const finalXml = productUrlsXml
+    ? updatedXml.replace('</urlset>', `${productUrlsXml}\n</urlset>`)
+    : updatedXml;
+
+  return new Response(finalXml, {
     status: response.status,
     headers: {
       'Content-Type': 'application/xml',
