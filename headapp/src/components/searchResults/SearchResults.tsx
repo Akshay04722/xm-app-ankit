@@ -67,6 +67,16 @@ function SearchResultsComponent({
     );
   };
 
+  const getProductImage = (item: SearchItem, prod: any) => {
+    return (
+      (item.image_url as string) ||
+      (item.imageUrl as string) ||
+      (item.image as string) ||
+      prod?.mainImage ||
+      ""
+    );
+  };
+
   const [uuid] = useState<string>(() => {
     const cookieValue = getCookie("bx_guest_ref");
     return cookieValue || `visitor-${Math.random().toString(36).slice(2, 11)}`;
@@ -267,6 +277,26 @@ function SearchResultsComponent({
     (vals) => vals.length > 0,
   );
 
+  const [activeTab, setActiveTab] = useState<"products" | "blogs">("products");
+
+  const productCount = results.filter((item) => item.type?.toLowerCase() === "product").length;
+  const blogCount = results.filter((item) => item.type?.toLowerCase() !== "product").length;
+
+  const filteredResults = results.filter((item) => {
+    const isProd = item.type?.toLowerCase() === "product";
+    return activeTab === "products" ? isProd : !isProd;
+  });
+
+  useEffect(() => {
+    const pCount = results.filter((item) => item.type?.toLowerCase() === "product").length;
+    const bCount = results.filter((item) => item.type?.toLowerCase() !== "product").length;
+    if (pCount === 0 && bCount > 0) {
+      setActiveTab("blogs");
+    } else {
+      setActiveTab("products");
+    }
+  }, [results]);
+
   return (
     <div className="search-results-shell">
       <div className="search-results-toolbar">
@@ -312,29 +342,31 @@ function SearchResultsComponent({
             <h4 className="search-panel-title">Facets</h4>
           </div>
           <div className="search-facet-groups">
-            {facets.map((facet) => (
-              <div key={facet.name} className="search-facet-group">
-                <h5 className="search-facet-group-title">{facet.name}</h5>
-                <div className="search-facet-options">
-                  {facet.value.map((value) => {
-                    const isSelected =
-                      selectedFacets[facet.name]?.includes(value.text) || false;
+            {facets
+              .filter((f) => f.name?.toLowerCase() !== "type")
+              .map((facet) => (
+                <div key={facet.name} className="search-facet-group">
+                  <h5 className="search-facet-group-title">{facet.name}</h5>
+                  <div className="search-facet-options">
+                    {facet.value.map((value) => {
+                      const isSelected =
+                        selectedFacets[facet.name]?.includes(value.text) || false;
 
-                    return (
-                      <button
-                        key={value.id || `${facet.name}-${value.text}`}
-                        className={`search-facet-chip${isSelected ? " is-selected" : ""}`}
-                        onClick={() => toggleFacetValue(facet.name, value.text)}
-                        aria-pressed={isSelected}
-                      >
-                        {value.text} <strong>({value.count})</strong>
-                      </button>
-                    );
-                  })}
+                      return (
+                        <button
+                          key={value.id || `${facet.name}-${value.text}`}
+                          className={`search-facet-chip${isSelected ? " is-selected" : ""}`}
+                          onClick={() => toggleFacetValue(facet.name, value.text)}
+                          aria-pressed={isSelected}
+                        >
+                          {value.text} <strong>({value.count})</strong>
+                        </button>
+                      );
+                    })}
+                  </div>
                 </div>
-              </div>
-            ))}
-            {!loading && facets.length === 0 && (
+              ))}
+            {!loading && facets.filter((f) => f.name?.toLowerCase() !== "type").length === 0 && (
               <p className="search-facet-empty">No filters available.</p>
             )}
           </div>
@@ -342,6 +374,32 @@ function SearchResultsComponent({
 
         {/* Right Column: Results panel */}
         <div className="search-results-panel">
+          {/* Tabs */}
+          {results.length > 0 && (
+            <div className="flex gap-2 mb-6 bg-[#f9f1e7]/40 p-1.5 rounded-xl border border-[#B88E2F]/20 w-fit font-poppins">
+              <button
+                onClick={() => setActiveTab("products")}
+                className={`px-5 py-2.5 text-sm font-bold transition-all duration-200 rounded-lg uppercase tracking-wider cursor-pointer ${
+                  activeTab === "products"
+                    ? "bg-[#B88E2F] text-white shadow-xs"
+                    : "text-gray-500 hover:text-gray-800"
+                }`}
+              >
+                Products ({productCount})
+              </button>
+              <button
+                onClick={() => setActiveTab("blogs")}
+                className={`px-5 py-2.5 text-sm font-bold transition-all duration-200 rounded-lg uppercase tracking-wider cursor-pointer ${
+                  activeTab === "blogs"
+                    ? "bg-[#B88E2F] text-white shadow-xs"
+                    : "text-gray-500 hover:text-gray-800"
+                }`}
+              >
+                Blogs & Pages ({blogCount})
+              </button>
+            </div>
+          )}
+
           {error ? (
             <div className="search-error-state">
               <span className="search-error-kicker">Oops!</span>
@@ -384,9 +442,19 @@ function SearchResultsComponent({
                 </button>
               )}
             </div>
+          ) : filteredResults.length === 0 ? (
+            <div className="search-empty-state">
+              <span className="search-empty-kicker">No Match Found</span>
+              <h4 className="search-empty-title">
+                {activeTab === "products" ? "No products found in this category" : "No articles found in this category"}
+              </h4>
+              <p className="search-empty-copy">
+                Try switching tabs to view other results.
+              </p>
+            </div>
           ) : (
             <div className="search-results-grid">
-              {results.map((item) => {
+              {filteredResults.map((item) => {
                 const label = getItemLabel(item);
                 const description =
                   (item.description as string) || "No description.";
@@ -413,98 +481,121 @@ function SearchResultsComponent({
                 const priceFormatted = product ? `Rp ${product.price.toLocaleString("id-ID")}` : "";
                 const discountPriceFormatted = product && product.discountPrice > 0 ? `Rp ${product.discountPrice.toLocaleString("id-ID")}` : "";
                 const detailUrl = item.url ? item.url.replace(/^https?:\/\/[^\/]+/, "") : "#";
+                const productImage = getProductImage(item, product);
+                const discountPercent = product && product.discountPrice > 0 ? Math.round(((product.price - product.discountPrice) / product.price) * 100) : 0;
 
                 return (
-                  <article key={item.id} className="search-result-card">
-                    {isProduct && product?.mainImage ? (
-                      <img
-                        src={product.mainImage}
-                        alt=""
-                        className="search-result-image animate-fade-in"
-                      />
-                    ) : item.image_url ? (
-                      <img
-                        src={item.image_url as string}
-                        alt=""
-                        className="search-result-image"
-                      />
-                    ) : (
-                      <div className="search-result-image search-result-image-placeholder">
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth="1.5"
-                          aria-hidden="true"
-                        >
-                          <rect x="3" y="3" width="18" height="18" rx="2" />
-                          <circle cx="8.5" cy="8.5" r="1.5" />
-                          <path d="m21 15-5-5L5 21" />
-                        </svg>
-                      </div>
-                    )}
-                    <div className="search-result-body">
-                      <div className="search-result-tags">
+                  <article key={item.id} className="search-result-card group flex flex-col justify-between h-full bg-white rounded-xl border border-gray-150 overflow-hidden shadow-xs hover:shadow-md transition-all duration-300">
+                    <div className="relative overflow-hidden aspect-video bg-gray-50 flex items-center justify-center">
+                      {productImage ? (
+                        <img
+                          src={productImage}
+                          alt=""
+                          className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500"
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center text-gray-300">
+                          <svg
+                            className="h-10 w-10 opacity-40"
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                            strokeWidth="1.5"
+                          >
+                            <rect x="3" y="3" width="18" height="18" rx="2" />
+                            <circle cx="8.5" cy="8.5" r="1.5" />
+                            <path d="m21 15-5-5L5 21" />
+                          </svg>
+                        </div>
+                      )}
+                      
+                      {/* Badges overlay */}
+                      {isProduct && discountPercent > 0 && (
+                        <div className="absolute top-3 right-3 w-10 h-10 bg-[#E97171] text-white rounded-full flex items-center justify-center font-bold text-xs shadow-xs z-10 font-poppins">
+                          -{discountPercent}%
+                        </div>
+                      )}
+                      {isProduct && product?.isNew && discountPercent === 0 && (
+                        <div className="absolute top-3 right-3 w-10 h-10 bg-[#2EC1AC] text-white rounded-full flex items-center justify-center font-bold text-xs shadow-xs z-10 font-poppins">
+                          New
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="search-result-body flex flex-col flex-grow p-4 gap-3">
+                      <div className="flex items-center flex-wrap gap-1.5">
                         {item.type && (
-                          <span className="search-result-tag">
+                          <span className={`text-[10px] font-extrabold uppercase tracking-wider px-2.5 py-1 rounded-full ${isProduct ? "bg-[#f9f1e7] text-[#B88E2F] border border-[#B88E2F]/20" : "bg-gray-100 text-gray-600"}`}>
                             {item.type as string}
                           </span>
                         )}
-                        {isProduct && product?.sku && (
-                          <span className="search-result-tag search-result-tag--subtle">
-                            SKU: {product.sku}
+                        {isProduct && (product?.sku || (item.sku as string)) && (
+                          <span className="text-[10px] font-bold text-gray-500 bg-gray-100 px-2.5 py-1 rounded-full">
+                            SKU: {product?.sku || (item.sku as string)}
                           </span>
                         )}
-                        {item.author && (
-                          <span className="search-result-tag search-result-tag--subtle">
-                            {item.author as string}
+                        {item.author && !isProduct && (
+                          <span className="text-[11px] text-gray-400">
+                            by {item.author as string}
                           </span>
                         )}
                       </div>
+
                       <h4
-                        className="search-result-title"
+                        className="text-lg font-bold text-gray-900 group-hover:text-[#B88E2F] transition-colors duration-150 line-clamp-2 leading-snug"
                         dangerouslySetInnerHTML={{ __html: highlightedTitle }}
                       />
                       <p
-                        className="search-result-description"
+                        className="text-sm text-gray-600 line-clamp-3 leading-relaxed"
                         dangerouslySetInnerHTML={{ __html: highlightedDesc }}
                       />
-                      {isProduct && product && (
-                        <div className="flex items-center gap-2 mt-1">
-                          <span className="text-base font-bold text-gray-900">
-                            {priceFormatted}
-                          </span>
-                          {product.discountPrice > 0 && (
-                            <span className="text-sm line-through text-gray-400 font-normal">
-                              {discountPriceFormatted}
+
+                      {isProduct && (product || item.price) && (
+                        <div className="mt-auto pt-3 border-t border-gray-100 flex items-baseline justify-between">
+                          <div className="flex flex-col">
+                            <span className="text-[#B88E2F] text-xl font-extrabold">
+                              {priceFormatted || (item.price ? `Rp ${parseFloat(item.price as string).toLocaleString("id-ID")}` : "Price N/A")}
                             </span>
-                          )}
+                            {product && product.discountPrice > 0 && (
+                              <span className="text-sm text-gray-400 line-through">
+                                Rp {product.discountPrice.toLocaleString("id-ID")}
+                              </span>
+                            )}
+                          </div>
                         </div>
                       )}
-                      <div className="search-result-footer">
-                        {isProduct && product ? (
-                          <div className="flex gap-2 w-full mt-2">
+
+                      <div className="search-result-footer mt-2">
+                        {isProduct && (product || item.sku || item.id) ? (
+                          <div className="flex gap-2 w-full">
                             <button
                               onClick={() => {
                                 handleResultClick(item);
                                 addToCart({
-                                  id: product.id,
-                                  sku: product.sku,
-                                  title: product.title,
-                                  price: product.price,
-                                  discountPrice: product.discountPrice,
-                                  image: product.mainImage,
+                                  id: product?.id || item.id,
+                                  sku: product?.sku || (item.sku as string) || (item.id as string),
+                                  title: product?.title || item.title || item.name || "Product",
+                                  price: product?.price || parseFloat((item.price as string) || "0"),
+                                  discountPrice: product?.discountPrice || parseFloat((item.discountPrice as string) || "0"),
+                                  image: productImage,
                                 });
                               }}
-                              className="flex-1 bg-[#B88E2F] hover:bg-[#a37924] text-white text-xs font-semibold py-2 px-3 rounded text-center transition-colors cursor-pointer"
+                              className="flex-1 bg-[#B88E2F] hover:bg-[#a37924] text-white text-sm font-bold py-3 px-4 rounded-xl transition-all duration-200 active:scale-95 flex items-center justify-center gap-1.5 shadow-xs hover:shadow-md cursor-pointer"
                             >
+                              <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                              </svg>
                               Add to Cart
                             </button>
                             <a
                               href={detailUrl}
-                              className="flex-1 border border-[#B88E2F] text-[#B88E2F] hover:bg-[#B88E2F] hover:text-white text-xs font-semibold py-2 px-3 rounded text-center transition-colors flex items-center justify-center decoration-none"
+                              className="flex-1 border border-[#B88E2F] text-[#B88E2F] hover:bg-[#B88E2F] hover:text-white text-sm font-bold py-3 px-4 rounded-xl transition-all duration-200 flex items-center justify-center gap-1.5 text-center decoration-none"
                             >
+                              <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                              </svg>
                               Details
                             </a>
                           </div>

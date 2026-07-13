@@ -52,6 +52,16 @@ function UnifiedSearchComponent() {
     );
   };
 
+  const getProductImage = (item: SearchItem, prod: any) => {
+    return (
+      (item.image_url as string) ||
+      (item.imageUrl as string) ||
+      (item.image as string) ||
+      prod?.mainImage ||
+      ""
+    );
+  };
+
   const containerRef = useRef<HTMLDivElement>(null);
   const skipNextSuggestionRef = useRef(false);
 
@@ -260,13 +270,14 @@ function UnifiedSearchComponent() {
                 const isProduct = blog.type?.toLowerCase() === "product";
                 const product = isProduct ? findProduct(blog) : null;
                 const priceFormatted = product ? `Rp ${product.price.toLocaleString("id-ID")}` : "";
+                const productImage = getProductImage(blog, product);
 
                 return (
                   <a
                     key={blog.id}
                     id={`suggestion-item-${idx}`}
                     href={blog.url || "#"}
-                    className={`search-suggestion-card${idx === focusedIndex ? " is-focused" : ""} ${isProduct ? "flex items-center gap-4" : ""}`}
+                    className={`search-suggestion-card group${idx === focusedIndex ? " is-focused" : ""} ${isProduct ? "flex items-center gap-4 py-3 border-b border-gray-50 last:border-b-0 hover:border-l-4 hover:border-l-[#B88E2F] pl-4 transition-all duration-150" : ""}`}
                     onClick={(e) => {
                       if (blog.url) {
                         setShowSuggestions(false);
@@ -278,28 +289,42 @@ function UnifiedSearchComponent() {
                     role="option"
                     aria-selected={idx === focusedIndex}
                   >
-                    {isProduct && product?.mainImage && (
-                      <img
-                        src={product.mainImage}
-                        alt=""
-                        className="w-12 h-12 object-cover rounded flex-shrink-0 bg-gray-50 border border-gray-100"
-                      />
+                    {isProduct && productImage && (
+                      <div className="w-14 h-14 overflow-hidden rounded-lg bg-gray-50 border border-gray-100 flex-shrink-0 shadow-xs">
+                        <img
+                          src={productImage}
+                          alt=""
+                          className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-300"
+                        />
+                      </div>
                     )}
                     <div className="flex-1 min-w-0">
-                      <div className="search-suggestion-meta">
-                        {blog.type && <span>{blog.type as string}</span>}
-                        {blog.author && <span>by {blog.author as string}</span>}
-                        {isProduct && product?.sku && <span className="text-[#B88E2F]">SKU: {product.sku}</span>}
+                      <div className="flex items-center flex-wrap gap-1.5 mb-1">
+                        {blog.type && (
+                          <span className={`text-[9px] font-extrabold uppercase tracking-wider px-2 py-0.5 rounded-full ${isProduct ? "bg-[#f9f1e7] text-[#B88E2F]" : "bg-gray-150 text-gray-600"}`}>
+                            {blog.type as string}
+                          </span>
+                        )}
+                        {isProduct && (product?.sku || (blog.sku as string)) && (
+                          <span className="text-[9px] font-bold text-gray-500 bg-gray-100 px-2 py-0.5 rounded-full">
+                            {product?.sku || (blog.sku as string)}
+                          </span>
+                        )}
+                        {blog.author && !isProduct && (
+                          <span className="text-[10px] text-gray-400">by {blog.author as string}</span>
+                        )}
                       </div>
                       <h5
-                        className="search-suggestion-title truncate"
+                        className="text-sm font-semibold text-gray-900 truncate group-hover:text-[#B88E2F] transition-colors duration-150"
                         dangerouslySetInnerHTML={{ __html: highlightedTitle }}
                       />
-                      {isProduct && product ? (
-                        <div className="text-xs font-semibold text-gray-900 mt-1">
-                          {priceFormatted}
-                          {product.discountPrice > 0 && (
-                            <span className="text-gray-400 line-through ml-2 font-normal">
+                      {isProduct ? (
+                        <div className="flex items-baseline gap-2 mt-0.5">
+                          <span className="text-sm font-bold text-[#B88E2F]">
+                            {priceFormatted || (blog.price ? `Rp ${parseFloat(blog.price as string).toLocaleString("id-ID")}` : "Price N/A")}
+                          </span>
+                          {product && product.discountPrice > 0 && (
+                            <span className="text-xs text-gray-400 line-through font-normal">
                               Rp {product.discountPrice.toLocaleString("id-ID")}
                             </span>
                           )}
@@ -313,24 +338,27 @@ function UnifiedSearchComponent() {
                         )
                       )}
                     </div>
-                    {isProduct && product && (
+                    {isProduct && (
                       <button
                         type="button"
                         onClick={(e) => {
                           e.preventDefault();
                           e.stopPropagation();
                           addToCart({
-                            id: product.id,
-                            sku: product.sku,
-                            title: product.title,
-                            price: product.price,
-                            discountPrice: product.discountPrice,
-                            image: product.mainImage,
+                            id: product?.id || blog.id,
+                            sku: product?.sku || (blog.sku as string) || (blog.id as string),
+                            title: product?.title || blog.title || blog.name || "Product",
+                            price: product?.price || parseFloat((blog.price as string) || "0"),
+                            discountPrice: product?.discountPrice || parseFloat((blog.discountPrice as string) || "0"),
+                            image: productImage,
                           });
                           setShowSuggestions(false);
                         }}
-                        className="flex-shrink-0 bg-[#B88E2F] hover:bg-[#a37924] text-white text-xs font-semibold px-2.5 py-1.5 rounded transition-colors"
+                        className="flex-shrink-0 bg-[#B88E2F] hover:bg-[#a37924] text-white text-xs font-bold px-3.5 py-2 rounded-full transition-all duration-200 active:scale-95 flex items-center gap-1.5 shadow-xs hover:shadow-sm"
                       >
+                        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                        </svg>
                         Add to Cart
                       </button>
                     )}
