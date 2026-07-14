@@ -443,15 +443,37 @@
   margin: 0 auto;
   padding: 0 20px;
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(285px, 1fr));
-  gap: 32px;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 24px;
   justify-items: center;
+}
+
+@media (max-width: 1024px) {
+  .productsGrid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+  }
+}
+
+@media (max-width: 768px) {
+  .productsGrid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .productsGrid {
+    grid-template-columns: repeat(1, 1fr);
+    gap: 16px;
+  }
 }
 
 .card {
   position: relative;
-  width: 285px;
-  height: 446px;
+  width: 100%;
+  max-width: 285px;
+  height: 380px;
   background-color: #f4f5f7;
   display: flex;
   flex-direction: column;
@@ -468,7 +490,7 @@
 .imageContainer {
   position: relative;
   width: 100%;
-  height: 301px;
+  height: 240px;
   background-color: #e5e7eb;
   overflow: hidden;
 }
@@ -534,14 +556,14 @@
 /* Info Box */
 .infoBox {
   flex-grow: 1;
-  padding: 16px 16px 20px 16px;
+  padding: 12px;
   display: flex;
   flex-direction: column;
   background-color: #f4f5f7;
 }
 
 .productTitle {
-  font-size: 24px;
+  font-size: 16px;
   font-weight: 600;
   color: #3a3a3a;
   margin: 0 0 4px 0;
@@ -551,10 +573,10 @@
 }
 
 .productDesc {
-  font-size: 16px;
+  font-size: 13px;
   font-weight: 500;
   color: #898989;
-  margin: 0 0 8px 0;
+  margin: 0 0 6px 0;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -568,13 +590,13 @@
 }
 
 .price {
-  font-size: 20px;
+  font-size: 16px;
   font-weight: 600;
   color: #3a3a3a;
 }
 
 .oldPrice {
-  font-size: 16px;
+  font-size: 13px;
   font-weight: 400;
   color: #b0b0b0;
   text-decoration: line-through;

@@ -269,7 +269,7 @@ function UnifiedSearchComponent() {
 
                 const isProduct = blog.type?.toLowerCase() === "product";
                 const product = isProduct ? findProduct(blog) : null;
-                const priceFormatted = product ? `Rp ${product.price.toLocaleString("id-ID")}` : "";
+                const priceFormatted = product ? `₹${product.price.toLocaleString("en-IN")}` : "";
                 const productImage = getProductImage(blog, product);
 
                 return (
@@ -321,11 +321,11 @@ function UnifiedSearchComponent() {
                       {isProduct ? (
                         <div className="flex items-baseline gap-2 mt-0.5">
                           <span className="text-sm font-bold text-[#B88E2F]">
-                            {priceFormatted || (blog.price ? `Rp ${parseFloat(blog.price as string).toLocaleString("id-ID")}` : "Price N/A")}
+                            {priceFormatted || (blog.price ? `₹${parseFloat(blog.price as string).toLocaleString("en-IN")}` : "Price N/A")}
                           </span>
                           {product && product.discountPrice > 0 && (
                             <span className="text-xs text-gray-400 line-through font-normal">
-                              Rp {product.discountPrice.toLocaleString("id-ID")}
+                              ₹{product.discountPrice.toLocaleString("en-IN")}
                             </span>
                           )}
                         </div>

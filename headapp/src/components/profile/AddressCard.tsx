@@ -34,7 +34,7 @@ export default function AddressCard({
       <div>
         <div className="flex items-start justify-between mb-3 gap-2">
           <div>
-            <h4 className="font-semibold text-gray-900 leading-tight">{fullName}</h4>
+            <h4 className="font-semibold text-base text-gray-900 leading-tight">{fullName}</h4>
             <span className="text-sm text-gray-500 mt-0.5 inline-block">{phoneNumber}</span>
           </div>
           

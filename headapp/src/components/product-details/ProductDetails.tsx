@@ -17,10 +17,10 @@ interface ProductDetailsProps extends ComponentProps {
 // Helper: format price
 // ---------------------------------------------------------------------------
 function formatPrice(raw: string | undefined): string {
-  if (!raw) return "Rs. 0";
+  if (!raw) return "₹0";
   const num = parseInt(raw, 10);
-  if (isNaN(num)) return "Rs. 0";
-  return `Rs. ${(num / 100).toLocaleString("en-IN", { minimumFractionDigits: 2 })}`;
+  if (isNaN(num)) return "₹0";
+  return `₹${(num / 100).toLocaleString("en-IN", { minimumFractionDigits: 2 })}`;
 }
 
 // ---------------------------------------------------------------------------

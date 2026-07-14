@@ -48,8 +48,8 @@ export default function CartDrawer() {
   if (!isCartOpen) return null;
 
   const formatPrice = (priceVal: number) => {
-    if (!priceVal) return "Rp 0";
-    return `Rp ${priceVal.toLocaleString("id-ID")}`;
+    if (!priceVal) return "₹0";
+    return `₹${priceVal.toLocaleString("en-IN")}`;
   };
 
   const handleCheckout = () => {

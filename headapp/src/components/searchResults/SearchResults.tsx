@@ -478,8 +478,8 @@ function SearchResultsComponent({
 
                 const isProduct = item.type?.toLowerCase() === "product";
                 const product = isProduct ? findProduct(item) : null;
-                const priceFormatted = product ? `Rp ${product.price.toLocaleString("id-ID")}` : "";
-                const discountPriceFormatted = product && product.discountPrice > 0 ? `Rp ${product.discountPrice.toLocaleString("id-ID")}` : "";
+                const priceFormatted = product ? `₹${product.price.toLocaleString("en-IN")}` : "";
+                const discountPriceFormatted = product && product.discountPrice > 0 ? `₹${product.discountPrice.toLocaleString("en-IN")}` : "";
                 const detailUrl = item.url ? item.url.replace(/^https?:\/\/[^\/]+/, "") : "#";
                 const productImage = getProductImage(item, product);
                 const discountPercent = product && product.discountPrice > 0 ? Math.round(((product.price - product.discountPrice) / product.price) * 100) : 0;
@@ -555,11 +555,11 @@ function SearchResultsComponent({
                         <div className="mt-auto pt-3 border-t border-gray-100 flex items-baseline justify-between">
                           <div className="flex flex-col">
                             <span className="text-[#B88E2F] text-xl font-extrabold">
-                              {priceFormatted || (item.price ? `Rp ${parseFloat(item.price as string).toLocaleString("id-ID")}` : "Price N/A")}
+                              {priceFormatted || (item.price ? `₹${parseFloat(item.price as string).toLocaleString("en-IN")}` : "Price N/A")}
                             </span>
                             {product && product.discountPrice > 0 && (
                               <span className="text-sm text-gray-400 line-through">
-                                Rp {product.discountPrice.toLocaleString("id-ID")}
+                                ₹{product.discountPrice.toLocaleString("en-IN")}
                               </span>
                             )}
                           </div>

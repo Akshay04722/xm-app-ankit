@@ -67,12 +67,12 @@ export default function AddProductPage() {
     );
   };
 
-  // Helper: Format Price to Rupiah/Standard representation
+  // Helper: Format Price to Rupee/Standard representation
   const formatPrice = (val: string | number) => {
-    if (!val) return "Rp 0";
+    if (!val) return "₹0";
     const num = Number(val);
     if (isNaN(num)) return val.toString();
-    return "Rp " + num.toLocaleString("id-ID");
+    return "₹" + num.toLocaleString("en-IN");
   };
 
   // Helper: Parse comma separated values
@@ -320,7 +320,7 @@ export default function AddProductPage() {
               
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
                 <div>
-                  <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Sale Price (Rp) *</label>
+                  <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Sale Price (₹) *</label>
                   <input
                     type="number"
                     required
@@ -333,7 +333,7 @@ export default function AddProductPage() {
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Original / Old Price (Rp)</label>
+                  <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Original / Old Price (₹)</label>
                   <input
                     type="number"
                     min="0"

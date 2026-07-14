@@ -27,6 +27,7 @@ interface Product {
   colors: ProductColor[];
   category: string;
   tags: string[];
+  galleryImages: string[];
 }
 
 interface ShopProductsListProps extends ComponentProps {
@@ -42,6 +43,76 @@ const NoDataFallback = ({ componentName }: { componentName: string }) => (
     </span>
   </div>
 );
+
+interface ProductImageSliderProps {
+  galleryImages: string[];
+  title: string;
+}
+
+const ProductImageSlider: React.FC<ProductImageSliderProps> = ({
+  galleryImages,
+  title,
+}) => {
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [isHovered, setIsHovered] = useState(false);
+  const timerRef = React.useRef<any>(null);
+
+  useEffect(() => {
+    if (isHovered && galleryImages.length > 1) {
+      timerRef.current = setInterval(() => {
+        setCurrentIndex((prev) => (prev + 1) % galleryImages.length);
+      }, 1500);
+    } else {
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+      }
+      setCurrentIndex(0);
+    }
+
+    return () => {
+      if (timerRef.current) clearInterval(timerRef.current);
+    };
+  }, [isHovered, galleryImages]);
+
+  if (galleryImages.length === 0) {
+    return <div className={styles.noImage}>No Image</div>;
+  }
+
+  return (
+    <div
+      className="w-full h-full relative overflow-hidden"
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
+      {galleryImages.map((img, idx) => (
+        <img
+          key={img}
+          src={img}
+          alt={`${title} - image ${idx + 1}`}
+          className={`${styles.productImg} absolute inset-0 w-full h-full object-cover transition-opacity duration-500`}
+          style={{
+            opacity: currentIndex === idx ? 1 : 0,
+            zIndex: currentIndex === idx ? 1 : 0,
+          }}
+        />
+      ))}
+
+      {/* Slider Indicators */}
+      {isHovered && galleryImages.length > 1 && (
+        <div className="absolute bottom-3 left-1/2 transform -translate-x-1/2 flex gap-1.5 z-10 bg-black/30 px-2 py-1 rounded-full backdrop-blur-xs">
+          {galleryImages.map((_, idx) => (
+            <span
+              key={idx}
+              className={`w-1.5 h-1.5 rounded-full transition-all duration-300 ${
+                currentIndex === idx ? "bg-white scale-110" : "bg-white/50"
+              }`}
+            />
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
 
 export const Default = (props: ShopProductsListProps): JSX.Element => {
   const { fields } = props;
@@ -133,6 +204,19 @@ export const Default = (props: ShopProductsListProps): JSX.Element => {
           node.fields?.Name?.value || node.displayName || node.name,
       );
 
+      // Parse gallery images
+      const galleryRaw = f.GalleryImages?.value || "";
+      const galleryImagesList: string[] = [];
+      if (f.MainImage?.value) galleryImagesList.push(f.MainImage.value);
+      if (galleryRaw) {
+        galleryRaw.split(/[|,]/).forEach((url: string) => {
+          const trimmed = url.trim();
+          if (trimmed && !galleryImagesList.includes(trimmed)) {
+            galleryImagesList.push(trimmed);
+          }
+        });
+      }
+
       return {
         id: r.id,
         name: r.name,
@@ -147,6 +231,7 @@ export const Default = (props: ShopProductsListProps): JSX.Element => {
         colors: colorsList,
         category: categoryName,
         tags: tagsList,
+        galleryImages: galleryImagesList,
       };
     });
 
@@ -277,8 +362,8 @@ export const Default = (props: ShopProductsListProps): JSX.Element => {
 
   // Price formatter (converts raw number to Indonesian Rupiah representation)
   const formatPrice = (priceVal: number) => {
-    if (!priceVal) return "Rp 0";
-    return `Rp ${priceVal.toLocaleString("id-ID")}`;
+    if (!priceVal) return "₹0";
+    return `₹${priceVal.toLocaleString("en-IN")}`;
   };
 
   return (
@@ -603,19 +688,19 @@ export const Default = (props: ShopProductsListProps): JSX.Element => {
                   className={`${styles.priceItem} ${selectedPriceRange === "under-1m" ? styles.priceItemActive : ""}`}
                   onClick={() => setSelectedPriceRange("under-1m")}
                 >
-                  Under Rp 1.000.000
+                  Under ₹1,00,000
                 </button>
                 <button
                   className={`${styles.priceItem} ${selectedPriceRange === "1m-3m" ? styles.priceItemActive : ""}`}
                   onClick={() => setSelectedPriceRange("1m-3m")}
                 >
-                  Rp 1.000.000 - Rp 3.000.000
+                  ₹1,00,000 - ₹3,00,000
                 </button>
                 <button
                   className={`${styles.priceItem} ${selectedPriceRange === "above-3m" ? styles.priceItemActive : ""}`}
                   onClick={() => setSelectedPriceRange("above-3m")}
                 >
-                  Above Rp 3.000.000
+                  Above ₹3,00,000
                 </button>
               </div>
             </div>
@@ -674,10 +759,10 @@ export const Default = (props: ShopProductsListProps): JSX.Element => {
                     <span>
                       Price:{" "}
                       {selectedPriceRange === "under-1m"
-                        ? "Under Rp 1m"
+                        ? "Under ₹1L"
                         : selectedPriceRange === "1m-3m"
-                          ? "Rp 1m - Rp 3m"
-                          : "Above Rp 3m"}
+                          ? "₹1L - ₹3L"
+                          : "Above ₹3L"}
                     </span>
                     <button
                       className={styles.removeTagBtn}
@@ -733,17 +818,10 @@ export const Default = (props: ShopProductsListProps): JSX.Element => {
                   className="flex gap-6 bg-[#f4f5f7] p-4 rounded shadow-sm hover:shadow-md transition-shadow relative group"
                 >
                   <div className="w-[180px] h-[180px] bg-gray-200 overflow-hidden relative shrink-0">
-                    {product.mainImage ? (
-                      <img
-                        src={product.mainImage}
-                        alt={product.title}
-                        className="object-cover w-full h-full"
-                      />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center text-gray-400">
-                        No Image
-                      </div>
-                    )}
+                    <ProductImageSlider
+                      galleryImages={product.galleryImages}
+                      title={product.title}
+                    />
                     {hasDiscount && (
                       <span className="absolute top-2 left-2 bg-[#e97171] text-white text-xs px-2 py-1 rounded font-semibold">
                         -{discountPercent}%
@@ -809,15 +887,10 @@ export const Default = (props: ShopProductsListProps): JSX.Element => {
               <div key={product.id} className={styles.card}>
                 {/* Image and Badges Container */}
                 <div className={styles.imageContainer}>
-                  {product.mainImage ? (
-                    <img
-                      src={product.mainImage}
-                      alt={product.title}
-                      className={styles.productImg}
-                    />
-                  ) : (
-                    <div className={styles.noImage}>No Image</div>
-                  )}
+                  <ProductImageSlider
+                    galleryImages={product.galleryImages}
+                    title={product.title}
+                  />
 
                   {/* Badges */}
                   <div className={styles.badgeContainer}>

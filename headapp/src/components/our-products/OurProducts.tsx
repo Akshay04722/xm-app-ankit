@@ -87,8 +87,8 @@ export const Default = (props: OurProductsProps): JSX.Element => {
         <div className="text-center mb-10">
           {datasource.title?.jsonValue?.value && (
             <Text
-              tag="h2"
-              className="text-[40px] font-bold text-[#3A3A3A] font-poppins text-center mb-8"
+              tag="div"
+              className="text-3xl font-bold text-[#3A3A3A] font-poppins text-center mb-8"
               field={datasource.title.jsonValue}
             />
           )}
@@ -133,14 +133,14 @@ export const Default = (props: OurProductsProps): JSX.Element => {
                   )}
 
                   {/* Badges (Top-Right) */}
-                  <div className="absolute top-6 right-6 flex flex-col gap-2 z-10">
+                  <div className="absolute top-4 right-4 flex flex-col gap-2 z-10">
                     {hasDiscount && (
-                      <div className="w-12 h-12 flex items-center justify-center rounded-full bg-[#E97171] text-white text-[16px] font-medium font-poppins">
+                      <div className="w-10 h-10 flex items-center justify-center rounded-full bg-[#E97171] text-white text-[12px] font-semibold font-poppins">
                         <Text field={discountTagField} />
                       </div>
                     )}
                     {isNewVal && !hasDiscount && (
-                      <div className="w-12 h-12 flex items-center justify-center rounded-full bg-[#2EC1AC] text-white text-[16px] font-medium font-poppins">
+                      <div className="w-10 h-10 flex items-center justify-center rounded-full bg-[#2EC1AC] text-white text-[12px] font-semibold font-poppins">
                         <span>New</span>
                       </div>
                     )}
@@ -151,15 +151,15 @@ export const Default = (props: OurProductsProps): JSX.Element => {
                 <div className="flex flex-col flex-grow p-4 bg-[#F4F5F7]">
                   {titleField?.value && (
                     <Text
-                      tag="h3"
-                      className="text-[24px] font-semibold text-[#3A3A3A] font-poppins truncate mb-1"
+                      tag="div"
+                      className="text-base font-semibold text-[#3A3A3A] font-poppins truncate mb-1"
                       field={titleField}
                     />
                   )}
                   {subtitleField?.value && (
                     <Text
                       tag="p"
-                      className="text-[16px] font-medium text-[#898989] font-poppins truncate mb-2"
+                      className="text-sm font-medium text-[#898989] font-poppins truncate mb-2"
                       field={subtitleField}
                     />
                   )}
@@ -167,14 +167,14 @@ export const Default = (props: OurProductsProps): JSX.Element => {
                     {priceField?.value && (
                       <Text
                         tag="span"
-                        className="text-[20px] font-semibold text-[#3A3A3A] font-poppins"
+                        className="text-base font-semibold text-[#3A3A3A] font-poppins"
                         field={priceField}
                       />
                     )}
                     {oldPriceField?.value && (
                       <Text
                         tag="span"
-                        className="text-[16px] font-normal text-[#B0B0B0] font-poppins line-through"
+                        className="text-sm font-normal text-[#B0B0B0] font-poppins line-through"
                         field={oldPriceField}
                       />
                     )}

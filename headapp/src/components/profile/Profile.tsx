@@ -148,12 +148,12 @@ export const Default = (props: ProfileProps): React.JSX.Element => {
 
           <div className="row g-4 items-start">
             {/* Left Side: Personal Info Form */}
-            <div className="col-12 col-lg-4">
+            <div className="col-12 col-md-5 col-lg-5">
               <ProfileInfoCard profile={profile} onSave={updatePersonalInfo} saving={saving} />
             </div>
 
             {/* Right Side: Address Management */}
-            <div className="col-12 col-lg-8">
+            <div className="col-12 col-md-7 col-lg-7">
               <div className="bg-white border border-gray-100 rounded-3xl p-6 md:p-8 shadow-xs">
                 <AddressList
                   addresses={addresses}
