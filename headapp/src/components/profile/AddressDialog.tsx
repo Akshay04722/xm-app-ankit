@@ -2,6 +2,23 @@
 
 import React, { useState, useEffect } from "react";
 import { Address } from "@/services/profileService";
+// @ts-ignore
+import countriesDataRaw from "@/lib/countriesData";
+
+interface StateData {
+  id: number;
+  name: string;
+  state_code: string;
+}
+
+interface CountryData {
+  name: string;
+  iso2: string;
+  emoji: string;
+  states: StateData[];
+}
+
+const countriesData = countriesDataRaw as CountryData[];
 
 interface AddressDialogProps {
   isOpen: boolean;
@@ -32,6 +49,11 @@ export default function AddressDialog({
 
   const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
 
+  const selectedCountryObj = countriesData.find(
+    (c) => c.name.toLowerCase() === country.toLowerCase()
+  );
+  const statesList = selectedCountryObj ? selectedCountryObj.states : [];
+
   useEffect(() => {
     if (address) {
       setFullName(address.fullName || "");
@@ -40,11 +62,30 @@ export default function AddressDialog({
       setAddressLine2(address.addressLine2 || "");
       setLandmark(address.landmark || "");
       setCity(address.city || "");
-      setState(address.state || "");
-      setCountry(address.country || "United States");
       setPostalCode(address.postalCode || "");
       setAddressType(address.addressType || "Home");
       setIsDefault(address.isDefault || false);
+
+      const initialCountry = address.country || "United States";
+      const matchedCountry = countriesData.find(
+        (c) =>
+          c.name.toLowerCase() === initialCountry.toLowerCase() ||
+          c.iso2.toLowerCase() === initialCountry.toLowerCase()
+      );
+
+      if (matchedCountry) {
+        setCountry(matchedCountry.name);
+        const initialState = address.state || "";
+        const matchedState = matchedCountry.states.find(
+          (s) =>
+            s.name.toLowerCase() === initialState.toLowerCase() ||
+            s.state_code.toLowerCase() === initialState.toLowerCase()
+        );
+        setState(matchedState ? matchedState.name : initialState);
+      } else {
+        setCountry(initialCountry);
+        setState(address.state || "");
+      }
     } else {
       setFullName("");
       setPhoneNumber("");
@@ -271,17 +312,36 @@ export default function AddressDialog({
               <label htmlFor="state" className="text-base font-semibold text-gray-700">
                 State *
               </label>
-              <input
-                id="state"
-                type="text"
-                className={`w-full px-4 py-2.5 rounded-xl border text-base transition focus:outline-hidden focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 ${
-                  validationErrors.state ? "border-red-500" : "border-gray-200"
-                }`}
-                placeholder="e.g. NY"
-                value={state}
-                onChange={(e) => setState(e.target.value)}
-                disabled={saving}
-              />
+              {statesList.length > 0 ? (
+                <select
+                  id="state"
+                  className={`w-full px-4 py-2.5 rounded-xl border text-base transition focus:outline-hidden focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 bg-white ${
+                    validationErrors.state ? "border-red-500" : "border-gray-200"
+                  }`}
+                  value={state}
+                  onChange={(e) => setState(e.target.value)}
+                  disabled={saving}
+                >
+                  <option value="">Select State</option>
+                  {statesList.map((s) => (
+                    <option key={s.id} value={s.name}>
+                      {s.name}
+                    </option>
+                  ))}
+                </select>
+              ) : (
+                <input
+                  id="state"
+                  type="text"
+                  className={`w-full px-4 py-2.5 rounded-xl border text-base transition focus:outline-hidden focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 ${
+                    validationErrors.state ? "border-red-500" : "border-gray-200"
+                  }`}
+                  placeholder="e.g. State/Province"
+                  value={state}
+                  onChange={(e) => setState(e.target.value)}
+                  disabled={saving || !country}
+                />
+              )}
               {validationErrors.state && (
                 <p className="text-sm font-semibold text-red-500">{validationErrors.state}</p>
               )}
@@ -294,17 +354,25 @@ export default function AddressDialog({
               <label htmlFor="country" className="text-base font-semibold text-gray-700">
                 Country *
               </label>
-              <input
+              <select
                 id="country"
-                type="text"
-                className={`w-full px-4 py-2.5 rounded-xl border text-base transition focus:outline-hidden focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 ${
+                className={`w-full px-4 py-2.5 rounded-xl border text-base transition focus:outline-hidden focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 bg-white ${
                   validationErrors.country ? "border-red-500" : "border-gray-200"
                 }`}
-                placeholder="e.g. United States"
                 value={country}
-                onChange={(e) => setCountry(e.target.value)}
+                onChange={(e) => {
+                  setCountry(e.target.value);
+                  setState("");
+                }}
                 disabled={saving}
-              />
+              >
+                <option value="">Select Country</option>
+                {countriesData.map((c) => (
+                  <option key={c.iso2} value={c.name}>
+                    {c.emoji} {c.name}
+                  </option>
+                ))}
+              </select>
               {validationErrors.country && (
                 <p className="text-sm font-semibold text-red-500">{validationErrors.country}</p>
               )}
