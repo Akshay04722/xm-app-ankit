@@ -18,6 +18,7 @@ import * as ContentBlock from 'src/components/content-block/ContentBlock';
 import * as CloudSdkBootstrap from 'src/components/CloudSdkBootstrap/CloudSdkBootstrap';
 import * as CDPProvider from 'src/components/cdp/CDPProvider';
 import * as CartDrawer from 'src/components/cart-drawer/CartDrawer';
+import * as Cart from 'src/components/cart/Cart';
 import * as BlogDetail from 'src/components/blog-detail/BlogDetail';
 import * as Blog from 'src/components/blog/Blog';
 import * as AdminDashboard from 'src/components/admin-dashboard/AdminDashboard';
@@ -41,6 +42,7 @@ export const componentMap = new Map<string, NextjsContentSdkComponent>([
   ['CloudSdkBootstrap', { ...CloudSdkBootstrap }],
   ['CDPProvider', { ...CDPProvider }],
   ['CartDrawer', { ...CartDrawer }],
+  ['Cart', { ...Cart }],
   ['BlogDetail', { ...BlogDetail }],
   ['Blog', { ...Blog }],
   ['AdminDashboard', { ...AdminDashboard }],

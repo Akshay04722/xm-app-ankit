@@ -40,6 +40,17 @@ export const Default = (props: SignInProps): JSX.Element => {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [isForgotPassword, setIsForgotPassword] = useState(false);
+  const [redirectUrl, setRedirectUrl] = useState('/');
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      const redir = params.get('redirect');
+      if (redir) {
+        setRedirectUrl(redir);
+      }
+    }
+  }, []);
 
   const handleResetPassword = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -102,7 +113,7 @@ export const Default = (props: SignInProps): JSX.Element => {
       setPassword('');
 
       setTimeout(() => {
-        router.push('/');
+        router.push(redirectUrl);
       }, 1500);
 
       setTimeout(() => {
@@ -145,7 +156,7 @@ export const Default = (props: SignInProps): JSX.Element => {
       setSuccess("Successfully signed in with Google!");
 
       setTimeout(() => {
-        router.push('/');
+        router.push(redirectUrl);
       }, 1500);
 
       setTimeout(() => {

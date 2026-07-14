@@ -4,6 +4,7 @@ import React, { useState, JSX } from "react";
 import styles from "./ProductDetails.module.css";
 import { ComponentProps } from "@/lib/component-props";
 import { useSitecore } from "@sitecore-content-sdk/nextjs";
+import { useCart } from "@/lib/CartContext";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -47,6 +48,7 @@ export const Default = (props: ProductDetailsProps): JSX.Element => {
   const { page } = useSitecore();
   const route = page?.layout?.sitecore?.route;
   const routeFields = route?.fields as Record<string, any> | undefined;
+  const { addToCart } = useCart();
 
   // ---------- State ----------
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
@@ -260,7 +262,23 @@ export const Default = (props: ProductDetailsProps): JSX.Element => {
               </button>
             </div>
 
-            <button className={styles.addToCartBtn}>Add To Cart</button>
+            <button
+              className={styles.addToCartBtn}
+              onClick={() => {
+                addToCart({
+                  id: route?.itemId || sku,
+                  sku,
+                  title,
+                  price: parseFloat(price),
+                  discountPrice: discountPrice ? parseFloat(discountPrice) : undefined,
+                  image: mainImage,
+                  selectedColor: selectedColor || undefined,
+                  selectedSize: selectedSize || undefined,
+                }, quantity);
+              }}
+            >
+              Add To Cart
+            </button>
 
             <button className={styles.compareBtn}>
               <span style={{ fontSize: 23 }}>+</span> Compare

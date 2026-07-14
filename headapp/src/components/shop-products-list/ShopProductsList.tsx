@@ -6,6 +6,7 @@ import { ComponentProps } from "@/lib/component-props";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import client from "@/lib/sitecore-client";
+import { useCart } from "@/lib/CartContext";
 
 interface ProductColor {
   name: string;
@@ -46,6 +47,7 @@ export const Default = (props: ShopProductsListProps): JSX.Element => {
   const { fields } = props;
   console.log("fields", fields);
   const pathname = usePathname();
+  const { addToCart } = useCart();
   const [products, setProducts] = useState<Product[]>([]);
   const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
 
@@ -850,7 +852,21 @@ export const Default = (props: ShopProductsListProps): JSX.Element => {
 
                 {/* Hover Overlay */}
                 <div className={styles.overlay}>
-                  <button className={styles.addToCartBtn}>Add to cart</button>
+                  <button
+                    className={styles.addToCartBtn}
+                    onClick={() => {
+                      addToCart({
+                        id: product.id,
+                        sku: product.sku,
+                        title: product.title,
+                        price: product.price,
+                        discountPrice: product.discountPrice || undefined,
+                        image: product.mainImage,
+                      });
+                    }}
+                  >
+                    Add to cart
+                  </button>
                   <Link
                     href={`${pathname}/products/${product.sku}--${product.title}`}
                     className={styles.viewDetailsBtn}

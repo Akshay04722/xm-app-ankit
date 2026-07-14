@@ -173,7 +173,7 @@ const getGreetingName = (email: string) => {
 export const Default = (props: HeaderProps): JSX.Element => {
   const { fields, params } = props;
   const { user, signOutUser } = useAuth();
-  const { totalItems, setCartOpen } = useCart();
+  const { totalItems } = useCart();
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
 
@@ -485,10 +485,10 @@ export const Default = (props: HeaderProps): JSX.Element => {
         <button className="header__icon-btn" aria-label="Wishlist">
           <HeartIcon />
         </button>
-        <button
-          className="header__icon-btn relative"
+        <Link
+          href="/cart"
+          className="header__icon-btn relative flex items-center justify-center decoration-none"
           aria-label="Shopping cart"
-          onClick={() => setCartOpen(true)}
         >
           <CartIcon />
           {totalItems > 0 && (
@@ -496,7 +496,7 @@ export const Default = (props: HeaderProps): JSX.Element => {
               {totalItems}
             </span>
           )}
-        </button>
+        </Link>
       </div>
     </header>
   );

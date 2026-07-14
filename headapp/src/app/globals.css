@@ -1,3 +1,18 @@
 @import '../assets/main.css';
 @import '../styles/index.css';
 
+.component.Cart,
+.component.cart,
+[data-rendering-name="Cart"],
+[data-rendering-name="cart"],
+.component[class*="Cart"],
+.component[class*="cart"],
+div:has(> .cart-page-root),
+section:has(> .cart-page-root),
+div:has(> * > .cart-page-root),
+#content:has(.cart-page-root) > * {
+  width: 100% !important;
+  flex: 0 0 100% !important;
+  max-width: 100% !important;
+}
+
