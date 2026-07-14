@@ -255,7 +255,7 @@ export const Default = (props: HeaderProps): JSX.Element => {
 
           {/* Manage Account Pill Button */}
           <Link
-            href="/sign-in"
+            href="/profile"
             className={popoverStyles.manageButton}
             onClick={() => setIsPopupOpen(false)}
             style={isAdmin ? { marginBottom: "16px" } : undefined}

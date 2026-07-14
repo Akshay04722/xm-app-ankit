@@ -81,6 +81,7 @@ export const Default: React.FC<ComponentProps> = () => {
   const [isAdmin, setIsAdmin] = useState(false);
   const [claimsLoading, setClaimsLoading] = useState(true);
   const [syncing, setSyncing] = useState(false);
+  const [syncingUsers, setSyncingUsers] = useState(false);
 
   const availableSizes = ["XS", "S", "M", "L", "XL", "XXL", "Queen", "King", "Double", "Standard", "One Size"];
   const availableColors = ["Red", "Blue", "Green", "Gray", "Beige", "Brown", "Black", "White", "Navy", "Maroon", "Saddlebrown", "Lavender", "Pink", "Silver"];
@@ -219,6 +220,39 @@ export const Default: React.FC<ComponentProps> = () => {
       setTimeout(() => setError(null), 5000);
     } finally {
       setSyncing(false);
+    }
+  };
+
+  // Sync Users handler
+  const handleSyncUsers = async () => {
+    if (!user) return;
+    try {
+      setSyncingUsers(true);
+      setError(null);
+      setSuccess(null);
+      const idToken = await user.getIdToken();
+      
+      const res = await fetch("/api/admin/users/sync-firestore", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${idToken}`,
+        },
+      });
+      
+      const data = await res.json();
+      if (res.ok) {
+        setSuccess(data.message || "Users successfully synced to Firestore!");
+        fetchUsers(); // Refresh user list
+        setTimeout(() => setSuccess(null), 5000);
+      } else {
+        setError(data.error || "Failed to sync users to Firestore.");
+        setTimeout(() => setError(null), 5000);
+      }
+    } catch (err: any) {
+      setError(err.message || "An error occurred during users synchronization.");
+      setTimeout(() => setError(null), 5000);
+    } finally {
+      setSyncingUsers(false);
     }
   };
 
@@ -504,46 +538,72 @@ export const Default: React.FC<ComponentProps> = () => {
             <p>Manage application users, product catalog listings, sync data, and manage stock counts.</p>
           </div>
           <div className={styles.headerActions}>
-            <button
-              onClick={handleSyncProducts}
-              disabled={syncing}
-              style={{
-                backgroundColor: '#B88E2F',
-                color: '#ffffff',
-                border: 'none',
-                padding: '10px 20px',
-                fontSize: '14px',
-                fontWeight: '600',
-                borderRadius: '8px',
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '8px',
-                transition: 'opacity 0.2s ease',
-                opacity: syncing ? 0.7 : 1
-              }}
-            >
-              {syncing ? (
-                <>
-                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" style={{ width: '16px', height: '16px', borderRadius: '50%', border: '2px solid white', borderTopColor: 'transparent', animation: 'spin 1s linear infinite' }}></div>
-                  Syncing...
-                </>
-              ) : (
-                <>
+            {activeConsole === "products" ? (
+              <>
+                <button
+                  onClick={handleSyncProducts}
+                  disabled={syncing}
+                  style={{
+                    backgroundColor: '#B88E2F',
+                    color: '#ffffff',
+                    border: 'none',
+                    padding: '10px 20px',
+                    fontSize: '14px',
+                    fontWeight: '600',
+                    borderRadius: '8px',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                    transition: 'opacity 0.2s ease',
+                    opacity: syncing ? 0.7 : 1
+                  }}
+                >
+                  {syncing ? (
+                    <>
+                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" style={{ width: '16px', height: '16px', borderRadius: '50%', border: '2px solid white', borderTopColor: 'transparent', animation: 'spin 1s linear infinite' }}></div>
+                      Syncing...
+                    </>
+                  ) : (
+                    <>
+                      <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+                        <path d="M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6 0 1.01-.25 1.97-.7 2.8l1.46 1.46C19.54 15.03 20 13.57 20 12c0-4.41-3.59-8-8-8zm-8 8c0 1.57.46 3.03 1.24 4.26L6.7 17.7C5.25 16.03 4 13.88 4 12c0-4.41 3.59-8 8-8v3l4-4-4-4v3c-4.41 0-8 3.59-8 8z" />
+                      </svg>
+                      Sync Products to Sitecore
+                    </>
+                  )}
+                </button>
+                <button
+                  onClick={handleOpenAddModal}
+                  style={{
+                    backgroundColor: '#ffffff',
+                    color: '#B88E2F',
+                    border: '1px solid #B88E2F',
+                    padding: '10px 20px',
+                    fontSize: '14px',
+                    fontWeight: '600',
+                    borderRadius: '8px',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                    transition: 'background-color 0.2s ease'
+                  }}
+                >
                   <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
-                    <path d="M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6 0 1.01-.25 1.97-.7 2.8l1.46 1.46C19.54 15.03 20 13.57 20 12c0-4.41-3.59-8-8-8zm-8 8c0 1.57.46 3.03 1.24 4.26L6.7 17.7C5.25 16.03 4 13.88 4 12c0-4.41 3.59-8 8-8v3l4-4-4-4v3c-4.41 0-8 3.59-8 8z" />
+                    <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" />
                   </svg>
-                  Sync Products to Sitecore
-                </>
-              )}
-            </button>
-            {activeConsole === "products" && (
+                  Add Product
+                </button>
+              </>
+            ) : (
               <button
-                onClick={handleOpenAddModal}
+                onClick={handleSyncUsers}
+                disabled={syncingUsers}
                 style={{
-                  backgroundColor: '#ffffff',
-                  color: '#B88E2F',
-                  border: '1px solid #B88E2F',
+                  backgroundColor: '#B88E2F',
+                  color: '#ffffff',
+                  border: 'none',
                   padding: '10px 20px',
                   fontSize: '14px',
                   fontWeight: '600',
@@ -552,13 +612,23 @@ export const Default: React.FC<ComponentProps> = () => {
                   display: 'flex',
                   alignItems: 'center',
                   gap: '8px',
-                  transition: 'background-color 0.2s ease'
+                  transition: 'opacity 0.2s ease',
+                  opacity: syncingUsers ? 0.7 : 1
                 }}
               >
-                <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
-                  <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" />
-                </svg>
-                Add Product
+                {syncingUsers ? (
+                  <>
+                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" style={{ width: '16px', height: '16px', borderRadius: '50%', border: '2px solid white', borderTopColor: 'transparent', animation: 'spin 1s linear infinite' }}></div>
+                    Syncing Users...
+                  </>
+                ) : (
+                  <>
+                    <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+                      <path d="M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6 0 1.01-.25 1.97-.7 2.8l1.46 1.46C19.54 15.03 20 13.57 20 12c0-4.41-3.59-8-8-8zm-8 8c0 1.57.46 3.03 1.24 4.26L6.7 17.7C5.25 16.03 4 13.88 4 12c0-4.41 3.59-8 8-8v3l4-4-4-4v3c-4.41 0-8 3.59-8 8z" />
+                    </svg>
+                    Sync Users to Firestore
+                  </>
+                )}
               </button>
             )}
           </div>

@@ -8,6 +8,10 @@ import * as SignIn from 'src/components/sign-in/SignIn';
 import * as ShopProductsList from 'src/components/shop-products-list/ShopProductsList';
 import * as SearchResults from 'src/components/searchResults/SearchResults';
 import * as Register from 'src/components/register/Register';
+import * as ProfileForm from 'src/components/profile/ProfileForm';
+import * as ProfileCompletionDialog from 'src/components/profile/ProfileCompletionDialog';
+import * as Profile from 'src/components/profile/Profile';
+import * as AddressDialog from 'src/components/profile/AddressDialog';
 import * as ProductDetails from 'src/components/product-details/ProductDetails';
 import * as OurProducts from 'src/components/our-products/OurProducts';
 import * as Navigation from 'src/components/navigation/Navigation';
@@ -32,6 +36,10 @@ export const componentMap = new Map<string, NextjsContentSdkComponent>([
   ['ShopProductsList', { ...ShopProductsList }],
   ['SearchResults', { ...SearchResults }],
   ['Register', { ...Register }],
+  ['ProfileForm', { ...ProfileForm }],
+  ['ProfileCompletionDialog', { ...ProfileCompletionDialog }],
+  ['Profile', { ...Profile }],
+  ['AddressDialog', { ...AddressDialog }],
   ['ProductDetails', { ...ProductDetails }],
   ['OurProducts', { ...OurProducts }],
   ['Navigation', { ...Navigation }],

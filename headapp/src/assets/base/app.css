@@ -22,12 +22,8 @@ body {
 }
 
 a {
-  color: var(--color-text-basic);
   cursor: pointer;
   font-size: 0.85em;
-  &:hover {
-    color: var(--color-text-basic-active);
-  }
 }
 
 h1,

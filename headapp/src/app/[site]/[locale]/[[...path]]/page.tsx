@@ -80,6 +80,47 @@ async function fetchPage(resolvedPath: string[], site: string, locale: string) {
   return page;
 }
 
+async function fetchPageWithFallback(resolvedPath: string[], site: string, locale: string) {
+  let page = await fetchPage(resolvedPath, site, locale);
+
+  if (!page && resolvedPath.length === 1 && resolvedPath[0]?.toLowerCase() === "profile") {
+    const homePage = await fetchPage([], site, locale);
+    if (homePage && homePage.layout?.sitecore?.route) {
+      page = {
+        ...homePage,
+        layout: {
+          ...homePage.layout,
+          sitecore: {
+            ...homePage.layout.sitecore,
+            route: {
+              ...homePage.layout.sitecore.route,
+              name: "profile",
+              displayName: "Profile",
+              fields: {
+                ...homePage.layout.sitecore.route.fields,
+                metadataTitle: { value: "My Profile" },
+                pageTitle: { value: "My Profile" },
+              },
+              placeholders: {
+                ...homePage.layout.sitecore.route.placeholders,
+                "headless-main": [
+                  {
+                    uid: "profile-component-uid",
+                    componentName: "Profile",
+                    params: {},
+                    fields: {}
+                  }
+                ]
+              }
+            }
+          }
+        }
+      } as any;
+    }
+  }
+  return page;
+}
+
 type PageProps = {
   params: Promise<{
     site: string;
@@ -109,7 +150,7 @@ export default async function Page({ params, searchParams }: PageProps) {
     }
   } else {
     const resolvedPath = resolveProductPath(path ?? []);
-    page = await fetchPage(resolvedPath, site, locale);
+    page = await fetchPageWithFallback(resolvedPath, site, locale);
   }
 
   // If the page is not found, return a 404
@@ -166,7 +207,7 @@ export const generateMetadata = async ({ params }: PageProps) => {
 
   // The same call as for rendering the page. Should be cached by default react behavior
   const resolvedPath = resolveProductPath(path ?? []);
-  const page = await fetchPage(resolvedPath, site, locale);
+  const page = await fetchPageWithFallback(resolvedPath, site, locale);
   const fields = page?.layout.sitecore.route?.fields as RouteFields;
   const itemId = page?.layout.sitecore.route?.itemId || "";
   const templateName = page?.layout.sitecore.route?.templateName || "";

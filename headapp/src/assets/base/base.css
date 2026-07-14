@@ -57,7 +57,7 @@ ol {
   }
 }
 a {
-  @apply text-text-red underline text-[1em] hover:text-text-basic-active;
+  @apply text-[1em] hover:text-text-basic-active;
 }
 table {
   @apply h-auto! border-2 border-solid border-border-gray;

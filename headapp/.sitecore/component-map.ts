@@ -16,6 +16,15 @@ import * as RowSplitter from 'src/components/row-splitter/RowSplitter';
 import * as RichText from 'src/components/rich-text/RichText';
 import * as Register from 'src/components/register/Register';
 import * as Promo from 'src/components/promo/Promo';
+import * as ProfileInfoCard from 'src/components/profile/ProfileInfoCard';
+import * as ProfileHeader from 'src/components/profile/ProfileHeader';
+import * as ProfileForm from 'src/components/profile/ProfileForm';
+import * as ProfileCompletionDialog from 'src/components/profile/ProfileCompletionDialog';
+import * as Profile from 'src/components/profile/Profile';
+import * as EmptyAddress from 'src/components/profile/EmptyAddress';
+import * as AddressList from 'src/components/profile/AddressList';
+import * as AddressDialog from 'src/components/profile/AddressDialog';
+import * as AddressCard from 'src/components/profile/AddressCard';
 import * as ProductDetails from 'src/components/product-details/ProductDetails';
 import * as PartialDesignDynamicPlaceholder from 'src/components/partial-design-dynamic-placeholder/PartialDesignDynamicPlaceholder';
 import * as PageContent from 'src/components/page-content/PageContent';
@@ -55,6 +64,15 @@ export const componentMap = new Map<string, NextjsContentSdkComponent>([
   ['RichText', { ...RichText }],
   ['Register', { ...Register, componentType: 'client' }],
   ['Promo', { ...Promo }],
+  ['ProfileInfoCard', { ...ProfileInfoCard }],
+  ['ProfileHeader', { ...ProfileHeader }],
+  ['ProfileForm', { ...ProfileForm, componentType: 'client' }],
+  ['ProfileCompletionDialog', { ...ProfileCompletionDialog, componentType: 'client' }],
+  ['Profile', { ...Profile, componentType: 'client' }],
+  ['EmptyAddress', { ...EmptyAddress }],
+  ['AddressList', { ...AddressList }],
+  ['AddressDialog', { ...AddressDialog, componentType: 'client' }],
+  ['AddressCard', { ...AddressCard }],
   ['ProductDetails', { ...ProductDetails, componentType: 'client' }],
   ['PartialDesignDynamicPlaceholder', { ...PartialDesignDynamicPlaceholder }],
   ['PageContent', { ...PageContent }],
