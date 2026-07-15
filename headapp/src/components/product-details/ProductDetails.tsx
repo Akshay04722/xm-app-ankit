@@ -18,9 +18,9 @@ interface ProductDetailsProps extends ComponentProps {
 // ---------------------------------------------------------------------------
 function formatPrice(raw: string | undefined): string {
   if (!raw) return "₹0";
-  const num = parseInt(raw, 10);
+  const num = parseFloat(raw);
   if (isNaN(num)) return "₹0";
-  return `₹${(num / 100).toLocaleString("en-IN", { minimumFractionDigits: 2 })}`;
+  return `₹${num.toLocaleString("en-IN")}`;
 }
 
 // ---------------------------------------------------------------------------
