@@ -1,6 +1,12 @@
 "use client";
 
-import React, { createContext, useContext, useState, useEffect, ReactNode } from "react";
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  ReactNode,
+} from "react";
 
 export interface CartItem {
   id: string;
@@ -20,7 +26,12 @@ interface CartContextType {
   setCartOpen: (open: boolean) => void;
   addToCart: (item: Omit<CartItem, "quantity">, quantity?: number) => void;
   removeFromCart: (sku: string, color?: string, size?: string) => void;
-  updateQuantity: (sku: string, quantity: number, color?: string, size?: string) => void;
+  updateQuantity: (
+    sku: string,
+    quantity: number,
+    color?: string,
+    size?: string,
+  ) => void;
   clearCart: () => void;
   totalItems: number;
   subtotal: number;
@@ -74,7 +85,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
         (i) =>
           i.sku === item.sku &&
           i.selectedColor === item.selectedColor &&
-          i.selectedSize === item.selectedSize
+          i.selectedSize === item.selectedSize,
       );
 
       if (existingIndex > -1) {
@@ -93,12 +104,22 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const removeFromCart = (sku: string, color?: string, size?: string) => {
     setCartItems((prev) =>
       prev.filter(
-        (i) => !(i.sku === sku && i.selectedColor === color && i.selectedSize === size)
-      )
+        (i) =>
+          !(
+            i.sku === sku &&
+            i.selectedColor === color &&
+            i.selectedSize === size
+          ),
+      ),
     );
   };
 
-  const updateQuantity = (sku: string, quantity: number, color?: string, size?: string) => {
+  const updateQuantity = (
+    sku: string,
+    quantity: number,
+    color?: string,
+    size?: string,
+  ) => {
     if (quantity <= 0) {
       removeFromCart(sku, color, size);
       return;
@@ -108,8 +129,8 @@ export function CartProvider({ children }: { children: ReactNode }) {
       prev.map((i) =>
         i.sku === sku && i.selectedColor === color && i.selectedSize === size
           ? { ...i, quantity }
-          : i
-      )
+          : i,
+      ),
     );
   };
 
@@ -117,10 +138,13 @@ export function CartProvider({ children }: { children: ReactNode }) {
     setCartItems([]);
   };
 
-  const totalItems = cartItems.reduce((sum, item) => sum + item.quantity, 0);
+  const totalItems = cartItems.length;
 
   const subtotal = cartItems.reduce((sum, item) => {
-    const activePrice = item.discountPrice && item.discountPrice > 0 ? item.discountPrice : item.price;
+    const activePrice =
+      item.discountPrice && item.discountPrice > 0
+        ? item.discountPrice
+        : item.price;
     return sum + activePrice * item.quantity;
   }, 0);
 
@@ -141,7 +165,12 @@ export function CartProvider({ children }: { children: ReactNode }) {
       {children}
       {toastMessage && (
         <div
-          style={{ backgroundColor: "#b88e2f", zIndex: 99999, right: "20px", top: "20px" }}
+          style={{
+            backgroundColor: "#b88e2f",
+            zIndex: 99999,
+            right: "20px",
+            top: "20px",
+          }}
           className="fixed text-white px-5 py-3 rounded-2xl shadow-xl flex items-center gap-2.5 font-medium text-base animate-slide-in"
         >
           <svg
@@ -152,14 +181,23 @@ export function CartProvider({ children }: { children: ReactNode }) {
             stroke="currentColor"
             style={{ width: "20px", height: "20px" }}
           >
-            <path strokeLinecap="round" strokeLinejoin="round" d="m4.5 12.75 6 6 9-13.5" />
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="m4.5 12.75 6 6 9-13.5"
+            />
           </svg>
           <span>{toastMessage}</span>
           <button
             type="button"
             onClick={() => setToastMessage(null)}
             className="ml-2 hover:opacity-80 text-white/90 text-lg cursor-pointer"
-            style={{ background: "none", border: "none", color: "inherit", padding: 0 }}
+            style={{
+              background: "none",
+              border: "none",
+              color: "inherit",
+              padding: 0,
+            }}
           >
             &times;
           </button>
