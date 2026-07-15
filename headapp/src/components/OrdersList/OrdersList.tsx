@@ -35,7 +35,7 @@ interface Order {
   orderId: string;
   userId: string;
   amount: number;
-  status: "pending" | "success" | "failed" | "cancelled";
+  status: "pending" | "success" | "failed" | "cancelled" | "returned";
   createdAt: string;
   updatedAt?: string;
   razorpay_order_id: string;
@@ -46,6 +46,15 @@ interface Order {
   cancelReason?: string;
   cancelledAt?: string;
   addressId?: string;
+  returnReason?: string;
+  returnComment?: string;
+  returnedAt?: string;
+  refund?: {
+    refundId: string;
+    status: string;
+    amount: number;
+    createdAt: string;
+  };
 }
 
 interface OrdersListProps {
@@ -62,6 +71,12 @@ export default function OrdersList({ embedded = false }: OrdersListProps): React
   const [cancelReason, setCancelReason] = useState<string>("");
   const [cancelLoading, setCancelLoading] = useState<boolean>(false);
   const [cancelError, setCancelError] = useState<string | null>(null);
+  
+  const [returningOrderId, setReturningOrderId] = useState<string | null>(null);
+  const [returnReason, setReturnReason] = useState<string>("Wrong size/fit");
+  const [returnComment, setReturnComment] = useState<string>("");
+  const [returnLoading, setReturnLoading] = useState<boolean>(false);
+  const [returnError, setReturnError] = useState<string | null>(null);
   const [keyId, setKeyId] = useState<string | null>(null);
 
   const loadRazorpayScript = () => {
@@ -227,6 +242,67 @@ export default function OrdersList({ embedded = false }: OrdersListProps): React
     }
   };
 
+  const handleReturnOrder = async (orderId: string) => {
+    if (!returnReason.trim() || !user) return;
+    setReturnLoading(true);
+    setReturnError(null);
+    try {
+      const token = await user.getIdToken();
+      const res = await fetch("/api/orders/return", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          orderId,
+          reason: returnReason,
+          comment: returnComment,
+        }),
+      });
+
+      const data = await res.json();
+      if (!res.ok || data.error) {
+        throw new Error(data.error || "Failed to return order");
+      }
+
+      setOrders((prev) =>
+        prev.map((o) =>
+          o.id === orderId
+            ? {
+                ...o,
+                status: "returned" as any,
+                returnReason: returnReason,
+                returnComment: returnComment,
+                returnedAt: new Date().toISOString(),
+              }
+            : o
+        )
+      );
+
+      setSelectedOrder((prev) =>
+        prev && prev.id === orderId
+          ? {
+              ...prev,
+              status: "returned" as any,
+              returnReason: returnReason,
+              returnComment: returnComment,
+              returnedAt: new Date().toISOString(),
+            }
+          : prev
+      );
+
+      setReturningOrderId(null);
+      setReturnReason("Wrong size/fit");
+      setReturnComment("");
+    } catch (err: any) {
+      console.error(err);
+      setReturnError(err.message || "Failed to return order.");
+    } finally {
+      setReturnLoading(false);
+    }
+  };
+
   useEffect(() => {
     async function fetchOrders() {
       if (!user) {
@@ -353,6 +429,8 @@ export default function OrdersList({ embedded = false }: OrdersListProps): React
                           ? styles.statusPending
                           : order.status === "cancelled"
                           ? styles.statusFailed
+                          : order.status === "returned"
+                          ? styles.statusReturned
                           : styles.statusFailed
                       }`}
                     >
@@ -435,6 +513,24 @@ export default function OrdersList({ embedded = false }: OrdersListProps): React
                   {selectedOrder.cancelReason && (
                     <p><strong>Reason:</strong> {selectedOrder.cancelReason}</p>
                   )}
+                  {selectedOrder.refund && (
+                    <p style={{ marginTop: "8px", fontSize: "13px", color: "#666" }}>
+                      <strong>Refund Status:</strong> {selectedOrder.refund.status} (ID: {selectedOrder.refund.refundId})
+                    </p>
+                  )}
+                </div>
+              ) : selectedOrder.status === "returned" ? (
+                <div className={styles.returnedInfoBox}>
+                  <p><strong>This order has been returned.</strong></p>
+                  <p><strong>Reason:</strong> {selectedOrder.returnReason}</p>
+                  {selectedOrder.returnComment && (
+                    <p><strong>Comments:</strong> {selectedOrder.returnComment}</p>
+                  )}
+                  {selectedOrder.refund && (
+                    <p style={{ marginTop: "8px", fontSize: "13px", color: "#666" }}>
+                      <strong>Refund Status:</strong> {selectedOrder.refund.status} (ID: {selectedOrder.refund.refundId})
+                    </p>
+                  )}
                 </div>
               ) : (
                 <>
@@ -470,6 +566,65 @@ export default function OrdersList({ embedded = false }: OrdersListProps): React
                         </button>
                       </div>
                     </div>
+                  ) : returningOrderId === selectedOrder.id ? (
+                    <div className={styles.returnForm}>
+                      <h5>Return Order</h5>
+                      <div className={styles.formGroup}>
+                        <label>Reason for Return:</label>
+                        <select
+                          value={returnReason}
+                          onChange={(e) => setReturnReason(e.target.value)}
+                          className={styles.returnSelect}
+                        >
+                          <option value="Wrong size/fit">Wrong size/fit</option>
+                          <option value="Damaged or defective item">Damaged or defective item</option>
+                          <option value="Item not as described">Item not as described</option>
+                          <option value="Changed my mind">Changed my mind</option>
+                          <option value="Other">Other</option>
+                        </select>
+                      </div>
+                      <div className={styles.formGroup}>
+                        <label>Additional Comments:</label>
+                        <textarea
+                          placeholder="Please write additional details here..."
+                          value={returnComment}
+                          onChange={(e) => setReturnComment(e.target.value)}
+                          className={styles.returnTextarea}
+                        />
+                      </div>
+                      <div className={styles.instructionsBox}>
+                        <h6>Return Instructions:</h6>
+                        <ul>
+                          <li>Keep the items unused, unwashed and with all original tags attached.</li>
+                          <li>Pack the items securely in their original packaging.</li>
+                          <li>A pickup agent will be assigned to collect the items in 2-3 business days.</li>
+                          <li>Once pick-up is verified, your refund will be processed back to your original payment method.</li>
+                        </ul>
+                      </div>
+                      {returnError && <p className={styles.errorText}>{returnError}</p>}
+                      <div className={styles.cancelBtnGroup}>
+                        <button
+                          type="button"
+                          onClick={() => handleReturnOrder(selectedOrder.id)}
+                          disabled={returnLoading}
+                          className={styles.btnConfirmReturn}
+                        >
+                          {returnLoading ? "Processing..." : "Confirm Return"}
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setReturningOrderId(null);
+                            setReturnReason("Wrong size/fit");
+                            setReturnComment("");
+                            setReturnError(null);
+                          }}
+                          className={styles.btnCancelBack}
+                        >
+                          Back
+                        </button>
+                      </div>
+                    </div>
                   ) : (
                     <div style={{ marginBottom: "16px", display: "flex", gap: "10px" }}>
                       {selectedOrder.status === "pending" && (
@@ -477,16 +632,26 @@ export default function OrdersList({ embedded = false }: OrdersListProps): React
                           type="button"
                           onClick={() => handleCompletePayment(selectedOrder)}
                           className={styles.btnPayNow}
-                          disabled={cancelLoading}
+                          disabled={cancelLoading || returnLoading}
                         >
                           {cancelLoading ? "Processing..." : "Pay Now"}
+                        </button>
+                      )}
+                      {selectedOrder.status === "success" && (
+                        <button
+                          type="button"
+                          onClick={() => setReturningOrderId(selectedOrder.id)}
+                          className={styles.btnReturn}
+                          disabled={cancelLoading || returnLoading}
+                        >
+                          Return Order
                         </button>
                       )}
                       <button
                         type="button"
                         onClick={() => setCancellingOrderId(selectedOrder.id)}
                         className={styles.btnCancel}
-                        disabled={cancelLoading}
+                        disabled={cancelLoading || returnLoading}
                       >
                         Cancel Order
                       </button>
