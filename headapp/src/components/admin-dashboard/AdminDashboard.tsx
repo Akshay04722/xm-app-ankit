@@ -38,11 +38,64 @@ interface ProductRecord {
   updatedAt: string;
 }
 
+interface OrderItem {
+  sku: string;
+  title: string;
+  image?: string;
+  price: number;
+  discountPrice?: number;
+  activePrice: number;
+  quantity: number;
+  selectedColor?: string;
+  selectedSize?: string;
+  itemTotal: number;
+}
+
+interface OrderAddress {
+  fullName: string;
+  phoneNumber: string;
+  addressLine1: string;
+  addressLine2?: string;
+  landmark?: string;
+  city: string;
+  state: string;
+  country: string;
+  postalCode: string;
+  addressType: string;
+}
+
+interface OrderRecord {
+  id: string;
+  orderId: string;
+  userId: string;
+  amount: number;
+  status: "pending" | "success" | "failed" | "cancelled" | "returned";
+  createdAt: string;
+  updatedAt?: string;
+  razorpay_order_id: string;
+  razorpay_payment_id?: string;
+  razorpay_signature?: string;
+  address?: OrderAddress;
+  cart?: OrderItem[];
+  cancelReason?: string;
+  cancelledAt?: string;
+  addressId?: string;
+  returnReason?: string;
+  returnComment?: string;
+  returnedAt?: string;
+  refund?: {
+    refundId: string;
+    status: string;
+    amount: number;
+    createdAt: string;
+  };
+}
+
 export const Default: React.FC<ComponentProps> = () => {
   const { user, loading: authLoading } = useAuth();
   
   // Dashboard view toggle
-  const [activeConsole, setActiveConsole] = useState<"users" | "products">("products");
+  const [activeConsole, setActiveConsole] = useState<"users" | "products" | "orders">("products");
 
   // Users State
   const [users, setUsers] = useState<UserRecord[]>([]);
@@ -75,13 +128,22 @@ export const Default: React.FC<ComponentProps> = () => {
   const [formStockCount, setFormStockCount] = useState("50");
   const [productActionLoading, setProductActionLoading] = useState(false);
 
+  // Orders State
+  const [orders, setOrders] = useState<OrderRecord[]>([]);
+  const [ordersLoading, setOrdersLoading] = useState(true);
+  const [orderSearch, setOrderSearch] = useState("");
+  const [statusFilter, setStatusFilter] = useState("all");
+  const [selectedOrder, setSelectedOrder] = useState<OrderRecord | null>(null);
+  const [isOrderModalOpen, setIsOrderModalOpen] = useState(false);
+  const [selectedStatus, setSelectedStatus] = useState("");
+  const [orderActionLoading, setOrderActionLoading] = useState(false);
+
   // Shared state
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
   const [claimsLoading, setClaimsLoading] = useState(true);
   const [syncing, setSyncing] = useState(false);
-  const [syncingUsers, setSyncingUsers] = useState(false);
 
   const availableSizes = ["XS", "S", "M", "L", "XL", "XXL", "Queen", "King", "Double", "Standard", "One Size"];
   const availableColors = ["Red", "Blue", "Green", "Gray", "Beige", "Brown", "Black", "White", "Navy", "Maroon", "Saddlebrown", "Lavender", "Pink", "Silver"];
@@ -175,12 +237,73 @@ export const Default: React.FC<ComponentProps> = () => {
     }
   };
 
+  // Fetch orders
+  const fetchOrders = async () => {
+    if (!user) return;
+    try {
+      setOrdersLoading(true);
+      const idToken = await user.getIdToken();
+      const res = await fetch("/api/admin/orders", {
+        headers: {
+          Authorization: `Bearer ${idToken}`,
+        },
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setOrders(data.orders || []);
+        setError(null);
+      } else {
+        setError(data.error || "Failed to fetch orders");
+      }
+    } catch (err: any) {
+      setError(err.message || "An error occurred while fetching orders");
+    } finally {
+      setOrdersLoading(false);
+    }
+  };
+
+  // Update order status
+  const handleUpdateOrderStatus = async (orderId: string, newStatus: string) => {
+    if (!user) return;
+    try {
+      setOrderActionLoading(true);
+      const idToken = await user.getIdToken();
+      const res = await fetch("/api/admin/orders", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${idToken}`,
+        },
+        body: JSON.stringify({ orderId, status: newStatus }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setSuccess(`Order status updated to ${newStatus} successfully.`);
+        fetchOrders(); // Refresh order list
+        if (selectedOrder && selectedOrder.id === orderId) {
+          setSelectedOrder((prev) => (prev ? { ...prev, status: newStatus as any } : null));
+        }
+        setTimeout(() => setSuccess(null), 5000);
+      } else {
+        setError(data.error || "Failed to update order status");
+        setTimeout(() => setError(null), 5000);
+      }
+    } catch (err: any) {
+      setError(err.message || "An error occurred while updating order status");
+      setTimeout(() => setError(null), 5000);
+    } finally {
+      setOrderActionLoading(false);
+    }
+  };
+
   useEffect(() => {
     if (isAdmin) {
       if (activeConsole === "users") {
         fetchUsers();
-      } else {
+      } else if (activeConsole === "products") {
         fetchProducts();
+      } else if (activeConsole === "orders") {
+        fetchOrders();
       }
     }
   }, [isAdmin, activeConsole, debouncedUserSearch]);
@@ -220,39 +343,6 @@ export const Default: React.FC<ComponentProps> = () => {
       setTimeout(() => setError(null), 5000);
     } finally {
       setSyncing(false);
-    }
-  };
-
-  // Sync Users handler
-  const handleSyncUsers = async () => {
-    if (!user) return;
-    try {
-      setSyncingUsers(true);
-      setError(null);
-      setSuccess(null);
-      const idToken = await user.getIdToken();
-      
-      const res = await fetch("/api/admin/users/sync-firestore", {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${idToken}`,
-        },
-      });
-      
-      const data = await res.json();
-      if (res.ok) {
-        setSuccess(data.message || "Users successfully synced to Firestore!");
-        fetchUsers(); // Refresh user list
-        setTimeout(() => setSuccess(null), 5000);
-      } else {
-        setError(data.error || "Failed to sync users to Firestore.");
-        setTimeout(() => setError(null), 5000);
-      }
-    } catch (err: any) {
-      setError(err.message || "An error occurred during users synchronization.");
-      setTimeout(() => setError(null), 5000);
-    } finally {
-      setSyncingUsers(false);
     }
   };
 
@@ -519,6 +609,20 @@ export const Default: React.FC<ComponentProps> = () => {
     );
   });
 
+  // Filter orders in memory
+  const filteredOrders = orders.filter(o => {
+    if (!o) return false;
+    const searchLower = (orderSearch || "").toLowerCase();
+    const matchesSearch = 
+      (o.id && typeof o.id === 'string' && o.id.toLowerCase().includes(searchLower)) ||
+      (o.userId && typeof o.userId === 'string' && o.userId.toLowerCase().includes(searchLower)) ||
+      (o.address?.fullName && typeof o.address.fullName === 'string' && o.address.fullName.toLowerCase().includes(searchLower)) ||
+      (o.address?.phoneNumber && typeof o.address.phoneNumber === 'string' && o.address.phoneNumber.toLowerCase().includes(searchLower));
+    
+    const matchesStatus = statusFilter === "all" || o.status === statusFilter;
+    return !!(matchesSearch && matchesStatus);
+  });
+
   return (
     <div className={styles.dashboardContainer}>
       {/* Breadcrumbs */}
@@ -526,7 +630,7 @@ export const Default: React.FC<ComponentProps> = () => {
         <Link href="/admin">Admin</Link>
         <span className={styles.breadcrumbsSep}>/</span>
         <span className={styles.breadcrumbsMuted}>
-          {activeConsole === "users" ? "Users Console" : "Products Console"}
+          {activeConsole === "users" ? "Users Console" : activeConsole === "products" ? "Products Console" : "Orders Console"}
         </span>
       </div>
 
@@ -538,7 +642,7 @@ export const Default: React.FC<ComponentProps> = () => {
             <p>Manage application users, product catalog listings, sync data, and manage stock counts.</p>
           </div>
           <div className={styles.headerActions}>
-            {activeConsole === "products" ? (
+            {activeConsole === "products" && (
               <>
                 <button
                   onClick={handleSyncProducts}
@@ -596,40 +700,6 @@ export const Default: React.FC<ComponentProps> = () => {
                   Add Product
                 </button>
               </>
-            ) : (
-              <button
-                onClick={handleSyncUsers}
-                disabled={syncingUsers}
-                style={{
-                  backgroundColor: '#B88E2F',
-                  color: '#ffffff',
-                  border: 'none',
-                  padding: '10px 20px',
-                  fontSize: '14px',
-                  fontWeight: '600',
-                  borderRadius: '8px',
-                  cursor: 'pointer',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '8px',
-                  transition: 'opacity 0.2s ease',
-                  opacity: syncingUsers ? 0.7 : 1
-                }}
-              >
-                {syncingUsers ? (
-                  <>
-                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" style={{ width: '16px', height: '16px', borderRadius: '50%', border: '2px solid white', borderTopColor: 'transparent', animation: 'spin 1s linear infinite' }}></div>
-                    Syncing Users...
-                  </>
-                ) : (
-                  <>
-                    <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
-                      <path d="M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6 0 1.01-.25 1.97-.7 2.8l1.46 1.46C19.54 15.03 20 13.57 20 12c0-4.41-3.59-8-8-8zm-8 8c0 1.57.46 3.03 1.24 4.26L6.7 17.7C5.25 16.03 4 13.88 4 12c0-4.41 3.59-8 8-8v3l4-4-4-4v3c-4.41 0-8 3.59-8 8z" />
-                    </svg>
-                    Sync Users to Firestore
-                  </>
-                )}
-              </button>
             )}
           </div>
         </div>
@@ -648,32 +718,84 @@ export const Default: React.FC<ComponentProps> = () => {
           >
             Users Console
           </button>
+          <button
+            className={`${styles.tabSelectorBtn} ${activeConsole === "orders" ? styles.tabSelectorBtnActive : ""}`}
+            onClick={() => setActiveConsole("orders")}
+          >
+            Orders Console
+          </button>
         </div>
 
         <div className={styles.headerControls}>
-          <div className={styles.searchWrapper}>
-            <svg className={styles.searchIcon} viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2.5">
-              <circle cx="11" cy="11" r="8" />
-              <path d="M21 21l-4.35-4.35" />
-            </svg>
-            {activeConsole === "users" ? (
-              <input
-                type="text"
-                className={styles.searchInput}
-                placeholder="Search email, name or UID..."
-                value={userSearch}
-                onChange={(e) => setUserSearch(e.target.value)}
-              />
-            ) : (
-              <input
-                type="text"
-                className={styles.searchInput}
-                placeholder="Search products by title, category, SKU..."
-                value={productSearch}
-                onChange={(e) => setProductSearch(e.target.value)}
-              />
-            )}
-          </div>
+          {activeConsole !== "orders" ? (
+            <div className={styles.searchWrapper}>
+              <svg className={styles.searchIcon} viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2.5">
+                <circle cx="11" cy="11" r="8" />
+                <path d="M21 21l-4.35-4.35" />
+              </svg>
+              {activeConsole === "users" ? (
+                <input
+                  type="text"
+                  className={styles.searchInput}
+                  placeholder="Search email, name or UID..."
+                  value={userSearch}
+                  onChange={(e) => setUserSearch(e.target.value)}
+                />
+              ) : (
+                <input
+                  type="text"
+                  className={styles.searchInput}
+                  placeholder="Search products by title, category, SKU..."
+                  value={productSearch}
+                  onChange={(e) => setProductSearch(e.target.value)}
+                />
+              )}
+            </div>
+          ) : (
+            <div style={{ display: 'flex', gap: '16px', width: '100%', flexWrap: 'wrap', alignItems: 'center' }}>
+              <div className={styles.searchWrapper} style={{ flex: 1, minWidth: '240px' }}>
+                <svg className={styles.searchIcon} viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2.5">
+                  <circle cx="11" cy="11" r="8" />
+                  <path d="M21 21l-4.35-4.35" />
+                </svg>
+                <input
+                  type="text"
+                  className={styles.searchInput}
+                  placeholder="Search by Order ID, Name, Phone..."
+                  value={orderSearch}
+                  onChange={(e) => setOrderSearch(e.target.value)}
+                />
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <label htmlFor="adminStatusFilterSelect" style={{ fontSize: '13px', fontWeight: 600, color: '#898989' }}>Status:</label>
+                <select
+                  id="adminStatusFilterSelect"
+                  value={statusFilter}
+                  onChange={(e) => setStatusFilter(e.target.value)}
+                  className={styles.formSelect}
+                  style={{
+                    padding: '8px 16px',
+                    borderRadius: '10px',
+                    border: '1px solid #e5e7eb',
+                    fontSize: '14px',
+                    backgroundColor: '#ffffff',
+                    color: '#3a3a3a',
+                    cursor: 'pointer',
+                    outline: 'none',
+                    margin: 0,
+                    width: 'auto'
+                  }}
+                >
+                  <option value="all">All Statuses</option>
+                  <option value="pending">Pending</option>
+                  <option value="success">Success</option>
+                  <option value="failed">Failed</option>
+                  <option value="cancelled">Cancelled</option>
+                  <option value="returned">Returned</option>
+                </select>
+              </div>
+            </div>
+          )}
         </div>
       </div>
 
@@ -712,7 +834,7 @@ export const Default: React.FC<ComponentProps> = () => {
             </div>
           </div>
         </div>
-      ) : (
+      ) : activeConsole === "products" ? (
         <div className={styles.metricsGrid}>
           <div className={styles.metricCard}>
             <div className={styles.metricIconWrapper}>
@@ -749,6 +871,46 @@ export const Default: React.FC<ComponentProps> = () => {
                 {products.reduce((acc, p) => acc + (p.stockCount || 0), 0)}
               </span>
               <span className={styles.metricLabel}>Total Items Stock</span>
+            </div>
+          </div>
+        </div>
+      ) : (
+        <div className={styles.metricsGrid}>
+          <div className={styles.metricCard}>
+            <div className={styles.metricIconWrapper}>
+              <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+              </svg>
+            </div>
+            <div className={styles.metricContent}>
+              <span className={styles.metricValue}>{orders.filter(Boolean).length}</span>
+              <span className={styles.metricLabel}>Total Orders</span>
+            </div>
+          </div>
+          <div className={styles.metricCard}>
+            <div className={styles.metricIconWrapper}>
+              <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+            <div className={styles.metricContent}>
+              <span className={styles.metricValue}>
+                Rs. {orders.filter(o => o && o.status === "success").reduce((acc, o) => acc + (o.amount || 0), 0).toLocaleString("en-IN")}
+              </span>
+              <span className={styles.metricLabel}>Total Revenue</span>
+            </div>
+          </div>
+          <div className={styles.metricCard}>
+            <div className={styles.metricIconWrapper}>
+              <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+            <div className={styles.metricContent}>
+              <span className={styles.metricValue}>
+                {orders.filter(o => o && o.status === "pending").length}
+              </span>
+              <span className={styles.metricLabel}>Pending Payments</span>
             </div>
           </div>
         </div>
@@ -853,7 +1015,7 @@ export const Default: React.FC<ComponentProps> = () => {
             </table>
           </div>
         )
-      ) : (
+      ) : activeConsole === "products" ? (
         productsLoading && products.length === 0 ? (
           <div className={styles.loadingContainer}>
             <div className={styles.spinner}></div>
@@ -937,6 +1099,74 @@ export const Default: React.FC<ComponentProps> = () => {
                             Delete
                           </button>
                         </div>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+        )
+      ) : (
+        ordersLoading && orders.length === 0 ? (
+          <div className={styles.loadingContainer}>
+            <div className={styles.spinner}></div>
+            <p>Fetching order history...</p>
+          </div>
+        ) : (
+          <div className={styles.tableWrapper}>
+            <table className={styles.usersTable}>
+              <thead>
+                <tr>
+                  <th>Order ID</th>
+                  <th>Customer</th>
+                  <th>Date</th>
+                  <th>Amount</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filteredOrders.length === 0 ? (
+                  <tr>
+                    <td colSpan={6} style={{ textAlign: "center", padding: "40px", color: "#9f9f9f" }}>
+                      No orders found matching your query.
+                    </td>
+                  </tr>
+                ) : (
+                  filteredOrders.map((o) => (
+                    <tr key={o.id}>
+                      <td style={{ fontFamily: "monospace", fontWeight: "700" }}>{o.id}</td>
+                      <td>
+                        <div style={{ display: 'flex', flexDirection: 'column' }}>
+                          <span style={{ fontWeight: 600 }}>{o.address?.fullName || "N/A"}</span>
+                          <span style={{ fontSize: '12px', color: '#898989' }}>{o.address?.phoneNumber || "N/A"}</span>
+                        </div>
+                      </td>
+                      <td>{o.createdAt ? new Date(o.createdAt).toLocaleDateString("en-IN", { year: 'numeric', month: 'short', day: 'numeric' }) : "N/A"}</td>
+                      <td style={{ fontWeight: 700 }}>
+                        Rs. {o.amount?.toLocaleString("en-IN")}
+                      </td>
+                      <td>
+                        <span className={`${styles.statusBadge} ${styles['status' + (o.status ? o.status.charAt(0).toUpperCase() + o.status.slice(1) : 'Pending')]}`}>
+                          {o.status || 'pending'}
+                        </span>
+                      </td>
+                      <td>
+                        <button
+                          className={styles.editBtn}
+                          onClick={() => {
+                            setSelectedOrder(o);
+                            setSelectedStatus(o.status || 'pending');
+                            setIsOrderModalOpen(true);
+                          }}
+                        >
+                          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2.5">
+                            <circle cx="12" cy="12" r="3" />
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                          </svg>
+                          View Details
+                        </button>
                       </td>
                     </tr>
                   ))
@@ -1165,6 +1395,235 @@ export const Default: React.FC<ComponentProps> = () => {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* Modal Popup Details for Admin Orders */}
+      {isOrderModalOpen && selectedOrder && (
+        <div className={styles.modalOverlay}>
+          <div className={styles.modalContent} style={{ maxWidth: '950px' }}>
+            <div className={styles.modalHeader}>
+              <h2>Order Details: {selectedOrder.id}</h2>
+              <button className={styles.closeBtn} onClick={() => { setIsOrderModalOpen(false); setSelectedOrder(null); }}>
+                <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+            
+            <div className={styles.orderModalBody} style={{ padding: '20px 0 0 0' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) 320px', gap: '24px' }}>
+                {/* Left Side: Items & Delivery Address */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                  {/* Items list */}
+                  <div style={{ border: '1px solid #f6f3eb', borderRadius: '12px', padding: '20px', backgroundColor: '#ffffff' }}>
+                    <h3 style={{ fontSize: '16px', fontWeight: 700, margin: '0 0 16px 0', borderBottom: '1px solid #f6f3eb', paddingBottom: '10px' }}>Items Purchased</h3>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                      {selectedOrder.cart && selectedOrder.cart.map((item, idx) => (
+                        <div key={`${item.sku}-${idx}`} style={{ display: 'flex', alignItems: 'center', gap: '16px', borderBottom: idx < (selectedOrder.cart?.length || 0) - 1 ? '1px solid #fcfbf9' : 'none', paddingBottom: idx < (selectedOrder.cart?.length || 0) - 1 ? '16px' : '0' }}>
+                          <div style={{ width: '60px', height: '60px', borderRadius: '8px', overflow: 'hidden', backgroundColor: '#fcfbf9', border: '1px solid #f6f3eb', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                            {item.image ? (
+                              <img src={item.image} alt={item.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                            ) : (
+                              <div style={{ width: '100%', height: '100%', backgroundColor: '#f3f1eb' }} />
+                            )}
+                          </div>
+                          <div style={{ flex: 1 }}>
+                            <div style={{ fontWeight: 600, fontSize: '14px', color: '#1a1a1a' }}>{item.title}</div>
+                            <div style={{ fontSize: '12px', color: '#898989', marginTop: '4px' }}>
+                              SKU: {item.sku}
+                              {item.selectedColor && ` | Color: ${item.selectedColor}`}
+                              {item.selectedSize && ` | Size: ${item.selectedSize}`}
+                            </div>
+                            <div style={{ fontSize: '13px', color: '#3a3a3a', marginTop: '4px' }}>
+                              {item.quantity} x Rs. {item.activePrice?.toLocaleString("en-IN")}
+                            </div>
+                          </div>
+                          <div style={{ fontWeight: 700, fontSize: '14px', color: '#1a1a1a' }}>
+                            Rs. {item.itemTotal?.toLocaleString("en-IN")}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Delivery Address */}
+                  {selectedOrder.address && (
+                    <div style={{ border: '1px solid #f6f3eb', borderRadius: '12px', padding: '20px', backgroundColor: '#ffffff' }}>
+                      <h3 style={{ fontSize: '16px', fontWeight: 700, margin: '0 0 16px 0', borderBottom: '1px solid #f6f3eb', paddingBottom: '10px' }}>Delivery Address</h3>
+                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+                        <div>
+                          <p style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', color: '#898989', margin: '0 0 4px 0', letterSpacing: '0.05em' }}>Customer Name</p>
+                          <p style={{ fontSize: '14px', margin: 0, fontWeight: 600, color: '#3a3a3a' }}>{selectedOrder.address.fullName}</p>
+                        </div>
+                        <div>
+                          <p style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', color: '#898989', margin: '0 0 4px 0', letterSpacing: '0.05em' }}>Phone Number</p>
+                          <p style={{ fontSize: '14px', margin: 0, fontWeight: 600, color: '#3a3a3a' }}>{selectedOrder.address.phoneNumber}</p>
+                        </div>
+                        <div style={{ gridColumn: 'span 2' }}>
+                          <p style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', color: '#898989', margin: '0 0 4px 0', letterSpacing: '0.05em' }}>Address</p>
+                          <p style={{ fontSize: '14px', margin: 0, color: '#3a3a3a', lineHeight: '1.5' }}>
+                            {selectedOrder.address.addressLine1}
+                            {selectedOrder.address.addressLine2 ? `, ${selectedOrder.address.addressLine2}` : ""}
+                            {selectedOrder.address.landmark ? ` (Landmark: ${selectedOrder.address.landmark})` : ""}
+                          </p>
+                        </div>
+                        <div>
+                          <p style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', color: '#898989', margin: '0 0 4px 0', letterSpacing: '0.05em' }}>City</p>
+                          <p style={{ fontSize: '14px', margin: 0, color: '#3a3a3a' }}>{selectedOrder.address.city}</p>
+                        </div>
+                        <div>
+                          <p style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', color: '#898989', margin: '0 0 4px 0', letterSpacing: '0.05em' }}>State</p>
+                          <p style={{ fontSize: '14px', margin: 0, color: '#3a3a3a' }}>{selectedOrder.address.state}</p>
+                        </div>
+                        <div>
+                          <p style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', color: '#898989', margin: '0 0 4px 0', letterSpacing: '0.05em' }}>Postal Code</p>
+                          <p style={{ fontSize: '14px', margin: 0, color: '#3a3a3a' }}>{selectedOrder.address.postalCode}</p>
+                        </div>
+                        <div>
+                          <p style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', color: '#898989', margin: '0 0 4px 0', letterSpacing: '0.05em' }}>Country</p>
+                          <p style={{ fontSize: '14px', margin: 0, color: '#3a3a3a' }}>{selectedOrder.address.country}</p>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Payment Details */}
+                  <div style={{ border: '1px solid #f6f3eb', borderRadius: '12px', padding: '20px', backgroundColor: '#ffffff' }}>
+                    <h3 style={{ fontSize: '16px', fontWeight: 700, margin: '0 0 16px 0', borderBottom: '1px solid #f6f3eb', paddingBottom: '10px' }}>Payment & System Logs</h3>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+                      <div>
+                        <p style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', color: '#898989', margin: '0 0 4px 0', letterSpacing: '0.05em' }}>Razorpay Order ID</p>
+                        <p style={{ fontSize: '13px', margin: 0, fontFamily: 'monospace', color: '#3a3a3a' }}>{selectedOrder.razorpay_order_id || selectedOrder.orderId}</p>
+                      </div>
+                      {selectedOrder.razorpay_payment_id && (
+                        <div>
+                          <p style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', color: '#898989', margin: '0 0 4px 0', letterSpacing: '0.05em' }}>Razorpay Payment ID</p>
+                          <p style={{ fontSize: '13px', margin: 0, fontFamily: 'monospace', color: '#3a3a3a' }}>{selectedOrder.razorpay_payment_id}</p>
+                        </div>
+                      )}
+                      <div>
+                        <p style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', color: '#898989', margin: '0 0 4px 0', letterSpacing: '0.05em' }}>Created Date</p>
+                        <p style={{ fontSize: '13px', margin: 0, color: '#3a3a3a' }}>
+                          {selectedOrder.createdAt ? new Date(selectedOrder.createdAt).toLocaleString("en-IN") : "N/A"}
+                        </p>
+                      </div>
+                      {selectedOrder.updatedAt && (
+                        <div>
+                          <p style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', color: '#898989', margin: '0 0 4px 0', letterSpacing: '0.05em' }}>Last Updated</p>
+                          <p style={{ fontSize: '13px', margin: 0, color: '#3a3a3a' }}>
+                            {new Date(selectedOrder.updatedAt).toLocaleString("en-IN")}
+                          </p>
+                        </div>
+                      )}
+                    </div>
+
+                    {selectedOrder.status === 'cancelled' && (
+                      <div style={{ borderLeft: '4px solid #ff5c5c', backgroundColor: '#fff5f5', padding: '12px 16px', borderRadius: '4px', marginTop: '16px' }}>
+                        <p style={{ color: '#c53030', fontWeight: 700, margin: '0 0 4px 0', fontSize: '14px' }}>Cancellation Info</p>
+                        <p style={{ margin: 0, fontSize: '13px', color: '#3a3a3a' }}><strong>Reason:</strong> {selectedOrder.cancelReason || 'No reason provided'}</p>
+                        {selectedOrder.cancelledAt && (
+                          <p style={{ margin: '4px 0 0 0', fontSize: '12px', color: '#742a2a' }}>
+                            <strong>Cancelled At:</strong> {new Date(selectedOrder.cancelledAt).toLocaleString("en-IN")}
+                          </p>
+                        )}
+                      </div>
+                    )}
+
+                    {selectedOrder.status === 'returned' && (
+                      <div style={{ borderLeft: '4px solid #5c5c8a', backgroundColor: '#f5f5fa', padding: '12px 16px', borderRadius: '4px', marginTop: '16px' }}>
+                        <p style={{ color: '#4a4a74', fontWeight: 700, margin: '0 0 4px 0', fontSize: '14px' }}>Return Info</p>
+                        <p style={{ margin: 0, fontSize: '13px', color: '#3a3a3a' }}><strong>Reason:</strong> {selectedOrder.returnReason || 'No reason provided'}</p>
+                        {selectedOrder.returnComment && (
+                          <p style={{ margin: '4px 0 0 0', fontSize: '13px', color: '#3a3a3a' }}><strong>Comments:</strong> {selectedOrder.returnComment}</p>
+                        )}
+                        {selectedOrder.returnedAt && (
+                          <p style={{ margin: '4px 0 0 0', fontSize: '12px', color: '#3b3b5c' }}>
+                            <strong>Returned At:</strong> {new Date(selectedOrder.returnedAt).toLocaleString("en-IN")}
+                          </p>
+                        )}
+                      </div>
+                    )}
+
+                    {selectedOrder.refund && (
+                      <div style={{ borderLeft: '4px solid #2ec1ac', backgroundColor: '#e6f7f0', padding: '12px 16px', borderRadius: '4px', marginTop: '16px' }}>
+                        <p style={{ color: '#1a8475', fontWeight: 700, margin: '0 0 4px 0', fontSize: '14px' }}>Refund Executed</p>
+                        <p style={{ margin: 0, fontSize: '13px', color: '#3a3a3a' }}><strong>Refund ID:</strong> {selectedOrder.refund.refundId}</p>
+                        <p style={{ margin: '2px 0 0 0', fontSize: '13px', color: '#3a3a3a' }}><strong>Amount:</strong> Rs. {selectedOrder.refund.amount?.toLocaleString("en-IN")}</p>
+                        <p style={{ margin: '2px 0 0 0', fontSize: '13px', color: '#3a3a3a' }}><strong>Status:</strong> {selectedOrder.refund.status}</p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* Right Side: Status Update & Summary */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                  {/* Status management */}
+                  <div style={{ border: '1px solid #f6f3eb', borderRadius: '12px', padding: '20px', backgroundColor: '#ffffff' }}>
+                    <h3 style={{ fontSize: '16px', fontWeight: 700, margin: '0 0 16px 0', borderBottom: '1px solid #f6f3eb', paddingBottom: '10px' }}>Order Status</h3>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                      <div>
+                        <label style={{ fontSize: '13px', fontWeight: 600, color: '#898989', marginBottom: '8px', display: 'block' }}>
+                          Current Status:
+                        </label>
+                        <span className={`${styles.statusBadge} ${styles['status' + (selectedOrder.status ? selectedOrder.status.charAt(0).toUpperCase() + selectedOrder.status.slice(1) : 'Pending')]}`}>
+                          {selectedOrder.status || 'pending'}
+                        </span>
+                      </div>
+
+                      <div style={{ borderTop: '1px solid #f6f3eb', paddingTop: '16px' }}>
+                        <label htmlFor="adminOrderStatusSelect" style={{ fontSize: '13px', fontWeight: 600, color: '#3a3a3a', marginBottom: '8px', display: 'block' }}>
+                          Update Status To:
+                        </label>
+                        <select
+                          id="adminOrderStatusSelect"
+                          value={selectedStatus || selectedOrder.status || 'pending'}
+                          onChange={(e) => setSelectedStatus(e.target.value)}
+                          className={styles.formSelect}
+                          style={{ width: '100%', marginBottom: '12px', padding: '8px', fontSize: '14px', borderRadius: '6px' }}
+                          disabled={orderActionLoading}
+                        >
+                          <option value="pending">Pending</option>
+                          <option value="success">Success</option>
+                          <option value="failed">Failed</option>
+                          <option value="cancelled">Cancelled</option>
+                          <option value="returned">Returned</option>
+                        </select>
+                        <button
+                          type="button"
+                          onClick={() => handleUpdateOrderStatus(selectedOrder.id, selectedStatus || selectedOrder.status)}
+                          className={styles.submitBtn}
+                          style={{ width: '100%', padding: '10px', fontSize: '14px', fontWeight: 600 }}
+                          disabled={orderActionLoading || (selectedStatus === selectedOrder.status)}
+                        >
+                          {orderActionLoading ? "Updating Status..." : "Save Status"}
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Summary card */}
+                  <div style={{ border: '1px solid #ecdcb9', borderRadius: '12px', padding: '20px', backgroundColor: '#fdfbf7' }}>
+                    <h3 style={{ fontSize: '16px', fontWeight: 700, margin: '0 0 16px 0', borderBottom: '1px solid #f6f3eb', paddingBottom: '10px', color: '#1a1a1a' }}>Amount Details</h3>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '14px', color: '#3a3a3a' }}>
+                        <span>Subtotal</span>
+                        <span>Rs. {selectedOrder.amount?.toLocaleString("en-IN")}</span>
+                      </div>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '14px', color: '#3a3a3a' }}>
+                        <span>Shipping</span>
+                        <span style={{ color: '#2ec1ac', fontWeight: 'bold' }}>FREE</span>
+                      </div>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '15px', fontWeight: 700, borderTop: '1px dashed #e2d1bc', paddingTop: '12px', color: '#1a1a1a' }}>
+                        <span>Total Paid</span>
+                        <span>Rs. {selectedOrder.amount?.toLocaleString("en-IN")}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       )}
