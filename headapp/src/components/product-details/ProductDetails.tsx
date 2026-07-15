@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, JSX } from "react";
+import React, { useState, useEffect, JSX } from "react";
 import styles from "./ProductDetails.module.css";
 import { ComponentProps } from "@/lib/component-props";
 import { useSitecore } from "@sitecore-content-sdk/nextjs";
@@ -67,6 +67,23 @@ export const Default = (props: ProductDetailsProps): JSX.Element => {
   // ---------- Extract fields from route (context item) ----------
   const title = routeFields.ProductTitle?.value || route?.name || "";
   const sku = routeFields.SKU?.value || "";
+
+  // Real-time stock count from Firestore
+  const [stockCount, setStockCount] = useState<number | null>(null);
+
+  useEffect(() => {
+    if (sku) {
+      fetch(`/api/products?sku=${encodeURIComponent(sku)}`)
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.success && typeof data.stockCount === "number") {
+            setStockCount(data.stockCount);
+          }
+        })
+        .catch((err) => console.error("Error fetching stock:", err));
+    }
+  }, [sku]);
+
   const shortDesc = stripHtml(routeFields.ShortDescription?.value || "");
   const longDesc = stripHtml(routeFields.LongDescription?.value || "");
   const additionalInfo = stripHtml(
@@ -244,27 +261,49 @@ export const Default = (props: ProductDetailsProps): JSX.Element => {
             </>
           )}
 
+          {/* Stock Alert Messages */}
+          {stockCount === 0 && (
+            <div className={styles.outOfStockAlert}>
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24" style={{ width: "20px", height: "20px" }}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="m9.75 9.75 4.5 4.5m0-4.5-4.5 4.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+              </svg>
+              <span>This product is currently out of stock.</span>
+            </div>
+          )}
+
+          {stockCount !== null && stockCount > 0 && stockCount <= 5 && (
+            <div className={styles.lowStockAlert}>
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24" style={{ width: "20px", height: "20px" }}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" />
+              </svg>
+              <span>Hurry! Only {stockCount} items left in stock - order soon.</span>
+            </div>
+          )}
+
           {/* Quantity + Add to Cart + Compare */}
           <div className={styles.actionRow}>
             <div className={styles.quantityStepper}>
               <button
                 className={styles.stepperBtn}
                 onClick={() => setQuantity((q) => Math.max(1, q - 1))}
+                disabled={stockCount === 0}
               >
                 −
               </button>
-              <span className={styles.stepperValue}>{quantity}</span>
+              <span className={styles.stepperValue}>{stockCount === 0 ? 0 : quantity}</span>
               <button
                 className={styles.stepperBtn}
-                onClick={() => setQuantity((q) => q + 1)}
+                onClick={() => setQuantity((q) => (stockCount !== null && q >= stockCount ? q : q + 1))}
+                disabled={stockCount === 0 || (stockCount !== null && quantity >= stockCount)}
               >
                 +
               </button>
             </div>
 
             <button
-              className={styles.addToCartBtn}
+              className={`${styles.addToCartBtn} ${stockCount === 0 ? styles.disabledBtn : ""}`}
               onClick={() => {
+                if (stockCount === 0) return;
                 addToCart({
                   id: route?.itemId || sku,
                   sku,
@@ -276,8 +315,9 @@ export const Default = (props: ProductDetailsProps): JSX.Element => {
                   selectedSize: selectedSize || undefined,
                 }, quantity);
               }}
+              disabled={stockCount === 0}
             >
-              Add To Cart
+              {stockCount === 0 ? "Out of Stock" : "Add To Cart"}
             </button>
 
             <button className={styles.compareBtn}>

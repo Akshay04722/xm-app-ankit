@@ -62,15 +62,17 @@ export async function POST(req: NextRequest) {
       updatedAt: new Date().toISOString(),
     });
 
-    // 7. If the order was successful, revert/restore the stock counts in Firestore
+    // 7. If the order was successful, revert/restore the stock counts in Firestore and Sitecore
     if (previousStatus === "success" && Array.isArray(orderData?.cart) && orderData.cart.length > 0) {
       const batch = db.batch();
       for (const item of orderData.cart) {
         if (item.sku) {
+          // Firestore restore (safe set merge)
           const productRef = db.collection("products").doc(item.sku.trim());
-          batch.update(productRef, {
+          batch.set(productRef, {
             stockCount: FieldValue.increment(Number(item.quantity || 1)),
-          });
+            updatedAt: new Date().toISOString(),
+          }, { merge: true });
         }
       }
       await batch.commit();

@@ -22,14 +22,17 @@ interface CheckoutFormProps {
   };
 }
 
-export default function CheckoutForm(props: CheckoutFormProps): React.JSX.Element {
+export default function CheckoutForm(
+  props: CheckoutFormProps,
+): React.JSX.Element {
   const { fields } = props;
   const { datasource } = fields?.data || {};
 
   // Sitecore Fields
   const sitecoreTitle = datasource?.pageTitle?.jsonValue;
   const sitecoreSummaryText = datasource?.orderSummaryText?.jsonValue;
-  const successRedirect = datasource?.successRedirectUrl?.jsonValue?.value || "/profile";
+  const successRedirect =
+    datasource?.successRedirectUrl?.jsonValue?.value || "/profile";
 
   // Contexts and Hooks
   const { cartItems, subtotal, clearCart } = useCart();
@@ -38,7 +41,8 @@ export default function CheckoutForm(props: CheckoutFormProps): React.JSX.Elemen
 
   // State
   const [selectedAddressId, setSelectedAddressId] = useState<string>("");
-  const [isAddressDialogOpen, setIsAddressDialogOpen] = useState<boolean>(false);
+  const [isAddressDialogOpen, setIsAddressDialogOpen] =
+    useState<boolean>(false);
   const [paymentLoading, setPaymentLoading] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
@@ -70,7 +74,7 @@ export default function CheckoutForm(props: CheckoutFormProps): React.JSX.Elemen
   };
 
   const handleAddNewAddress = async (
-    addressData: Omit<Address, "addressId" | "createdAt" | "updatedAt">
+    addressData: Omit<Address, "addressId" | "createdAt" | "updatedAt">,
   ): Promise<boolean> => {
     const success = await addNewAddress(addressData);
     if (success) {
@@ -104,6 +108,7 @@ export default function CheckoutForm(props: CheckoutFormProps): React.JSX.Elemen
           userId: user.uid,
           addressId: selectedAddressId,
           cartItems: cartItems.map((item) => ({
+            id: item.id,
             sku: item.sku,
             quantity: item.quantity,
             selectedColor: item.selectedColor || "",
@@ -158,7 +163,9 @@ export default function CheckoutForm(props: CheckoutFormProps): React.JSX.Elemen
             const verifyData = await verifyRes.json();
 
             if (!verifyRes.ok || verifyData.error) {
-              throw new Error(verifyData.error || "Payment verification failed.");
+              throw new Error(
+                verifyData.error || "Payment verification failed.",
+              );
             }
 
             // 4. Success handling
@@ -170,9 +177,19 @@ export default function CheckoutForm(props: CheckoutFormProps): React.JSX.Elemen
           }
         },
         modal: {
-          ondismiss: () => {
+          ondismiss: async () => {
             setPaymentLoading(false);
-            window.location.href = "/checkout/error?error=Payment cancelled by user";
+            try {
+              await fetch("/api/orders", {
+                method: "DELETE",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ orderId }),
+              });
+              window.location.href =
+                "/checkout/error?error=Payment cancelled by user";
+            } catch (err) {
+              console.error("Failed to delete pending order on dismiss:", err);
+            }
           },
         },
       };
@@ -191,8 +208,14 @@ export default function CheckoutForm(props: CheckoutFormProps): React.JSX.Elemen
       <div className={styles.container}>
         <div className={styles.authWrapper}>
           <h2>Please Login to Checkout</h2>
-          <p>You need to be signed in to select a shipping address and complete your purchase.</p>
-          <Link href="/sign-in?redirect=/checkout" className={styles.btnPrimary}>
+          <p>
+            You need to be signed in to select a shipping address and complete
+            your purchase.
+          </p>
+          <Link
+            href="/sign-in?redirect=/checkout"
+            className={styles.btnPrimary}
+          >
             Sign In
           </Link>
         </div>
@@ -205,7 +228,9 @@ export default function CheckoutForm(props: CheckoutFormProps): React.JSX.Elemen
       <div className={styles.container}>
         <div className={styles.emptyCartWrapper}>
           <h2>Your Cart is Empty</h2>
-          <p>Please add some items to your cart before proceeding to checkout.</p>
+          <p>
+            Please add some items to your cart before proceeding to checkout.
+          </p>
           <Link href="/shop" className={styles.btnPrimary}>
             Back to Shop
           </Link>
@@ -214,7 +239,9 @@ export default function CheckoutForm(props: CheckoutFormProps): React.JSX.Elemen
     );
   }
 
-  const selectedAddress = addresses.find((addr) => addr.addressId === selectedAddressId);
+  const selectedAddress = addresses.find(
+    (addr) => addr.addressId === selectedAddressId,
+  );
 
   return (
     <div className={styles.container}>
@@ -251,7 +278,10 @@ export default function CheckoutForm(props: CheckoutFormProps): React.JSX.Elemen
             <div className={styles.loader}>Loading your saved addresses...</div>
           ) : addresses.length === 0 ? (
             <div className={styles.noAddressCard}>
-              <p>No saved addresses found. Please add a shipping address to proceed.</p>
+              <p>
+                No saved addresses found. Please add a shipping address to
+                proceed.
+              </p>
               <button
                 type="button"
                 onClick={() => setIsAddressDialogOpen(true)}
@@ -266,14 +296,20 @@ export default function CheckoutForm(props: CheckoutFormProps): React.JSX.Elemen
                 <div
                   key={addr.addressId}
                   className={`${styles.addressCard} ${
-                    selectedAddressId === addr.addressId ? styles.addressCardSelected : ""
+                    selectedAddressId === addr.addressId
+                      ? styles.addressCardSelected
+                      : ""
                   }`}
                   onClick={() => setSelectedAddressId(addr.addressId)}
                 >
                   <div className={styles.addressCardHeader}>
                     <span className={styles.addressName}>{addr.fullName}</span>
-                    <span className={styles.addressTag}>{addr.addressType}</span>
-                    {addr.isDefault && <span className={styles.defaultBadge}>Default</span>}
+                    <span className={styles.addressTag}>
+                      {addr.addressType}
+                    </span>
+                    {addr.isDefault && (
+                      <span className={styles.defaultBadge}>Default</span>
+                    )}
                   </div>
                   <div className={styles.addressDetails}>
                     <p>{addr.addressLine1}</p>
@@ -283,7 +319,9 @@ export default function CheckoutForm(props: CheckoutFormProps): React.JSX.Elemen
                       {addr.city}, {addr.state} - {addr.postalCode}
                     </p>
                     <p>{addr.country}</p>
-                    <p className={styles.addressPhone}>Phone: {addr.phoneNumber}</p>
+                    <p className={styles.addressPhone}>
+                      Phone: {addr.phoneNumber}
+                    </p>
                   </div>
                 </div>
               ))}
@@ -297,7 +335,9 @@ export default function CheckoutForm(props: CheckoutFormProps): React.JSX.Elemen
           <div className={styles.summaryItems}>
             {cartItems.map((item) => {
               const activePrice =
-                item.discountPrice && item.discountPrice > 0 ? item.discountPrice : item.price;
+                item.discountPrice && item.discountPrice > 0
+                  ? item.discountPrice
+                  : item.price;
               return (
                 <div
                   key={`${item.sku}-${item.selectedColor || ""}-${item.selectedSize || ""}`}
@@ -305,7 +345,11 @@ export default function CheckoutForm(props: CheckoutFormProps): React.JSX.Elemen
                 >
                   <div className={styles.itemImageWrapper}>
                     {item.image ? (
-                      <img src={item.image} alt={item.title} className={styles.itemImage} />
+                      <img
+                        src={item.image}
+                        alt={item.title}
+                        className={styles.itemImage}
+                      />
                     ) : (
                       <div className={styles.imagePlaceholder} />
                     )}
@@ -345,10 +389,12 @@ export default function CheckoutForm(props: CheckoutFormProps): React.JSX.Elemen
             <div className={styles.selectedAddressPreview}>
               <h3>Deliver to:</h3>
               <p>
-                <strong>{selectedAddress.fullName}</strong> ({selectedAddress.addressType})
+                <strong>{selectedAddress.fullName}</strong> (
+                {selectedAddress.addressType})
               </p>
               <p>
-                {selectedAddress.addressLine1}, {selectedAddress.city} - {selectedAddress.postalCode}
+                {selectedAddress.addressLine1}, {selectedAddress.city} -{" "}
+                {selectedAddress.postalCode}
               </p>
             </div>
           )}

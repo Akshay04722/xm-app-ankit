@@ -50,3 +50,30 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: error.message || "Internal server error" }, { status: 500 });
   }
 }
+
+export async function DELETE(req: NextRequest) {
+  try {
+    const { orderId } = await req.json();
+    if (!orderId) {
+      return NextResponse.json({ error: "orderId is required" }, { status: 400 });
+    }
+
+    const db = getFirestore();
+    const orderRef = db.collection("orders").doc(orderId);
+    const orderSnap = await orderRef.get();
+
+    if (orderSnap.exists) {
+      const orderData = orderSnap.data();
+      // Only delete if the order is still pending to prevent deleting success/cancelled orders
+      if (orderData?.status === "pending") {
+        await orderRef.delete();
+        return NextResponse.json({ success: true, message: "Pending order deleted successfully" });
+      }
+    }
+
+    return NextResponse.json({ success: true, message: "No pending order found to delete" });
+  } catch (error: any) {
+    console.error("DELETE /api/orders error:", error);
+    return NextResponse.json({ error: error.message || "Internal server error" }, { status: 500 });
+  }
+}

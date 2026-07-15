@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import "@/lib/firebaseAdmin";
 import { getFirestore } from "firebase-admin/firestore";
+import client from "@/lib/sitecore-client";
 
 export async function POST(req: NextRequest) {
   try {
@@ -35,47 +36,68 @@ export async function POST(req: NextRequest) {
 
     const address = addressSnap.data();
 
-    // 3. Recompute order total from Firestore product prices (never trust client prices) and build snapshot
+    // Fetch individual product details from Sitecore in parallel to avoid query complexity limits
     let recomputedSubtotal = 0;
     const cartSnapshot = [];
 
-    for (const item of cartItems) {
-      if (!item.sku) {
-        return NextResponse.json({ error: "Item SKU is missing" }, { status: 400 });
-      }
+    try {
+      const fetchPromises = cartItems.map(async (item) => {
+        const productPathOrId = item.id || item.sku;
+        if (!productPathOrId) {
+          throw new Error("Item ID or SKU is missing");
+        }
 
-      const productSnap = await db.collection("products").doc(item.sku.trim()).get();
-      if (!productSnap.exists) {
-        return NextResponse.json(
-          { error: `Product with SKU ${item.sku} not found in Firestore` },
-          { status: 400 }
-        );
-      }
+        const productQuery = `query Product($id: String!, $language: String!) {
+          item(path: $id, language: $language) {
+            id
+            name
+            title: field(name: "Title") { jsonValue }
+            sku: field(name: "SKU") { jsonValue }
+            price: field(name: "Price") { jsonValue }
+            discountPrice: field(name: "DiscountPrice") { jsonValue }
+            mainImage: field(name: "MainImage") { jsonValue }
+          }
+        }`;
 
-      const productData = productSnap.data();
-      if (!productData) {
-        return NextResponse.json({ error: "Invalid product data in database" }, { status: 500 });
-      }
+        const data = await (client as any).graphQLClient.request(productQuery, {
+          id: productPathOrId,
+          language: "en",
+        });
 
-      const price = Number(productData.price || 0);
-      const discountPrice = Number(productData.discountPrice || 0);
-      const activePrice = discountPrice > 0 ? discountPrice : price;
+        const sitecoreItem = data?.item;
+        if (!sitecoreItem) {
+          throw new Error(`Product with ID/SKU ${productPathOrId} not found in Sitecore`);
+        }
 
-      const itemTotal = activePrice * Number(item.quantity || 1);
-      recomputedSubtotal += itemTotal;
+        const price = parseFloat(sitecoreItem.price?.jsonValue?.value || "0");
+        const discountPrice = parseFloat(sitecoreItem.discountPrice?.jsonValue?.value || "0");
+        const activePrice = discountPrice > 0 ? discountPrice : price;
+        const itemTotal = activePrice * Number(item.quantity || 1);
 
-      cartSnapshot.push({
-        sku: item.sku.trim(),
-        title: productData.title || "",
-        image: productData.mainImageUrl || "",
-        price: price,
-        discountPrice: discountPrice,
-        activePrice: activePrice,
-        quantity: Number(item.quantity || 1),
-        selectedColor: item.selectedColor || "",
-        selectedSize: item.selectedSize || "",
-        itemTotal: itemTotal,
+        return {
+          id: sitecoreItem.id,
+          sku: sitecoreItem.sku?.jsonValue?.value || item.sku || "",
+          title: sitecoreItem.title?.jsonValue?.value || sitecoreItem.name,
+          image: sitecoreItem.mainImage?.jsonValue?.value?.src || "",
+          price,
+          discountPrice,
+          activePrice,
+          quantity: Number(item.quantity || 1),
+          selectedColor: item.selectedColor || "",
+          selectedSize: item.selectedSize || "",
+          itemTotal,
+        };
       });
+
+      const sitecoreProducts = await Promise.all(fetchPromises);
+
+      for (const product of sitecoreProducts) {
+        recomputedSubtotal += product.itemTotal;
+        cartSnapshot.push(product);
+      }
+    } catch (err: any) {
+      console.error("Error querying Sitecore products:", err);
+      return NextResponse.json({ error: err.message || "Failed to load product details from Sitecore" }, { status: 400 });
     }
 
     if (recomputedSubtotal <= 0) {

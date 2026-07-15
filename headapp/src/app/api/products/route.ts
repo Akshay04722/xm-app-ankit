@@ -1,8 +1,20 @@
 import { NextRequest, NextResponse } from "next/server";
 import client from "@/lib/sitecore-client";
+import "@/lib/firebaseAdmin";
+import { getFirestore } from "firebase-admin/firestore";
 
 export async function GET(req: NextRequest) {
   try {
+    const { searchParams } = new URL(req.url);
+    const skuParam = searchParams.get("sku");
+    if (skuParam) {
+      const db = getFirestore();
+      const productSnap = await db.collection("products").doc(skuParam.trim()).get();
+      // Default to 100 if the Firestore stock count is not initialized yet
+      const stockCount = productSnap.exists ? (productSnap.data()?.stockCount ?? 100) : 100;
+      return NextResponse.json({ success: true, sku: skuParam, stockCount });
+    }
+
     const query = `query AllProducts($language: String!) {
       search(
         where: {

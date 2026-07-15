@@ -23,31 +23,24 @@ export async function POST(req: NextRequest) {
     const keySecret = process.env.RAZORPAY_KEY_SECRET;
     if (!keySecret) {
       return NextResponse.json(
-        { error: "Razorpay credentials are not configured on the server." },
+        { error: "Razorpay key secret is not configured on the server" },
         { status: 500 }
       );
     }
 
-    // 2. Verify Razorpay Signature locally
-    const signData = `${razorpay_order_id}|${razorpay_payment_id}`;
-    const expectedSignature = crypto
+    // 2. Signature verification
+    const generated_signature = crypto
       .createHmac("sha256", keySecret)
-      .update(signData)
+      .update(`${razorpay_order_id}|${razorpay_payment_id}`)
       .digest("hex");
 
-    const isSignatureValid = expectedSignature === razorpay_signature;
-
-    if (!isSignatureValid) {
-      console.error("Razorpay signature verification failed.", {
-        expected: expectedSignature,
-        received: razorpay_signature,
-      });
-      return NextResponse.json({ error: "Payment verification failed" }, { status: 400 });
+    if (generated_signature !== razorpay_signature) {
+      return NextResponse.json({ error: "Invalid payment signature" }, { status: 400 });
     }
 
     const db = getFirestore();
 
-    // 3. Update order document and decrement stock count
+    // 3. Prevent duplicate order processing
     const orderRef = db.collection("orders").doc(razorpay_order_id);
     const orderSnap = await orderRef.get();
 
@@ -55,23 +48,19 @@ export async function POST(req: NextRequest) {
     let itemsToDecrement = [];
 
     if (orderSnap.exists) {
-      const orderData = orderSnap.data();
-      if (orderData?.status === "success") {
-        // Already processed, avoid duplicate stock decrement
-        return NextResponse.json({ success: true, orderId: razorpay_order_id });
+      const existingOrder = orderSnap.data();
+      if (existingOrder?.status !== "success") {
+        shouldDecrementStock = true;
+        itemsToDecrement = existingOrder?.cart || cartItems || [];
+        
+        await orderRef.update({
+          status: "success",
+          razorpay_payment_id,
+          razorpay_signature,
+          updatedAt: new Date().toISOString(),
+        });
       }
-      shouldDecrementStock = true;
-      itemsToDecrement = orderData?.cart || [];
-
-      // Update existing pending order
-      await orderRef.update({
-        status: "success",
-        razorpay_payment_id,
-        razorpay_signature,
-        updatedAt: new Date().toISOString(),
-      });
     } else {
-      // Fallback: create the full order document if it doesn't exist yet
       const addressSnap = await db
         .collection("users")
         .doc(userId)
@@ -100,15 +89,17 @@ export async function POST(req: NextRequest) {
       await orderRef.set(orderDoc);
     }
 
-    // 4. Atomic stock reduction in Firestore
+    // 4. Atomic stock reduction in both Firestore and Sitecore
     if (shouldDecrementStock && Array.isArray(itemsToDecrement) && itemsToDecrement.length > 0) {
       const batch = db.batch();
       for (const item of itemsToDecrement) {
         if (item.sku) {
+          // Firestore update (safe set merge)
           const productRef = db.collection("products").doc(item.sku.trim());
-          batch.update(productRef, {
+          batch.set(productRef, {
             stockCount: FieldValue.increment(-Number(item.quantity || 1)),
-          });
+            updatedAt: new Date().toISOString(),
+          }, { merge: true });
         }
       }
       await batch.commit();

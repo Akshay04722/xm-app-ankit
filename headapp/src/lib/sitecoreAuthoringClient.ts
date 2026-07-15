@@ -260,3 +260,25 @@ export async function triggerPublish(rootItemId: string): Promise<boolean> {
     return false;
   }
 }
+
+// --- Get current Quantity field value from Master ---
+export async function getSitecoreItemQuantity(itemId: string): Promise<number> {
+  const query = `
+    query GetItemQuantity($itemId: ID!) {
+      item(where: { database: "master", id: $itemId }) {
+        quantity: field(name: "Quantity") {
+          value
+        }
+      }
+    }
+  `;
+  try {
+    const data = await graphqlRequest(query, { itemId });
+    const val = data?.item?.quantity?.value || "";
+    if (!val.trim()) return 100; // default initial stock
+    return parseInt(val, 10) || 100;
+  } catch (err) {
+    console.error(`Error fetching quantity for item ${itemId}:`, err);
+    return 100;
+  }
+}
