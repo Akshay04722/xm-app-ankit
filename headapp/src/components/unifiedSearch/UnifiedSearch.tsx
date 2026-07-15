@@ -338,30 +338,6 @@ function UnifiedSearchComponent() {
                         )
                       )}
                     </div>
-                    {isProduct && (
-                      <button
-                        type="button"
-                        onClick={(e) => {
-                          e.preventDefault();
-                          e.stopPropagation();
-                          addToCart({
-                            id: product?.id || blog.id,
-                            sku: product?.sku || (blog.sku as string) || (blog.id as string),
-                            title: product?.title || blog.title || blog.name || "Product",
-                            price: product?.price || parseFloat((blog.price as string) || "0"),
-                            discountPrice: product?.discountPrice || parseFloat((blog.discountPrice as string) || "0"),
-                            image: productImage,
-                          });
-                          setShowSuggestions(false);
-                        }}
-                        className="flex-shrink-0 bg-[#B88E2F] hover:bg-[#a37924] text-white text-xs font-bold px-3.5 py-2 rounded-full transition-all duration-200 active:scale-95 flex items-center gap-1.5 shadow-xs hover:shadow-sm"
-                      >
-                        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
-                        </svg>
-                        Add to Cart
-                      </button>
-                    )}
                   </a>
                 );
               })}

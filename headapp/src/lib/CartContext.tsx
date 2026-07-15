@@ -32,6 +32,17 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [isCartOpen, setCartOpen] = useState(false);
   const [loaded, setLoaded] = useState(false);
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
+
+  // Auto-dismiss toast message after 3 seconds
+  useEffect(() => {
+    if (toastMessage) {
+      const timer = setTimeout(() => {
+        setToastMessage(null);
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [toastMessage]);
 
   // Load cart from localStorage on mount
   useEffect(() => {
@@ -76,6 +87,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
     });
     // Open the cart drawer so user sees their item was added successfully
     setCartOpen(true);
+    setToastMessage(`"${item.title}" added to cart successfully!`);
   };
 
   const removeFromCart = (sku: string, color?: string, size?: string) => {
@@ -127,6 +139,32 @@ export function CartProvider({ children }: { children: ReactNode }) {
       }}
     >
       {children}
+      {toastMessage && (
+        <div
+          style={{ backgroundColor: "#b88e2f", zIndex: 99999, right: "20px", top: "20px" }}
+          className="fixed text-white px-5 py-3 rounded-2xl shadow-xl flex items-center gap-2.5 font-medium text-base animate-slide-in"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            strokeWidth={2.5}
+            stroke="currentColor"
+            style={{ width: "20px", height: "20px" }}
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" d="m4.5 12.75 6 6 9-13.5" />
+          </svg>
+          <span>{toastMessage}</span>
+          <button
+            type="button"
+            onClick={() => setToastMessage(null)}
+            className="ml-2 hover:opacity-80 text-white/90 text-lg cursor-pointer"
+            style={{ background: "none", border: "none", color: "inherit", padding: 0 }}
+          >
+            &times;
+          </button>
+        </div>
+      )}
     </CartContext.Provider>
   );
 }

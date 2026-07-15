@@ -14,12 +14,16 @@ import * as Profile from 'src/components/profile/Profile';
 import * as AddressDialog from 'src/components/profile/AddressDialog';
 import * as ProductDetails from 'src/components/product-details/ProductDetails';
 import * as OurProducts from 'src/components/our-products/OurProducts';
+import * as OrdersList from 'src/components/OrdersList/OrdersList';
 import * as Navigation from 'src/components/navigation/Navigation';
 import * as Inspirations from 'src/components/inspirations/Inspirations';
 import * as Header from 'src/components/header/Header';
 import * as Footer from 'src/components/footer/Footer';
 import * as ContentBlock from 'src/components/content-block/ContentBlock';
 import * as CloudSdkBootstrap from 'src/components/CloudSdkBootstrap/CloudSdkBootstrap';
+import * as CheckoutSuccess from 'src/components/CheckoutSuccess/CheckoutSuccess';
+import * as CheckoutForm from 'src/components/CheckoutForm/CheckoutForm';
+import * as CheckoutError from 'src/components/CheckoutError/CheckoutError';
 import * as CDPProvider from 'src/components/cdp/CDPProvider';
 import * as CartDrawer from 'src/components/cart-drawer/CartDrawer';
 import * as Cart from 'src/components/cart/Cart';
@@ -42,12 +46,16 @@ export const componentMap = new Map<string, NextjsContentSdkComponent>([
   ['AddressDialog', { ...AddressDialog }],
   ['ProductDetails', { ...ProductDetails }],
   ['OurProducts', { ...OurProducts }],
+  ['OrdersList', { ...OrdersList }],
   ['Navigation', { ...Navigation }],
   ['Inspirations', { ...Inspirations }],
   ['Header', { ...Header }],
   ['Footer', { ...Footer }],
   ['ContentBlock', { ...ContentBlock }],
   ['CloudSdkBootstrap', { ...CloudSdkBootstrap }],
+  ['CheckoutSuccess', { ...CheckoutSuccess }],
+  ['CheckoutForm', { ...CheckoutForm }],
+  ['CheckoutError', { ...CheckoutError }],
   ['CDPProvider', { ...CDPProvider }],
   ['CartDrawer', { ...CartDrawer }],
   ['Cart', { ...Cart }],

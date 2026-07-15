@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { ComponentProps } from "lib/component-props";
 import { useAuth } from "@/lib/AuthContext";
 import { useProfile } from "@/hooks/useProfile";
@@ -10,6 +10,7 @@ import AddressList from "./AddressList";
 import AddressDialog from "./AddressDialog";
 import { Address } from "@/services/profileService";
 import Link from "next/link";
+import OrdersList from "../OrdersList/OrdersList";
 
 interface ProfileProps extends ComponentProps {}
 
@@ -32,6 +33,16 @@ export const Default = (props: ProfileProps): React.JSX.Element => {
 
   const [isAddressDialogOpen, setIsAddressDialogOpen] = useState(false);
   const [editingAddress, setEditingAddress] = useState<Address | null>(null);
+  const [activeTab, setActiveTab] = useState<"details" | "orders">("details");
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search);
+      if (params.get("tab") === "orders") {
+        setActiveTab("orders");
+      }
+    }
+  }, []);
 
   const handleOpenAddAddress = () => {
     setEditingAddress(null);
@@ -146,25 +157,57 @@ export const Default = (props: ProfileProps): React.JSX.Element => {
         <>
           <ProfileHeader profile={profile} />
 
-          <div className="row g-4 items-start">
-            {/* Left Side: Personal Info Form */}
-            <div className="col-12 col-md-5 col-lg-5">
-              <ProfileInfoCard profile={profile} onSave={updatePersonalInfo} saving={saving} />
-            </div>
+          {/* Tabs Navigation */}
+          <div className="flex border-b border-gray-150 mb-8 gap-8 font-poppins">
+            <button
+              type="button"
+              onClick={() => setActiveTab("details")}
+              className={`pb-3 text-[17px] font-semibold border-b-2 transition-all cursor-pointer ${
+                activeTab === "details"
+                  ? "border-amber-600 text-amber-600"
+                  : "border-transparent text-gray-400 hover:text-gray-900"
+              }`}
+            >
+              Profile Details & Addresses
+            </button>
+            <button
+              type="button"
+              onClick={() => setActiveTab("orders")}
+              className={`pb-3 text-[17px] font-semibold border-b-2 transition-all cursor-pointer ${
+                activeTab === "orders"
+                  ? "border-amber-600 text-amber-600"
+                  : "border-transparent text-gray-400 hover:text-gray-900"
+              }`}
+            >
+              My Orders
+            </button>
+          </div>
 
-            {/* Right Side: Address Management */}
-            <div className="col-12 col-md-7 col-lg-7">
-              <div className="bg-white border border-gray-100 rounded-3xl p-6 md:p-8 shadow-xs">
-                <AddressList
-                  addresses={addresses}
-                  onEditClick={handleOpenEditAddress}
-                  onMakeDefaultClick={makeAddressDefault}
-                  onAddClick={handleOpenAddAddress}
-                  disabled={saving}
-                />
+          {activeTab === "details" ? (
+            <div className="row g-4 items-start">
+              {/* Left Side: Personal Info Form */}
+              <div className="col-12 col-md-5 col-lg-5">
+                <ProfileInfoCard profile={profile} onSave={updatePersonalInfo} saving={saving} />
+              </div>
+
+              {/* Right Side: Address Management */}
+              <div className="col-12 col-md-7 col-lg-7">
+                <div className="bg-white border border-gray-100 rounded-3xl p-6 md:p-8 shadow-xs">
+                  <AddressList
+                    addresses={addresses}
+                    onEditClick={handleOpenEditAddress}
+                    onMakeDefaultClick={makeAddressDefault}
+                    onAddClick={handleOpenAddAddress}
+                    disabled={saving}
+                  />
+                </div>
               </div>
             </div>
-          </div>
+          ) : (
+            <div className="bg-white border border-gray-100 rounded-3xl p-6 md:p-8 shadow-xs">
+              <OrdersList embedded={true} />
+            </div>
+          )}
 
           {/* Add/Edit Dialog modal */}
           <AddressDialog

@@ -925,26 +925,11 @@ export const Default = (props: ShopProductsListProps): JSX.Element => {
 
                 {/* Hover Overlay */}
                 <div className={styles.overlay}>
-                  <button
-                    className={styles.addToCartBtn}
-                    onClick={() => {
-                      addToCart({
-                        id: product.id,
-                        sku: product.sku,
-                        title: product.title,
-                        price: product.price,
-                        discountPrice: product.discountPrice || undefined,
-                        image: product.mainImage,
-                      });
-                    }}
-                  >
-                    Add to cart
-                  </button>
                   <Link
                     href={`${pathname}/products/${product.sku}--${product.title}`}
                     className={styles.viewDetailsBtn}
                   >
-                    Details
+                    View Details
                   </Link>
 
                   <div className={styles.actionsContainer}>

@@ -650,9 +650,9 @@
 .viewDetailsBtn {
   width: 202px;
   height: 48px;
-  background-color: transparent;
-  color: #ffffff;
-  border: 2px solid #ffffff;
+  background-color: #ffffff;
+  color: #b88e2f;
+  border: none;
   font-size: 16px;
   font-weight: 600;
   cursor: pointer;
@@ -664,8 +664,8 @@
 }
 
 .viewDetailsBtn:hover {
-  background-color: #ffffff;
-  color: #b88e2f;
+  background-color: #b88e2f;
+  color: #ffffff;
 }
 
 .actionsContainer {

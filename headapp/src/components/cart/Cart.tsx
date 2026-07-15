@@ -17,8 +17,7 @@ export const Default = (props: any): React.JSX.Element => {
   };
 
   const handleCheckout = () => {
-    alert("Thank you for your purchase! Checkout is simulated for this demo.");
-    clearCart();
+    window.location.href = "/checkout";
   };
 
   const handleApplyCoupon = (e: React.FormEvent) => {

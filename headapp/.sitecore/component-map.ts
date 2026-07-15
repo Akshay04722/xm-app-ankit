@@ -29,6 +29,7 @@ import * as ProductDetails from 'src/components/product-details/ProductDetails';
 import * as PartialDesignDynamicPlaceholder from 'src/components/partial-design-dynamic-placeholder/PartialDesignDynamicPlaceholder';
 import * as PageContent from 'src/components/page-content/PageContent';
 import * as OurProducts from 'src/components/our-products/OurProducts';
+import * as OrdersList from 'src/components/OrdersList/OrdersList';
 import * as Navigation from 'src/components/navigation/Navigation';
 import * as LinkList from 'src/components/link-list/LinkList';
 import * as Inspirations from 'src/components/inspirations/Inspirations';
@@ -40,6 +41,9 @@ import * as ContentBlock from 'src/components/content-block/ContentBlock';
 import * as Container from 'src/components/container/Container';
 import * as ColumnSplitter from 'src/components/column-splitter/ColumnSplitter';
 import * as CloudSdkBootstrap from 'src/components/CloudSdkBootstrap/CloudSdkBootstrap';
+import * as CheckoutSuccess from 'src/components/CheckoutSuccess/CheckoutSuccess';
+import * as CheckoutForm from 'src/components/CheckoutForm/CheckoutForm';
+import * as CheckoutError from 'src/components/CheckoutError/CheckoutError';
 import * as CDPProvider from 'src/components/cdp/CDPProvider';
 import * as CartDrawer from 'src/components/cart-drawer/CartDrawer';
 import * as Cart from 'src/components/cart/Cart';
@@ -77,6 +81,7 @@ export const componentMap = new Map<string, NextjsContentSdkComponent>([
   ['PartialDesignDynamicPlaceholder', { ...PartialDesignDynamicPlaceholder }],
   ['PageContent', { ...PageContent }],
   ['OurProducts', { ...OurProducts, componentType: 'client' }],
+  ['OrdersList', { ...OrdersList, componentType: 'client' }],
   ['Navigation', { ...Navigation, componentType: 'client' }],
   ['LinkList', { ...LinkList }],
   ['Inspirations', { ...Inspirations, componentType: 'client' }],
@@ -88,6 +93,9 @@ export const componentMap = new Map<string, NextjsContentSdkComponent>([
   ['Container', { ...Container }],
   ['ColumnSplitter', { ...ColumnSplitter }],
   ['CloudSdkBootstrap', { ...CloudSdkBootstrap, componentType: 'client' }],
+  ['CheckoutSuccess', { ...CheckoutSuccess, componentType: 'client' }],
+  ['CheckoutForm', { ...CheckoutForm, componentType: 'client' }],
+  ['CheckoutError', { ...CheckoutError, componentType: 'client' }],
   ['CDPProvider', { ...CDPProvider, componentType: 'client' }],
   ['CartDrawer', { ...CartDrawer, componentType: 'client' }],
   ['Cart', { ...Cart, componentType: 'client' }],
