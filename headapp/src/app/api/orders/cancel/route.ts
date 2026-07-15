@@ -53,16 +53,61 @@ export async function POST(req: NextRequest) {
     }
 
     const previousStatus = orderData?.status;
+    const paymentId = orderData?.razorpay_payment_id;
+    let refundDetails = null;
 
-    // 6. Update order status to cancelled
+    // 6. If the order was successful, trigger a Razorpay refund
+    if (previousStatus === "success" && paymentId) {
+      const keyId = process.env.RAZORPAY_KEY_ID || process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID;
+      const keySecret = process.env.RAZORPAY_KEY_SECRET;
+
+      if (keyId && keySecret) {
+        try {
+          const auth = Buffer.from(`${keyId}:${keySecret}`).toString("base64");
+          const refundRes = await fetch(`https://api.razorpay.com/v1/payments/${paymentId}/refund`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Basic ${auth}`,
+            },
+            body: JSON.stringify({
+              notes: {
+                reason: reason.trim(),
+                orderId: orderId,
+              },
+            }),
+          });
+
+          const refundData = await refundRes.json();
+          if (refundRes.ok) {
+            console.log("Razorpay refund success:", refundData);
+            refundDetails = {
+              refundId: refundData.id,
+              status: refundData.status,
+              amount: refundData.amount / 100, // convert paise to Rupees
+              createdAt: new Date().toISOString(),
+            };
+          } else {
+            console.error("Razorpay refund API error details:", refundData);
+          }
+        } catch (refundErr) {
+          console.error("Failed calling Razorpay refund API:", refundErr);
+        }
+      } else {
+        console.error("Missing Razorpay credentials; skipping API refund call.");
+      }
+    }
+
+    // 7. Update order status to cancelled with cancellation details and refund status
     await orderRef.update({
       status: "cancelled",
       cancelReason: reason.trim(),
       cancelledAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
+      ...(refundDetails ? { refund: refundDetails } : {}),
     });
 
-    // 7. If the order was successful, revert/restore the stock counts in Firestore and Sitecore
+    // 8. If the order was successful, revert/restore the stock counts in Firestore
     if (previousStatus === "success" && Array.isArray(orderData?.cart) && orderData.cart.length > 0) {
       const batch = db.batch();
       for (const item of orderData.cart) {
