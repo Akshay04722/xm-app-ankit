@@ -71,7 +71,7 @@ export async function POST(req: NextRequest) {
 
         const price = parseFloat(sitecoreItem.price?.jsonValue?.value || "0");
         const discountPrice = parseFloat(sitecoreItem.discountPrice?.jsonValue?.value || "0");
-        const activePrice = discountPrice > 0 ? discountPrice : price;
+        const activePrice = price;
         const itemTotal = activePrice * Number(item.quantity || 1);
 
         return {

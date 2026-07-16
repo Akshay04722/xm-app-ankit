@@ -5,6 +5,8 @@ import styles from "./ProductDetails.module.css";
 import { ComponentProps } from "@/lib/component-props";
 import { useSitecore } from "@sitecore-content-sdk/nextjs";
 import { useCart } from "@/lib/CartContext";
+import { useAuth } from "@/lib/AuthContext";
+import Link from "next/link";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -50,6 +52,8 @@ export const Default = (props: ProductDetailsProps): JSX.Element => {
   const routeFields = route?.fields as Record<string, any> | undefined;
   const { addToCart } = useCart();
 
+  const sku = routeFields?.SKU?.value || "";
+
   // ---------- State ----------
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
   const [selectedColor, setSelectedColor] = useState<string | null>(null);
@@ -58,18 +62,38 @@ export const Default = (props: ProductDetailsProps): JSX.Element => {
     "description" | "additional" | "reviews"
   >("description");
   const [activeThumb, setActiveThumb] = useState(0);
-
-  // ---------- Guard ----------
-  if (!routeFields) {
-    return <NoDataFallback componentName="ProductDetails" />;
-  }
-
-  // ---------- Extract fields from route (context item) ----------
-  const title = routeFields.ProductTitle?.value || route?.name || "";
-  const sku = routeFields.SKU?.value || "";
-
-  // Real-time stock count from Firestore
   const [stockCount, setStockCount] = useState<number | null>(null);
+
+  const { user, userProfile } = useAuth();
+  const [reviews, setReviews] = useState<any[]>([]);
+  const [loadingReviews, setLoadingReviews] = useState<boolean>(true);
+  
+  // Form state
+  const [formRating, setFormRating] = useState<number>(5);
+  const [hoverRating, setHoverRating] = useState<number | null>(null);
+  const [formComment, setFormComment] = useState<string>("");
+  const [submittingReview, setSubmittingReview] = useState<boolean>(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
+  const [isEditingExisting, setIsEditingExisting] = useState<boolean>(false);
+
+  useEffect(() => {
+    if (sku) {
+      setLoadingReviews(true);
+      fetch(`/api/reviews?productId=${encodeURIComponent(sku.trim())}`)
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.success && Array.isArray(data.reviews)) {
+            setReviews(data.reviews);
+          }
+        })
+        .catch((err) => {
+          console.error("Error fetching reviews:", err);
+        })
+        .finally(() => {
+          setLoadingReviews(false);
+        });
+    }
+  }, [sku]);
 
   useEffect(() => {
     if (sku) {
@@ -83,6 +107,122 @@ export const Default = (props: ProductDetailsProps): JSX.Element => {
         .catch((err) => console.error("Error fetching stock:", err));
     }
   }, [sku]);
+
+  // ---------- Helpers for Reviews ----------
+  const getInitials = (name: string) => {
+    if (!name) return "U";
+    const parts = name.trim().split(/\s+/);
+    if (parts.length === 1) return parts[0].charAt(0).toUpperCase();
+    return (parts[0].charAt(0) + parts[parts.length - 1].charAt(0)).toUpperCase();
+  };
+
+  const getRatingCount = (stars: number) => {
+    return reviews.filter((r) => r.rating === stars).length;
+  };
+  
+  const getRatingPercentage = (stars: number) => {
+    if (reviews.length === 0) return 0;
+    return Math.round((getRatingCount(stars) / reviews.length) * 100);
+  };
+
+  const averageRating = reviews.length > 0 
+    ? Math.round((reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length) * 10) / 10
+    : 4.5; // default fallback if there are no reviews yet
+
+  const renderStars = (rating: number) => {
+    const stars = [];
+    const floor = Math.floor(rating);
+    const hasHalf = rating % 1 >= 0.4 && rating % 1 <= 0.8;
+    
+    for (let i = 1; i <= 5; i++) {
+      if (i <= floor) {
+        stars.push(<span key={i} className={styles.starFilled}>★</span>);
+      } else if (i === floor + 1 && hasHalf) {
+        stars.push(<span key={i} className={styles.starFilled} style={{ opacity: 0.6 }}>★</span>);
+      } else {
+        stars.push(<span key={i} className={styles.starEmpty}>★</span>);
+      }
+    }
+    return stars;
+  };
+
+  const existingUserReview = reviews.find((r) => r.userId === user?.uid);
+
+  const handleEditClick = () => {
+    if (existingUserReview) {
+      setFormRating(existingUserReview.rating);
+      setFormComment(existingUserReview.comment);
+      setIsEditingExisting(true);
+    }
+  };
+
+  const handleCancelEdit = () => {
+    setIsEditingExisting(false);
+    setFormRating(5);
+    setFormComment("");
+    setSubmitError(null);
+  };
+
+  const handleSubmitReview = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!user) return;
+    if (!formComment.trim()) {
+      setSubmitError("Please write a comment.");
+      return;
+    }
+    
+    setSubmittingReview(true);
+    setSubmitError(null);
+    
+    try {
+      const token = await user.getIdToken();
+      const res = await fetch("/api/reviews", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          productId: sku.trim(),
+          rating: formRating,
+          comment: formComment.trim(),
+        }),
+      });
+      
+      const data = await res.json();
+      if (!res.ok || data.error) {
+        throw new Error(data.error || "Failed to submit review.");
+      }
+      
+      setReviews((prev) => {
+        const index = prev.findIndex((r) => r.id === data.review.id);
+        if (index > -1) {
+          const updated = [...prev];
+          updated[index] = data.review;
+          updated.sort((a, b) => new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime());
+          return updated;
+        }
+        return [data.review, ...prev];
+      });
+
+      setIsEditingExisting(false);
+      setFormComment("");
+      setFormRating(5);
+    } catch (err: any) {
+      console.error("Error submitting review:", err);
+      setSubmitError(err.message || "Failed to submit review. Please try again.");
+    } finally {
+      setSubmittingReview(false);
+    }
+  };
+
+  // ---------- Guard ----------
+  if (!routeFields) {
+    return <NoDataFallback componentName="ProductDetails" />;
+  }
+
+  // ---------- Extract fields from route (context item) ----------
+  const title = routeFields.ProductTitle?.value || route?.name || "";
 
   const shortDesc = stripHtml(routeFields.ShortDescription?.value || "");
   const longDesc = stripHtml(routeFields.LongDescription?.value || "");
@@ -211,15 +351,12 @@ export const Default = (props: ProductDetailsProps): JSX.Element => {
           {/* Rating row */}
           <div className={styles.ratingRow}>
             <div className={styles.stars}>
-              {[1, 2, 3, 4].map((n) => (
-                <span key={n} className={styles.starFilled}>
-                  ★
-                </span>
-              ))}
-              <span className={styles.starEmpty}>★</span>
+              {renderStars(reviews.length > 0 ? averageRating : 0)}
             </div>
             <div className={styles.ratingDivider} />
-            <span className={styles.reviewCount}>5 Customer Review</span>
+            <span className={styles.reviewCount}>
+              {reviews.length} Customer {reviews.length === 1 ? "Review" : "Reviews"}
+            </span>
           </div>
 
           {/* Short description */}
@@ -397,7 +534,7 @@ export const Default = (props: ProductDetailsProps): JSX.Element => {
             className={`${styles.tabBtn} ${activeTab === "reviews" ? styles.tabBtnActive : ""}`}
             onClick={() => setActiveTab("reviews")}
           >
-            Reviews [5]
+            Reviews [{reviews.length}]
           </button>
         </div>
 
@@ -463,10 +600,180 @@ export const Default = (props: ProductDetailsProps): JSX.Element => {
           )}
 
           {activeTab === "reviews" && (
-            <div className={styles.tabText}>
-              <p style={{ textAlign: "center", color: "#9f9f9f" }}>
-                No reviews yet. Be the first to review this product!
-              </p>
+            <div className={styles.reviewsContainer}>
+              {/* Summary Dashboard */}
+              <div className={styles.reviewsSummary}>
+                <div className={styles.summaryScore}>
+                  <p className={styles.scoreNumber}>{reviews.length > 0 ? averageRating : "0.0"}</p>
+                  <div className={styles.summaryStars}>
+                    {renderStars(reviews.length > 0 ? averageRating : 0)}
+                  </div>
+                  <p className={styles.scoreLabel}>
+                    Based on {reviews.length} {reviews.length === 1 ? "review" : "reviews"}
+                  </p>
+                </div>
+                
+                <div className={styles.ratingBars}>
+                  {[5, 4, 3, 2, 1].map((stars) => {
+                    const percent = getRatingPercentage(stars);
+                    return (
+                      <div key={stars} className={styles.ratingBarRow}>
+                        <span className={styles.barLabel}>{stars} Star</span>
+                        <div className={styles.barTrack}>
+                          <div className={styles.barFill} style={{ width: `${percent}%` }} />
+                        </div>
+                        <span className={styles.barPercent}>{percent}%</span>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Review Form or Existing Review Display */}
+              {user ? (
+                existingUserReview && !isEditingExisting ? (
+                  <div className={styles.addReviewForm} style={{ border: "1px solid #ebdcca", backgroundColor: "#fdfbf7" }}>
+                    <h4 className={styles.formTitle}>Your Review</h4>
+                    <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "12px" }}>
+                      <div style={{ display: "flex", gap: "2px" }}>
+                        {renderStars(existingUserReview.rating)}
+                      </div>
+                      <span style={{ fontSize: "12px", color: "#9f9f9f" }}>
+                        Submitted on {new Date(existingUserReview.createdAt).toLocaleDateString("en-IN", {
+                          year: "numeric",
+                          month: "short",
+                          day: "numeric",
+                        })}
+                      </span>
+                    </div>
+                    <p style={{ fontSize: "14px", color: "#666", lineHeight: "1.6", margin: "0 0 20px", textAlign: "left" }}>
+                      {existingUserReview.comment}
+                    </p>
+                    <button
+                      type="button"
+                      onClick={handleEditClick}
+                      className={styles.submitBtn}
+                      style={{ background: "#242424" }}
+                    >
+                      Edit Review
+                    </button>
+                  </div>
+                ) : (
+                  <form onSubmit={handleSubmitReview} className={styles.addReviewForm}>
+                    <h4 className={styles.formTitle}>
+                      {isEditingExisting ? "Edit Your Review" : "Write a Review"}
+                    </h4>
+                    
+                    <div className={styles.ratingSelector}>
+                      <span className={styles.ratingSelectorLabel}>Your Rating:</span>
+                      <div className={styles.starButtons}>
+                        {[1, 2, 3, 4, 5].map((star) => {
+                          const isHighlighted = (hoverRating !== null ? star <= hoverRating : star <= formRating);
+                          return (
+                            <button
+                              key={star}
+                              type="button"
+                              className={`${styles.starBtn} ${isHighlighted ? styles.starBtnActive : ""}`}
+                              onClick={() => setFormRating(star)}
+                              onMouseEnter={() => setHoverRating(star)}
+                              onMouseLeave={() => setHoverRating(null)}
+                              aria-label={`Rate ${star} stars`}
+                            >
+                              ★
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+
+                    <div className={styles.textareaGroup}>
+                      <label htmlFor="reviewComment">Your Feedback:</label>
+                      <textarea
+                        id="reviewComment"
+                        placeholder="Share your thoughts about this product..."
+                        value={formComment}
+                        onChange={(e) => setFormComment(e.target.value)}
+                        required
+                        className={styles.formTextarea}
+                      />
+                    </div>
+
+                    {submitError && (
+                      <p style={{ color: "#9b1c1c", fontSize: "14px", marginBottom: "16px", textAlign: "left" }}>
+                        {submitError}
+                      </p>
+                    )}
+
+                    <div style={{ display: "flex", gap: "12px" }}>
+                      <button
+                        type="submit"
+                        disabled={submittingReview || !formComment.trim()}
+                        className={styles.submitBtn}
+                      >
+                        {submittingReview ? "Submitting..." : isEditingExisting ? "Update Review" : "Submit Review"}
+                      </button>
+                      
+                      {isEditingExisting && (
+                        <button
+                          type="button"
+                          onClick={handleCancelEdit}
+                          className={styles.submitBtn}
+                          style={{ backgroundColor: "transparent", color: "#666", border: "1px solid #d9d9d9" }}
+                        >
+                          Cancel
+                        </button>
+                      )}
+                    </div>
+                  </form>
+                )
+              ) : (
+                <div className={styles.signinCallout}>
+                  <p>You must be signed in to submit a review.</p>
+                  <Link
+                    href={`/sign-in?redirect=${typeof window !== "undefined" ? encodeURIComponent(window.location.pathname) : ""}`}
+                    className={styles.signinLink}
+                  >
+                    Sign In
+                  </Link>
+                </div>
+              )}
+
+              {/* Reviews List */}
+              <div className={styles.reviewsList}>
+                {loadingReviews ? (
+                  <p style={{ textAlign: "center", color: "#9f9f9f" }}>Loading reviews...</p>
+                ) : reviews.length === 0 ? (
+                  <p style={{ textAlign: "center", color: "#9f9f9f", margin: "20px 0" }}>
+                    No reviews yet. Be the first to review this product!
+                  </p>
+                ) : (
+                  reviews.map((rev) => (
+                    <div key={rev.id} className={styles.reviewCard}>
+                      <div className={styles.avatar}>
+                        {getInitials(rev.userName)}
+                      </div>
+                      <div className={styles.reviewContent}>
+                        <div className={styles.reviewHeader}>
+                          <div>
+                            <h5 className={styles.reviewerName}>{rev.userName}</h5>
+                            <div style={{ display: "flex", gap: "2px", marginTop: "4px" }}>
+                              {renderStars(rev.rating)}
+                            </div>
+                          </div>
+                          <span className={styles.reviewDate}>
+                            {rev.createdAt ? new Date(rev.createdAt).toLocaleDateString("en-IN", {
+                              year: "numeric",
+                              month: "short",
+                              day: "numeric",
+                            }) : "-"}
+                          </span>
+                        </div>
+                        <p className={styles.reviewText}>{rev.comment}</p>
+                      </div>
+                    </div>
+                  ))
+                )}
+              </div>
             </div>
           )}
         </div>
