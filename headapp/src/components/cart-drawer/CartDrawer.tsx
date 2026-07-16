@@ -138,7 +138,7 @@ export default function CartDrawer() {
                 ) : (
                   <ul role="list" className="flex flex-col gap-4">
                     {cartItems.map((item) => {
-                      const activePrice = item.discountPrice && item.discountPrice > 0 ? item.discountPrice : item.price;
+                      const activePrice = item.price;
                       return (
                         <li 
                           key={`${item.sku}-${item.selectedColor || ""}-${item.selectedSize || ""}`} 

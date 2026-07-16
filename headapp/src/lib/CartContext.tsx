@@ -141,10 +141,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const totalItems = cartItems.length;
 
   const subtotal = cartItems.reduce((sum, item) => {
-    const activePrice =
-      item.discountPrice && item.discountPrice > 0
-        ? item.discountPrice
-        : item.price;
+    const activePrice = item.price;
     return sum + activePrice * item.quantity;
   }, 0);
 

@@ -73,7 +73,7 @@ export const Default = (props: any): React.JSX.Element => {
             {/* Cart Items */}
             <div className="flex flex-col gap-5">
               {cartItems.map((item) => {
-                const activePrice = item.discountPrice && item.discountPrice > 0 ? item.discountPrice : item.price;
+                const activePrice = item.price;
                 return (
                   <div key={`${item.sku}-${item.selectedColor || ""}-${item.selectedSize || ""}`}>
                     {/* Desktop View */}

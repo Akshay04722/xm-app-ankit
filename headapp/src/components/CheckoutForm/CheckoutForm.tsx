@@ -334,10 +334,7 @@ export default function CheckoutForm(
           <h2>Order Summary</h2>
           <div className={styles.summaryItems}>
             {cartItems.map((item) => {
-              const activePrice =
-                item.discountPrice && item.discountPrice > 0
-                  ? item.discountPrice
-                  : item.price;
+              const activePrice = item.price;
               return (
                 <div
                   key={`${item.sku}-${item.selectedColor || ""}-${item.selectedSize || ""}`}

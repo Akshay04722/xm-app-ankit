@@ -482,7 +482,7 @@ function SearchResultsComponent({
                 const discountPriceFormatted = product && product.discountPrice > 0 ? `₹${product.discountPrice.toLocaleString("en-IN")}` : "";
                 const detailUrl = item.url ? item.url.replace(/^https?:\/\/[^\/]+/, "") : "#";
                 const productImage = getProductImage(item, product);
-                const discountPercent = product && product.discountPrice > 0 ? Math.round(((product.price - product.discountPrice) / product.price) * 100) : 0;
+                const discountPercent = product && product.discountPrice > product.price ? Math.round(((product.discountPrice - product.price) / product.discountPrice) * 100) : 0;
 
                 return (
                   <article key={item.id} className="search-result-card group flex flex-col justify-between h-full bg-white rounded-xl border border-gray-150 overflow-hidden shadow-xs hover:shadow-md transition-all duration-300">
