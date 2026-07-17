@@ -1,25 +1,24 @@
 import { NextRequest, NextResponse } from "next/server";
-
-const EDGE_CONTEXT_ID = process.env.SITECORE_EDGE_CONTEXT_ID || process.env.NEXT_PUBLIC_SITECORE_EDGE_CONTEXT_ID;
-const EDGE_URL = `https://edge.sitecorecloud.io/api/graphql/v1`;
+import client from "@/lib/sitecore-client";
 
 export async function POST(req: NextRequest) {
   try {
-    const { datasourceId, language } = await req.json();
+    const { datasourceId, language, first } = await req.json();
 
     if (!datasourceId) {
       return NextResponse.json({ error: "Missing datasourceId" }, { status: 400 });
     }
 
     const cleanId = datasourceId.replace(/[{}]/g, "").toLowerCase();
+    const firstCount = typeof first === "number" ? first : 20;
 
-    const query = `query ShopProductsList($datasource: String!, $language: String!) {
+    const query = `query ShopProductsList($datasource: String!, $language: String!, $first: Int) {
       datasource: item(path: $datasource, language: $language) {
-        products: children(includeTemplateIDs: ["{7D33D96A-F36D-4DF9-9091-88DD28A680D5}"], first: 100) {
+        products: children(includeTemplateIDs: ["{7D33D96A-F36D-4DF9-9091-88DD28A680D5}"], first: $first) {
           results {
             id
             name
-            title: field(name: "Title") { jsonValue }
+            title: field(name: "ProductTitle") { jsonValue }
             sku: field(name: "SKU") { jsonValue }
             shortDescription: field(name: "ShortDescription") { jsonValue }
             price: field(name: "Price") { jsonValue }
@@ -35,20 +34,13 @@ export async function POST(req: NextRequest) {
       }
     }`;
 
-    const response = await fetch(EDGE_URL, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        sc_apikey: EDGE_CONTEXT_ID || "",
-      },
-      body: JSON.stringify({
-        query,
-        variables: { datasource: cleanId, language: language || "en" },
-      }),
+    const result = await (client as any).graphQLClient.request(query, {
+      datasource: cleanId,
+      language: language || "en",
+      first: firstCount,
     });
 
-    const json = await response.json();
-    const results = json?.data?.datasource?.products?.results || [];
+    const results = result?.datasource?.products?.results || [];
 
     return NextResponse.json({ results });
   } catch (err: any) {

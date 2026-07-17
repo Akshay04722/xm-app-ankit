@@ -1,39 +1,37 @@
 "use client";
-import React, { JSX, useState } from "react";
+import React, { JSX, useState, useEffect } from "react";
 import {
-  NextImage as ContentSdkImage,
   Text,
   Field,
-  ImageField,
-  LinkField,
-  Link,
+  useSitecore,
 } from "@sitecore-content-sdk/nextjs";
 import { ComponentProps } from "lib/component-props";
-import { CompatibleLink } from "components/content-sdk/CompatibleLink";
+import { usePathname } from "next/navigation";
+import NextLink from "next/link";
+
 interface ProductItem {
+  id: string;
+  name: string;
   title?: {
     jsonValue?: Field<string>;
   };
-  subtitle?: {
+  sku?: {
     jsonValue?: Field<string>;
   };
-  image?: {
-    jsonValue?: ImageField;
+  shortDescription?: {
+    jsonValue?: Field<string>;
   };
   price?: {
-    jsonValue?: Field<string>;
+    jsonValue?: Field<number | string>;
   };
-  oldPrice?: {
-    jsonValue?: Field<string>;
-  };
-  discountTag?: {
-    jsonValue?: Field<string>;
+  discountPrice?: {
+    jsonValue?: Field<number | string>;
   };
   isNew?: {
     jsonValue?: Field<boolean | string>;
   };
-  ctaLink?: {
-    jsonValue?: LinkField;
+  mainImage?: {
+    jsonValue?: Field<string>;
   };
 }
 
@@ -42,12 +40,6 @@ interface OurProductsFields {
     datasource?: {
       title?: {
         jsonValue?: Field<string>;
-      };
-      showMoreLink?: {
-        jsonValue?: LinkField;
-      };
-      products?: {
-        results: ProductItem[];
       };
     };
   };
@@ -71,14 +63,136 @@ export const Default = (props: OurProductsProps): JSX.Element => {
   const styles = `component our-products w-full ${params.styles || ""}`.trim();
   const id = params.RenderingIdentifier;
 
+  const { page } = useSitecore();
+  const pathname = usePathname();
+
   // State to manage hover state for product cards (desktop overlay)
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+
+  // Dynamic products states
+  const [products, setProducts] = useState<ProductItem[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+
+  // Resolve current site and locale from URL path for the API call
+  const pathSegments = pathname.split("/").filter(Boolean);
+  const siteSegment = pathSegments[0] || "akshayxmc";
+  const localeSegment = pathSegments[1] || "en";
+
+  const shopLink = "/Shop";
+  const datasourcePath = `/sitecore/content/akshay/${siteSegment}/Shop/Products`;
+
+  useEffect(() => {
+    let active = true;
+    setLoading(true);
+    setError(null);
+
+    fetch("/api/shop-products", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        datasourceId: datasourcePath,
+        language: localeSegment,
+        first: 12,
+      }),
+    })
+      .then((res) => {
+        if (!res.ok) {
+          throw new Error("Failed to fetch products");
+        }
+        return res.json();
+      })
+      .then((data) => {
+        if (!active) return;
+        const results = (data.results || []) as ProductItem[];
+        // Sort descending by SKU to get the latest products
+        const sorted = results.sort((a, b) => {
+          const aSku = a.sku?.jsonValue?.value || a.name || "";
+          const bSku = b.sku?.jsonValue?.value || b.name || "";
+          return bSku.localeCompare(aSku, undefined, { numeric: true, sensitivity: "base" });
+        });
+        // Slice top 8 products
+        setProducts(sorted.slice(0, 8));
+      })
+      .catch((err) => {
+        if (!active) return;
+        console.error("Error loading products:", err);
+        setError("Failed to load products");
+      })
+      .finally(() => {
+        if (active) setLoading(false);
+      });
+
+    return () => {
+      active = false;
+    };
+  }, [datasourcePath, localeSegment]);
+
+  const formatPrice = (p: number | string | undefined) => {
+    if (!p) return "₹0";
+    const num = typeof p === "string" ? parseFloat(p) : p;
+    if (isNaN(num)) return "₹0";
+    return `₹${num.toLocaleString("en-IN")}`;
+  };
 
   if (!datasource) {
     return <NoDataFallback componentName="OurProducts" />;
   }
 
-  const products = datasource.products?.results || [];
+  if (loading) {
+    return (
+      <section className={styles} id={id || undefined}>
+        <div className="component-content max-w-[1240px] mx-auto px-4 py-12">
+          {/* Section Header */}
+          <div className="text-center mb-10">
+            {datasource.title?.jsonValue?.value && (
+              <Text
+                tag="div"
+                className="text-3xl font-bold text-[#3A3A3A] font-poppins text-center mb-8"
+                field={datasource.title.jsonValue}
+              />
+            )}
+          </div>
+
+          {/* Skeleton Grid */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-[32px] justify-items-center">
+            {Array.from({ length: 8 }).map((_, idx) => (
+              <div
+                key={idx}
+                className="w-full max-w-[285px] h-[446px] bg-[#F4F5F7] rounded-sm animate-pulse flex flex-col"
+              >
+                <div className="w-full h-[301px] bg-gray-200" />
+                <div className="p-4 flex flex-col gap-2 flex-grow">
+                  <div className="h-5 w-3/4 bg-gray-300 rounded" />
+                  <div className="h-4 w-1/2 bg-gray-300 rounded" />
+                  <div className="h-5 w-1/3 bg-gray-300 rounded mt-auto" />
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  if (error || products.length === 0) {
+    return (
+      <section className={styles} id={id || undefined}>
+        <div className="component-content max-w-[1240px] mx-auto px-4 py-12 text-center">
+          {datasource.title?.jsonValue?.value && (
+            <Text
+              tag="div"
+              className="text-3xl font-bold text-[#3A3A3A] font-poppins text-center mb-8"
+              field={datasource.title.jsonValue}
+            />
+          )}
+          <p className="text-gray-500 font-medium font-poppins">
+            {error || "No products found."}
+          </p>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section className={styles} id={id || undefined}>
@@ -97,34 +211,38 @@ export const Default = (props: OurProductsProps): JSX.Element => {
         {/* Product Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-[32px] justify-items-center">
           {products.map((product, index) => {
-            const titleField = product.title?.jsonValue;
-            const subtitleField = product.subtitle?.jsonValue;
-            const imageField = product.image?.jsonValue;
-            const priceField = product.price?.jsonValue;
-            const oldPriceField = product.oldPrice?.jsonValue;
-            const discountTagField = product.discountTag?.jsonValue;
-            const isNewField = product.isNew?.jsonValue;
-            const ctaField = product.ctaLink?.jsonValue;
+            const titleVal = product.title?.jsonValue?.value || product.name || "";
+            const descVal = product.shortDescription?.jsonValue?.value || "";
+            const priceVal = parseFloat((product.price?.jsonValue?.value as any) ?? "0");
+            const discountPriceVal = parseFloat((product.discountPrice?.jsonValue?.value as any) ?? "0");
+            const mainImageField = product.mainImage?.jsonValue;
 
-            const hasImage = !!imageField?.value?.src;
-            const isNewVal =
-              isNewField?.value === true || isNewField?.value === "1";
-            const hasDiscount = !!discountTagField?.value;
+            const imageUrl = typeof mainImageField?.value === "string"
+              ? mainImageField.value
+              : (mainImageField?.value as any)?.src || "";
+
+            const isNewVal = product.isNew?.jsonValue?.value === true || product.isNew?.jsonValue?.value === "1";
+            const hasDiscount = discountPriceVal > priceVal;
+            const discountPercent = hasDiscount
+              ? Math.round(((discountPriceVal - priceVal) / discountPriceVal) * 100)
+              : 0;
+
+            const productDetailHref = `${shopLink}/${product.sku?.jsonValue?.value || product.name}--${titleVal}`;
 
             return (
               <div
-                key={index}
+                key={product.id}
                 className="relative w-full max-w-[285px] h-[446px] flex flex-col group overflow-hidden bg-[#F4F5F7] transition-all duration-300 shadow-sm hover:shadow-md"
                 onMouseEnter={() => setHoveredIndex(index)}
                 onMouseLeave={() => setHoveredIndex(null)}
               >
                 {/* Image and Badges Container */}
                 <div className="relative w-full h-[301px] bg-gray-200 overflow-hidden">
-                  {hasImage ? (
-                    <ContentSdkImage
-                      field={imageField}
+                  {imageUrl ? (
+                    <img
+                      src={imageUrl}
                       className="object-cover w-full h-full transition-transform duration-500 group-hover:scale-105"
-                      alt=""
+                      alt={titleVal}
                     />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center text-gray-400">
@@ -136,7 +254,7 @@ export const Default = (props: OurProductsProps): JSX.Element => {
                   <div className="absolute top-4 right-4 flex flex-col gap-2 z-10">
                     {hasDiscount && (
                       <div className="w-10 h-10 flex items-center justify-center rounded-full bg-[#E97171] text-white text-[12px] font-semibold font-poppins">
-                        <Text field={discountTagField} />
+                        <span>-{discountPercent}%</span>
                       </div>
                     )}
                     {isNewVal && !hasDiscount && (
@@ -149,67 +267,51 @@ export const Default = (props: OurProductsProps): JSX.Element => {
 
                 {/* Description Box */}
                 <div className="flex flex-col flex-grow p-4 bg-[#F4F5F7]">
-                  {titleField?.value && (
-                    <Text
-                      tag="div"
-                      className="text-base font-semibold text-[#3A3A3A] font-poppins truncate mb-1"
-                      field={titleField}
-                    />
+                  {titleVal && (
+                    <h3 className="text-base font-semibold text-[#3A3A3A] font-poppins truncate mb-1">
+                      {titleVal}
+                    </h3>
                   )}
-                  {subtitleField?.value && (
-                    <Text
-                      tag="p"
-                      className="text-sm font-medium text-[#898989] font-poppins truncate mb-2"
-                      field={subtitleField}
-                    />
+                  {descVal && (
+                    <p className="text-sm font-medium text-[#898989] font-poppins truncate mb-2">
+                      {descVal}
+                    </p>
                   )}
                   <div className="flex items-center gap-4 mt-auto">
-                    {priceField?.value && (
-                      <Text
-                        tag="span"
-                        className="text-base font-semibold text-[#3A3A3A] font-poppins"
-                        field={priceField}
-                      />
-                    )}
-                    {oldPriceField?.value && (
-                      <Text
-                        tag="span"
-                        className="text-sm font-normal text-[#B0B0B0] font-poppins line-through"
-                        field={oldPriceField}
-                      />
+                    <span className="text-base font-semibold text-[#3A3A3A] font-poppins">
+                      {formatPrice(priceVal)}
+                    </span>
+                    {hasDiscount && (
+                      <span className="text-sm font-normal text-[#B0B0B0] font-poppins line-through">
+                        {formatPrice(discountPriceVal)}
+                      </span>
                     )}
                   </div>
                 </div>
 
                 {/* Hover Overlay */}
                 <div
-                  className={`absolute inset-0 bg-[#3A3A3A]/72 flex flex-col items-center justify-center gap-6 p-4 transition-all duration-300 z-20 ${
+                  className={`absolute inset-0 bg-[#3A3A3A]/72 flex flex-col items-center justify-center gap-4 p-4 transition-all duration-300 z-20 ${
                     hoveredIndex === index
                       ? "opacity-100 pointer-events-auto"
                       : "opacity-0 pointer-events-none group-focus-within:opacity-100 group-focus-within:pointer-events-auto"
                   }`}
                 >
-                  {/* CTA button (Add to cart) */}
-                  {ctaField?.value?.href ? (
-                    <Link
-                      field={ctaField}
-                      className="w-[202px] h-[48px] flex items-center justify-center bg-white text-[#B88E2F] font-semibold text-[16px] font-poppins transition-colors duration-300 hover:bg-[#B88E2F] hover:text-white"
-                    >
-                      {ctaField.value.text || "Add to cart"}
-                    </Link>
-                  ) : (
-                    <button className="w-[202px] h-[48px] flex items-center justify-center bg-white text-[#B88E2F] font-semibold text-[16px] font-poppins transition-colors duration-300 hover:bg-[#B88E2F] hover:text-white">
-                      Add to cart
-                    </button>
-                  )}
+                  {/* Details Button */}
+                  <NextLink
+                    href={productDetailHref}
+                    className="w-[202px] h-[48px] flex items-center justify-center bg-white text-[#B88E2F] font-semibold text-[16px] font-poppins transition-colors duration-300 hover:bg-[#B88E2F] hover:text-white"
+                  >
+                    Details
+                  </NextLink>
 
                   {/* Secondary Actions (Share, Compare, Like) */}
-                  <div className="flex items-center gap-5 text-white font-semibold text-[16px] font-poppins">
+                  <div className="flex items-center gap-5 text-white font-semibold text-[12px] font-poppins mt-2">
                     {/* Share */}
                     <button className="flex items-center gap-1 hover:text-[#B88E2F] transition-colors duration-300">
                       <svg
-                        width="16"
-                        height="16"
+                        width="12"
+                        height="12"
                         viewBox="0 0 24 24"
                         fill="currentColor"
                         aria-hidden="true"
@@ -221,8 +323,8 @@ export const Default = (props: OurProductsProps): JSX.Element => {
                     {/* Compare */}
                     <button className="flex items-center gap-1 hover:text-[#B88E2F] transition-colors duration-300">
                       <svg
-                        width="16"
-                        height="16"
+                        width="12"
+                        height="12"
                         viewBox="0 0 24 24"
                         fill="none"
                         stroke="currentColor"
@@ -236,8 +338,8 @@ export const Default = (props: OurProductsProps): JSX.Element => {
                     {/* Like */}
                     <button className="flex items-center gap-1 hover:text-[#B88E2F] transition-colors duration-300">
                       <svg
-                        width="16"
-                        height="16"
+                        width="12"
+                        height="12"
                         viewBox="0 0 24 24"
                         fill="currentColor"
                         aria-hidden="true"
@@ -255,18 +357,12 @@ export const Default = (props: OurProductsProps): JSX.Element => {
 
         {/* Section Footer (Show More CTA) */}
         <div className="flex justify-center mt-12">
-          {datasource.showMoreLink?.jsonValue?.value?.href ? (
-            <CompatibleLink
-              field={datasource.showMoreLink.jsonValue}
-              className="w-[245px] h-[48px] flex items-center justify-center border border-[#B88E2F] bg-white text-[#B88E2F] font-semibold text-[16px] font-poppins transition-all duration-300 hover:bg-[#B88E2F] hover:text-white"
-            >
-              {datasource.showMoreLink.jsonValue?.value?.text || "Show More"}
-            </CompatibleLink>
-          ) : (
-            <button className="w-[245px] h-[48px] flex items-center justify-center border border-[#B88E2F] bg-white text-[#B88E2F] font-semibold text-[16px] font-poppins transition-all duration-300 hover:bg-[#B88E2F] hover:text-white">
-              Show More
-            </button>
-          )}
+          <NextLink
+            href={shopLink}
+            className="w-[245px] h-[48px] flex items-center justify-center border border-[#B88E2F] bg-white text-[#B88E2F] font-semibold text-[16px] font-poppins transition-all duration-300 hover:bg-[#B88E2F] hover:text-white"
+          >
+            Show More
+          </NextLink>
         </div>
       </div>
     </section>
