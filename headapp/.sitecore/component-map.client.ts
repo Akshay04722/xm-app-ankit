@@ -20,6 +20,7 @@ import * as Inspirations from 'src/components/inspirations/Inspirations';
 import * as Header from 'src/components/header/Header';
 import * as Footer from 'src/components/footer/Footer';
 import * as ContentBlock from 'src/components/content-block/ContentBlock';
+import * as ContactUs from 'src/components/contact-us/ContactUs';
 import * as CloudSdkBootstrap from 'src/components/CloudSdkBootstrap/CloudSdkBootstrap';
 import * as CheckoutSuccess from 'src/components/CheckoutSuccess/CheckoutSuccess';
 import * as CheckoutForm from 'src/components/CheckoutForm/CheckoutForm';
@@ -52,6 +53,7 @@ export const componentMap = new Map<string, NextjsContentSdkComponent>([
   ['Header', { ...Header }],
   ['Footer', { ...Footer }],
   ['ContentBlock', { ...ContentBlock }],
+  ['ContactUs', { ...ContactUs }],
   ['CloudSdkBootstrap', { ...CloudSdkBootstrap }],
   ['CheckoutSuccess', { ...CheckoutSuccess }],
   ['CheckoutForm', { ...CheckoutForm }],

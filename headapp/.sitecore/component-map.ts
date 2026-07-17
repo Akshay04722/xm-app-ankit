@@ -39,6 +39,7 @@ import * as Header from 'src/components/header/Header';
 import * as Footer from 'src/components/footer/Footer';
 import * as ContentBlock from 'src/components/content-block/ContentBlock';
 import * as Container from 'src/components/container/Container';
+import * as ContactUs from 'src/components/contact-us/ContactUs';
 import * as ColumnSplitter from 'src/components/column-splitter/ColumnSplitter';
 import * as CloudSdkBootstrap from 'src/components/CloudSdkBootstrap/CloudSdkBootstrap';
 import * as CheckoutSuccess from 'src/components/CheckoutSuccess/CheckoutSuccess';
@@ -91,6 +92,7 @@ export const componentMap = new Map<string, NextjsContentSdkComponent>([
   ['Footer', { ...Footer, componentType: 'client' }],
   ['ContentBlock', { ...ContentBlock, componentType: 'client' }],
   ['Container', { ...Container }],
+  ['ContactUs', { ...ContactUs, componentType: 'client' }],
   ['ColumnSplitter', { ...ColumnSplitter }],
   ['CloudSdkBootstrap', { ...CloudSdkBootstrap, componentType: 'client' }],
   ['CheckoutSuccess', { ...CheckoutSuccess, componentType: 'client' }],
