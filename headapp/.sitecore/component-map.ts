@@ -13,6 +13,7 @@ import * as ShopBanner from 'src/components/shop-banner/ShopBanner';
 import * as ShareSetup from 'src/components/share-setup/ShareSetup';
 import * as SearchResults from 'src/components/searchResults/SearchResults';
 import * as RowSplitter from 'src/components/row-splitter/RowSplitter';
+import * as RoomVisualizer from 'src/components/room-visualizer/RoomVisualizer';
 import * as RichText from 'src/components/rich-text/RichText';
 import * as Register from 'src/components/register/Register';
 import * as RecentlyViewedCdp from 'src/components/recently-viewed-cdp/RecentlyViewedCdp';
@@ -54,6 +55,7 @@ import * as BrowseTheRange from 'src/components/browse-the-range/BrowseTheRange'
 import * as BlogDetail from 'src/components/blog-detail/BlogDetail';
 import * as Blog from 'src/components/blog/Blog';
 import * as AdminDashboard from 'src/components/admin-dashboard/AdminDashboard';
+import * as AboutUs from 'src/components/about-us/AboutUs';
 
 export const componentMap = new Map<string, NextjsContentSdkComponent>([
   ['BYOCWrapper', BYOCServerWrapper],
@@ -68,6 +70,7 @@ export const componentMap = new Map<string, NextjsContentSdkComponent>([
   ['ShareSetup', { ...ShareSetup }],
   ['SearchResults', { ...SearchResults, componentType: 'client' }],
   ['RowSplitter', { ...RowSplitter }],
+  ['RoomVisualizer', { ...RoomVisualizer, componentType: 'client' }],
   ['RichText', { ...RichText }],
   ['Register', { ...Register, componentType: 'client' }],
   ['RecentlyViewedCdp', { ...RecentlyViewedCdp, componentType: 'client' }],
@@ -109,6 +112,7 @@ export const componentMap = new Map<string, NextjsContentSdkComponent>([
   ['BlogDetail', { ...BlogDetail, componentType: 'client' }],
   ['Blog', { ...Blog, componentType: 'client' }],
   ['AdminDashboard', { ...AdminDashboard, componentType: 'client' }],
+  ['AboutUs', { ...AboutUs, componentType: 'client' }],
 ]);
 
 export default componentMap;

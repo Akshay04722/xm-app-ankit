@@ -1,0 +1,45 @@
+.gridContainer {
+  display: grid;
+  grid-template-cols: 1fr;
+  gap: 40px;
+}
+
+@media (min-width: 1024px) {
+  .gridContainer {
+    grid-template-cols: 2.5fr 1fr;
+  }
+}
+
+.canvasWrapper {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  background-color: #E8E8E8;
+  background-size: cover;
+  background-position: center;
+  border-radius: 12px;
+  box-shadow: inset 0 0 40px rgba(0, 0, 0, 0.15);
+  overflow: hidden;
+  border: 1px solid #D9D9D9;
+}
+
+@media (max-width: 768px) {
+  .canvasWrapper {
+    aspect-ratio: 4 / 3;
+  }
+}
+
+.renderCanvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 10;
+  cursor: grab;
+  touch-action: none;
+}
+
+.renderCanvas:active {
+  cursor: grabbing;
+}

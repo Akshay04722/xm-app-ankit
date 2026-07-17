@@ -7,6 +7,7 @@ import * as UnifiedSearch from 'src/components/unifiedSearch/UnifiedSearch';
 import * as SignIn from 'src/components/sign-in/SignIn';
 import * as ShopProductsList from 'src/components/shop-products-list/ShopProductsList';
 import * as SearchResults from 'src/components/searchResults/SearchResults';
+import * as RoomVisualizer from 'src/components/room-visualizer/RoomVisualizer';
 import * as Register from 'src/components/register/Register';
 import * as RecentlyViewedCdp from 'src/components/recently-viewed-cdp/RecentlyViewedCdp';
 import * as ProfileForm from 'src/components/profile/ProfileForm';
@@ -33,6 +34,7 @@ import * as Cart from 'src/components/cart/Cart';
 import * as BlogDetail from 'src/components/blog-detail/BlogDetail';
 import * as Blog from 'src/components/blog/Blog';
 import * as AdminDashboard from 'src/components/admin-dashboard/AdminDashboard';
+import * as AboutUs from 'src/components/about-us/AboutUs';
 
 export const componentMap = new Map<string, NextjsContentSdkComponent>([
   ['BYOCWrapper', BYOCClientWrapper],
@@ -42,6 +44,7 @@ export const componentMap = new Map<string, NextjsContentSdkComponent>([
   ['SignIn', { ...SignIn }],
   ['ShopProductsList', { ...ShopProductsList }],
   ['SearchResults', { ...SearchResults }],
+  ['RoomVisualizer', { ...RoomVisualizer }],
   ['Register', { ...Register }],
   ['RecentlyViewedCdp', { ...RecentlyViewedCdp }],
   ['ProfileForm', { ...ProfileForm }],
@@ -68,6 +71,7 @@ export const componentMap = new Map<string, NextjsContentSdkComponent>([
   ['BlogDetail', { ...BlogDetail }],
   ['Blog', { ...Blog }],
   ['AdminDashboard', { ...AdminDashboard }],
+  ['AboutUs', { ...AboutUs }],
 ]);
 
 export default componentMap;

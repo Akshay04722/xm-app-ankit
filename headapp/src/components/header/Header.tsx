@@ -397,6 +397,13 @@ export const Default = (props: HeaderProps): JSX.Element => {
             label: { value: "Contact" },
           },
         },
+        {
+          id: "default-visualizer",
+          fields: {
+            link: { value: { href: "/room-visualizer" } },
+            label: { value: "Room Visualizer" },
+          },
+        },
       ];
 
   const ctaLinkField = fields?.["CTA Link"] ||

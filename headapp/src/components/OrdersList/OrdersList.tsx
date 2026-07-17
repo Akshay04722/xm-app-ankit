@@ -333,6 +333,131 @@ export default function OrdersList({ embedded = false }: OrdersListProps): React
     fetchOrders();
   }, [user]);
 
+  const handleDownloadInvoice = (order: Order) => {
+    const printWindow = window.open("", "_blank");
+    if (!printWindow) {
+      alert("Please allow popups to download/print the invoice.");
+      return;
+    }
+
+    const itemsHtml = order.cart
+      ?.map(
+        (item) => `
+      <tr>
+        <td style="padding: 12px; border-bottom: 1px solid #eee;">
+          <strong>${item.title}</strong><br/>
+          <small style="color: #666;">SKU: ${item.sku} ${item.selectedColor ? `| Color: ${item.selectedColor}` : ""} ${item.selectedSize ? `| Size: ${item.selectedSize}` : ""}</small>
+        </td>
+        <td style="padding: 12px; border-bottom: 1px solid #eee; text-align: center;">${item.quantity}</td>
+        <td style="padding: 12px; border-bottom: 1px solid #eee; text-align: right;">₹${item.activePrice.toLocaleString("en-IN")}</td>
+        <td style="padding: 12px; border-bottom: 1px solid #eee; text-align: right;">₹${item.itemTotal.toLocaleString("en-IN")}</td>
+      </tr>
+    `
+      )
+      .join("");
+
+    const invoiceContent = `
+      <html>
+        <head>
+          <title>Invoice - ${order.id}</title>
+          <style>
+            body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 40px; color: #3A3A3A; line-height: 1.6; }
+            .header { display: flex; justify-content: space-between; border-bottom: 2px solid #B88E2F; padding-bottom: 20px; margin-bottom: 30px; }
+            .logo { font-size: 28px; font-weight: bold; color: #B88E2F; }
+            .invoice-title { font-size: 24px; text-transform: uppercase; color: #333; text-align: right; }
+            .meta-grid { display: grid; grid-template-cols: 1fr 1fr; gap: 40px; margin-bottom: 40px; }
+            .meta-block h4 { margin: 0 0 10px 0; color: #B88E2F; border-bottom: 1px solid #ddd; padding-bottom: 5px; }
+            .meta-block p { margin: 4px 0; font-size: 14px; }
+            table { width: 100%; border-collapse: collapse; margin-bottom: 40px; }
+            th { background-color: #FAF4EB; color: #B88E2F; padding: 12px; text-align: left; font-weight: 600; }
+            .total-table { width: 300px; margin-left: auto; font-size: 16px; }
+            .total-row { display: flex; justify-content: space-between; padding: 8px 0; }
+            .total-row-final { font-size: 20px; font-weight: bold; color: #B88E2F; border-top: 2px solid #B88E2F; padding-top: 10px; }
+            .footer { text-align: center; margin-top: 80px; font-size: 12px; color: #898989; border-top: 1px solid #eee; padding-top: 20px; }
+            @media print {
+              body { padding: 0; }
+              .no-print { display: none; }
+            }
+          </style>
+        </head>
+        <body>
+          <div class="no-print" style="margin-bottom: 20px; display: flex; gap: 10px;">
+            <button onclick="window.print()" style="padding: 10px 20px; background-color: #B88E2F; color: white; border: none; font-weight: bold; cursor: pointer; border-radius: 4px;">Print / Save as PDF</button>
+            <button onclick="window.close()" style="padding: 10px 20px; background-color: #FAF4EB; color: #B88E2F; border: 1px solid #B88E2F; font-weight: bold; cursor: pointer; border-radius: 4px;">Close Window</button>
+          </div>
+          <div class="header">
+            <div>
+              <div class="logo">Furniro.</div>
+              <p style="margin: 5px 0 0 0; font-size: 12px; color: #898989;">Premium Home & Living Spaces</p>
+            </div>
+            <div>
+              <div class="invoice-title">Tax Invoice</div>
+              <p style="margin: 5px 0 0 0; font-size: 14px; text-align: right;"><strong>Order ID:</strong> ${order.id}</p>
+              <p style="margin: 5px 0 0 0; font-size: 14px; text-align: right;"><strong>Date:</strong> ${new Date(order.createdAt).toLocaleDateString("en-IN")}</p>
+            </div>
+          </div>
+          <div class="meta-grid">
+            <div class="meta-block">
+              <h4>Billed To:</h4>
+              <p><strong>Name:</strong> ${order.address?.fullName || "Guest Customer"}</p>
+              <p><strong>Address:</strong> ${order.address?.addressLine1 || ""}</p>
+              ${order.address?.addressLine2 ? `<p>${order.address.addressLine2}</p>` : ""}
+              <p>${order.address?.city || ""}, ${order.address?.state || ""} - ${order.address?.postalCode || ""}</p>
+              <p><strong>Country:</strong> ${order.address?.country || ""}</p>
+              <p><strong>Phone:</strong> ${order.address?.phoneNumber || ""}</p>
+            </div>
+            <div class="meta-block">
+              <h4>Payment Details:</h4>
+              <p><strong>Status:</strong> Successful</p>
+              <p><strong>Payment ID:</strong> ${order.razorpay_payment_id || "N/A"}</p>
+              <p><strong>Order ID:</strong> ${order.razorpay_order_id || "N/A"}</p>
+              <p><strong>Delivery Method:</strong> Free Standard Shipping</p>
+            </div>
+          </div>
+          <table>
+            <thead>
+              <tr>
+                <th style="width: 50%;">Item Details</th>
+                <th style="width: 10%; text-align: center;">Qty</th>
+                <th style="width: 20%; text-align: right;">Unit Price</th>
+                <th style="width: 20%; text-align: right;">Total</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${itemsHtml}
+            </tbody>
+          </table>
+          <div class="total-table">
+            <div class="total-row">
+              <span>Subtotal:</span>
+              <span>₹${order.amount.toLocaleString("en-IN")}</span>
+            </div>
+            <div class="total-row">
+              <span>Shipping:</span>
+              <span style="color: green; font-weight: bold;">FREE</span>
+            </div>
+            <div class="total-row total-row-final">
+              <span>Total Paid:</span>
+              <span>₹${order.amount.toLocaleString("en-IN")}</span>
+            </div>
+          </div>
+          <div class="footer">
+            <p>Thank you for shopping with Furniro! If you have any questions about this invoice, please contact support.</p>
+            <p>&copy; 2026 Furniro Ltd. All rights reserved.</p>
+          </div>
+          <script>
+            window.onload = function() {
+              window.print();
+            }
+          </script>
+        </body>
+      </html>
+    `;
+
+    printWindow.document.write(invoiceContent);
+    printWindow.document.close();
+  };
+
   const formatPrice = (priceVal: number) => {
     return `₹${priceVal.toLocaleString("en-IN")}`;
   };
@@ -445,6 +570,16 @@ export default function OrdersList({ embedded = false }: OrdersListProps): React
                         className={styles.btnPayNow}
                       >
                         Pay Now
+                      </button>
+                    )}
+                    {order.status === "success" && (
+                      <button
+                        type="button"
+                        onClick={() => handleDownloadInvoice(order)}
+                        className={styles.btnDetails}
+                        style={{ marginRight: "8px", backgroundColor: "#B88E2F", color: "white", border: "1px solid #B88E2F" }}
+                      >
+                        Invoice
                       </button>
                     )}
                     <button
@@ -638,14 +773,24 @@ export default function OrdersList({ embedded = false }: OrdersListProps): React
                         </button>
                       )}
                       {selectedOrder.status === "success" && (
-                        <button
-                          type="button"
-                          onClick={() => setReturningOrderId(selectedOrder.id)}
-                          className={styles.btnReturn}
-                          disabled={cancelLoading || returnLoading}
-                        >
-                          Return Order
-                        </button>
+                        <>
+                          <button
+                            type="button"
+                            onClick={() => handleDownloadInvoice(selectedOrder)}
+                            className={styles.btnReturn}
+                            style={{ backgroundColor: "#B88E2F", color: "white", border: "1px solid #B88E2F" }}
+                          >
+                            Download Invoice
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setReturningOrderId(selectedOrder.id)}
+                            className={styles.btnReturn}
+                            disabled={cancelLoading || returnLoading}
+                          >
+                            Return Order
+                          </button>
+                        </>
                       )}
                       <button
                         type="button"
