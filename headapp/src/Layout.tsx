@@ -17,6 +17,8 @@ import {
 import StructuredData from "src/components/structured-data/StructuredData";
 import type { JsonLdValue } from "src/lib/structured-data/jsonld";
 import { getBaseUrl } from "src/lib/utils";
+import Chatbot from "components/chatbot/Chatbot";
+import RecentlyViewedCdp from "components/recently-viewed-cdp/RecentlyViewedCdp";
 
 interface LayoutProps {
   page: Page;
@@ -58,6 +60,8 @@ const Layout = ({ page, baseUrl: baseUrlProp }: LayoutProps): JSX.Element => {
     undefined,
     "Furniro demo site showcasing component examples",
   );
+  
+  const isHome = route?.name === "Home";
 
   return (
     <>
@@ -104,6 +108,7 @@ const Layout = ({ page, baseUrl: baseUrlProp }: LayoutProps): JSX.Element => {
                   />
                 )}
               </div>
+              {isHome && <RecentlyViewedCdp />}
             </main>
             <footer>
               <div id="footer">
@@ -117,6 +122,7 @@ const Layout = ({ page, baseUrl: baseUrlProp }: LayoutProps): JSX.Element => {
                 )}
               </div>
             </footer>
+            <Chatbot />
           </>
         )}
       </div>

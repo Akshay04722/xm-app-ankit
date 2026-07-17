@@ -8,6 +8,7 @@ import * as SignIn from 'src/components/sign-in/SignIn';
 import * as ShopProductsList from 'src/components/shop-products-list/ShopProductsList';
 import * as SearchResults from 'src/components/searchResults/SearchResults';
 import * as Register from 'src/components/register/Register';
+import * as RecentlyViewedCdp from 'src/components/recently-viewed-cdp/RecentlyViewedCdp';
 import * as ProfileForm from 'src/components/profile/ProfileForm';
 import * as ProfileCompletionDialog from 'src/components/profile/ProfileCompletionDialog';
 import * as Profile from 'src/components/profile/Profile';
@@ -25,6 +26,7 @@ import * as CloudSdkBootstrap from 'src/components/CloudSdkBootstrap/CloudSdkBoo
 import * as CheckoutSuccess from 'src/components/CheckoutSuccess/CheckoutSuccess';
 import * as CheckoutForm from 'src/components/CheckoutForm/CheckoutForm';
 import * as CheckoutError from 'src/components/CheckoutError/CheckoutError';
+import * as Chatbot from 'src/components/chatbot/Chatbot';
 import * as CDPProvider from 'src/components/cdp/CDPProvider';
 import * as CartDrawer from 'src/components/cart-drawer/CartDrawer';
 import * as Cart from 'src/components/cart/Cart';
@@ -41,6 +43,7 @@ export const componentMap = new Map<string, NextjsContentSdkComponent>([
   ['ShopProductsList', { ...ShopProductsList }],
   ['SearchResults', { ...SearchResults }],
   ['Register', { ...Register }],
+  ['RecentlyViewedCdp', { ...RecentlyViewedCdp }],
   ['ProfileForm', { ...ProfileForm }],
   ['ProfileCompletionDialog', { ...ProfileCompletionDialog }],
   ['Profile', { ...Profile }],
@@ -58,6 +61,7 @@ export const componentMap = new Map<string, NextjsContentSdkComponent>([
   ['CheckoutSuccess', { ...CheckoutSuccess }],
   ['CheckoutForm', { ...CheckoutForm }],
   ['CheckoutError', { ...CheckoutError }],
+  ['Chatbot', { ...Chatbot }],
   ['CDPProvider', { ...CDPProvider }],
   ['CartDrawer', { ...CartDrawer }],
   ['Cart', { ...Cart }],

@@ -7,6 +7,7 @@ import { useSitecore } from "@sitecore-content-sdk/nextjs";
 import { useCart } from "@/lib/CartContext";
 import { useAuth } from "@/lib/AuthContext";
 import Link from "next/link";
+import { useRecentlyViewedCdp } from "@/components/cdp/CDPProvider";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -51,8 +52,23 @@ export const Default = (props: ProductDetailsProps): JSX.Element => {
   const route = page?.layout?.sitecore?.route;
   const routeFields = route?.fields as Record<string, any> | undefined;
   const { addToCart } = useCart();
+  const { trackPostClick } = useRecentlyViewedCdp();
 
   const sku = routeFields?.SKU?.value || "";
+
+  useEffect(() => {
+    if (sku && routeFields) {
+      const titleVal = routeFields.ProductTitle?.value || route?.name || "";
+      const imageVal = routeFields.MainImage?.value || "";
+      
+      trackPostClick({
+        id: sku,
+        title: titleVal,
+        imageSrc: imageVal,
+        href: window.location.pathname,
+      }).catch((err) => console.warn("Failed to track product view in CDP:", err));
+    }
+  }, [sku, routeFields, trackPostClick, route?.name]);
 
   // ---------- State ----------
   const [selectedSize, setSelectedSize] = useState<string | null>(null);

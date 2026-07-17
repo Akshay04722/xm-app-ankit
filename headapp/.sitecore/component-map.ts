@@ -15,6 +15,7 @@ import * as SearchResults from 'src/components/searchResults/SearchResults';
 import * as RowSplitter from 'src/components/row-splitter/RowSplitter';
 import * as RichText from 'src/components/rich-text/RichText';
 import * as Register from 'src/components/register/Register';
+import * as RecentlyViewedCdp from 'src/components/recently-viewed-cdp/RecentlyViewedCdp';
 import * as Promo from 'src/components/promo/Promo';
 import * as ProfileInfoCard from 'src/components/profile/ProfileInfoCard';
 import * as ProfileHeader from 'src/components/profile/ProfileHeader';
@@ -45,6 +46,7 @@ import * as CloudSdkBootstrap from 'src/components/CloudSdkBootstrap/CloudSdkBoo
 import * as CheckoutSuccess from 'src/components/CheckoutSuccess/CheckoutSuccess';
 import * as CheckoutForm from 'src/components/CheckoutForm/CheckoutForm';
 import * as CheckoutError from 'src/components/CheckoutError/CheckoutError';
+import * as Chatbot from 'src/components/chatbot/Chatbot';
 import * as CDPProvider from 'src/components/cdp/CDPProvider';
 import * as CartDrawer from 'src/components/cart-drawer/CartDrawer';
 import * as Cart from 'src/components/cart/Cart';
@@ -68,6 +70,7 @@ export const componentMap = new Map<string, NextjsContentSdkComponent>([
   ['RowSplitter', { ...RowSplitter }],
   ['RichText', { ...RichText }],
   ['Register', { ...Register, componentType: 'client' }],
+  ['RecentlyViewedCdp', { ...RecentlyViewedCdp, componentType: 'client' }],
   ['Promo', { ...Promo }],
   ['ProfileInfoCard', { ...ProfileInfoCard }],
   ['ProfileHeader', { ...ProfileHeader }],
@@ -98,6 +101,7 @@ export const componentMap = new Map<string, NextjsContentSdkComponent>([
   ['CheckoutSuccess', { ...CheckoutSuccess, componentType: 'client' }],
   ['CheckoutForm', { ...CheckoutForm, componentType: 'client' }],
   ['CheckoutError', { ...CheckoutError, componentType: 'client' }],
+  ['Chatbot', { ...Chatbot, componentType: 'client' }],
   ['CDPProvider', { ...CDPProvider, componentType: 'client' }],
   ['CartDrawer', { ...CartDrawer, componentType: 'client' }],
   ['Cart', { ...Cart, componentType: 'client' }],
