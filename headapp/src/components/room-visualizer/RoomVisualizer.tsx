@@ -1,4 +1,5 @@
 "use client";
+import { useTranslations } from "next-intl";
 import React, { useState, useEffect, useRef, JSX } from "react";
 import { ComponentProps } from "lib/component-props";
 import styles from "./RoomVisualizer.module.css";
@@ -93,6 +94,8 @@ function rotateX(p: Point3D, angleDeg: number): Point3D {
 }
 
 export const Default = (props: RoomVisualizerProps): JSX.Element => {
+  const t = useTranslations(process.env.NEXT_PUBLIC_DEFAULT_SITE_NAME);
+
   const { params } = props;
   const renderId = params.RenderingIdentifier;
 
@@ -564,8 +567,8 @@ export const Default = (props: RoomVisualizerProps): JSX.Element => {
       <div className="relative w-full h-[220px] bg-[url('https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?q=80&w=1200')] bg-cover bg-center flex flex-col items-center justify-center">
         <div className="absolute inset-0 bg-white/70 backdrop-blur-[2px]" />
         <div className="relative z-10 flex flex-col items-center text-center px-4">
-          <h1 className="text-[40px] font-semibold text-black font-poppins mb-1">Interactive 3D Room Styling Sandbox</h1>
-          <p className="text-black/60 font-poppins text-[15px]">Rotate, scale, position, and customize premium 3D furniture models inside your room</p>
+          <h1 className="text-[40px] font-semibold text-black font-poppins mb-1">{t('RoomVisualizer-Interactive3dRoomStyling')}</h1>
+          <p className="text-black/60 font-poppins text-[15px]">{t('RoomVisualizer-RotateScalePositionAnd')}</p>
         </div>
       </div>
 
@@ -578,7 +581,7 @@ export const Default = (props: RoomVisualizerProps): JSX.Element => {
             {/* Toolbar Settings */}
             <div className="flex flex-wrap items-center justify-between gap-4 p-4 bg-[#F4F5F7] rounded-lg">
               <div className="flex items-center gap-3">
-                <span className="text-sm font-medium text-black/60 font-poppins">Select Room Scene:</span>
+                <span className="text-sm font-medium text-black/60 font-poppins">{t('RoomVisualizer-SelectRoomScene')}</span>
                 {ROOM_TEMPLATES.map((tmpl) => (
                   <button
                     key={tmpl.name}
@@ -601,7 +604,7 @@ export const Default = (props: RoomVisualizerProps): JSX.Element => {
                     <polyline points="17 8 12 3 7 8" />
                     <line x1="12" y1="3" x2="12" y2="15" />
                   </svg>
-                  Upload Scene
+                  {t('RoomVisualizer-UploadScene')}
                   <input type="file" accept="image/*" onChange={handleBgUpload} className="hidden" />
                 </label>
 
@@ -609,7 +612,7 @@ export const Default = (props: RoomVisualizerProps): JSX.Element => {
                   onClick={clearCanvas}
                   className="px-3 py-1.5 bg-red-50 text-red-600 border border-red-200 hover:bg-red-100 rounded-md text-xs font-semibold font-poppins transition-colors"
                 >
-                  Clear Sandbox
+                  {t('RoomVisualizer-ClearSandbox')}
                 </button>
               </div>
             </div>
@@ -637,9 +640,9 @@ export const Default = (props: RoomVisualizerProps): JSX.Element => {
               {activeItems.length === 0 && (
                 <div className="absolute inset-0 flex items-center justify-center pointer-events-none bg-black/10 select-none">
                   <div className="p-6 bg-white/95 backdrop-blur-sm rounded-lg text-center shadow-lg max-w-[340px]">
-                    <span className="block text-[#B88E2F] font-bold font-poppins text-lg mb-2">3D Design Playground</span>
+                    <span className="block text-[#B88E2F] font-bold font-poppins text-lg mb-2">{t('RoomVisualizer-3dDesignPlayground')}</span>
                     <span className="text-xs font-poppins text-black/60 leading-relaxed block">
-                      Choose a room background, add 3D furniture from the catalog sidebar, drag items to place them, and rotate them in 3D space!
+                      {t('RoomVisualizer-ChooseARoomBackground')}
                     </span>
                   </div>
                 </div>
@@ -651,11 +654,11 @@ export const Default = (props: RoomVisualizerProps): JSX.Element => {
               <div className="p-6 bg-white border border-gray-100 rounded-lg shadow-sm grid grid-cols-1 md:grid-cols-2 gap-6 font-poppins">
                 <div className="flex flex-col gap-1 border-b md:border-b-0 md:border-r border-gray-100 pb-4 md:pb-0 md:pr-6">
                   <h4 className="font-semibold text-lg text-black">{selectedItem.title}</h4>
-                  <span className="text-xs text-[#B88E2F] font-bold">Category: {selectedItem.category} 3D Mesh Model</span>
+                  <span className="text-xs text-[#B88E2F] font-bold">{t('Global-Category1')} {selectedItem.category} {t('RoomVisualizer-3dMeshModel')}</span>
                   
                   {/* Color Selector */}
                   <div className="mt-4 flex items-center gap-3">
-                    <span className="text-xs font-semibold text-black/60">Material / Texture:</span>
+                    <span className="text-xs font-semibold text-black/60">{t('RoomVisualizer-MaterialTexture')}</span>
                     <select
                       value={selectedItem.material}
                       onChange={(e) => {
@@ -680,7 +683,7 @@ export const Default = (props: RoomVisualizerProps): JSX.Element => {
                 <div className="flex flex-col gap-4">
                   {/* Rotation Slider */}
                   <div className="flex items-center justify-between gap-4">
-                    <span className="text-xs font-semibold text-black/60 w-[90px]">Y Rotation:</span>
+                    <span className="text-xs font-semibold text-black/60 w-[90px]">{t('RoomVisualizer-YRotation')}</span>
                     <input
                       type="range"
                       min="-180"
@@ -695,7 +698,7 @@ export const Default = (props: RoomVisualizerProps): JSX.Element => {
 
                   {/* Pitch / Tilt Slider */}
                   <div className="flex items-center justify-between gap-4">
-                    <span className="text-xs font-semibold text-black/60 w-[90px]">X Tilt Angle:</span>
+                    <span className="text-xs font-semibold text-black/60 w-[90px]">{t('RoomVisualizer-XTiltAngle')}</span>
                     <input
                       type="range"
                       min="-45"
@@ -710,7 +713,7 @@ export const Default = (props: RoomVisualizerProps): JSX.Element => {
 
                   {/* Scaling Slider */}
                   <div className="flex items-center justify-between gap-4">
-                    <span className="text-xs font-semibold text-black/60 w-[90px]">Scale Size:</span>
+                    <span className="text-xs font-semibold text-black/60 w-[90px]">{t('RoomVisualizer-ScaleSize')}</span>
                     <input
                       type="range"
                       min="0.5"
@@ -733,7 +736,7 @@ export const Default = (props: RoomVisualizerProps): JSX.Element => {
                         <polyline points="3 6 5 6 21 6" />
                         <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
                       </svg>
-                      Delete Placed Object
+                      {t('RoomVisualizer-DeletePlacedObject')}
                     </button>
                   </div>
                 </div>
@@ -744,7 +747,7 @@ export const Default = (props: RoomVisualizerProps): JSX.Element => {
 
           {/* Right Column: Dynamic Sidebar Catalog */}
           <div className="flex flex-col border border-gray-200 rounded-lg p-5 max-h-[640px] overflow-hidden bg-[#FAF9F5]/40 backdrop-blur-[2px]">
-            <h3 className="text-xl font-bold font-poppins text-black mb-3">3D Furniture Catalog</h3>
+            <h3 className="text-xl font-bold font-poppins text-black mb-3">{t('RoomVisualizer-3dFurnitureCatalog')}</h3>
             
             {/* Category tabs */}
             <div className="flex gap-2 overflow-x-auto pb-3 mb-4 border-b border-gray-100 scrollbar-none">
@@ -767,11 +770,11 @@ export const Default = (props: RoomVisualizerProps): JSX.Element => {
             <div className="flex-grow overflow-y-auto pr-1 grid grid-cols-2 gap-3 scrollbar-thin">
               {loading ? (
                 <div className="col-span-2 text-center py-10 text-black/40 font-poppins text-sm">
-                  Loading catalog...
+                  {t('RoomVisualizer-LoadingCatalog')}
                 </div>
               ) : filteredProducts.length === 0 ? (
                 <div className="col-span-2 text-center py-10 text-black/40 font-poppins text-sm">
-                  No 3D templates in this category.
+                  {t('RoomVisualizer-No3dTemplatesIn')}
                 </div>
               ) : (
                 filteredProducts.map((prod) => (
@@ -791,7 +794,7 @@ export const Default = (props: RoomVisualizerProps): JSX.Element => {
                         }}
                       />
                       <span className="absolute bottom-1 right-1 bg-[#B88E2F]/90 text-white text-[9px] font-bold px-1.5 py-0.5 rounded">
-                        3D
+                        {t('RoomVisualizer-3d')}
                       </span>
                     </div>
                     <span className="text-xs font-bold text-[#3A3A3A] truncate font-poppins">{prod.title}</span>

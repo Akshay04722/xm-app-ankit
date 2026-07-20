@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { useEffect, useRef, useState, Suspense } from "react";
 import { useSearchParams, usePathname } from "next/navigation";
 import { getCookie, setCookie } from "@/lib/cookies";
@@ -28,6 +29,7 @@ function SearchResultsComponent({
   rfkId: string;
   keyword?: string;
 }) {
+  const t = useTranslations(process.env.NEXT_PUBLIC_DEFAULT_SITE_NAME);
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const [results, setResults] = useState<SearchItem[]>([]);
@@ -313,7 +315,7 @@ function SearchResultsComponent({
         </h3>
         {hasActiveFilters && (
           <button className="search-clear-filters" onClick={clearAllFilters}>
-            Clear Filters
+            {t('SearchResults-ClearFilters')}
           </button>
         )}
       </div>
@@ -327,7 +329,7 @@ function SearchResultsComponent({
                 className="search-active-filter"
                 onClick={() => toggleFacetValue(facetName, val)}
               >
-                {facetName}: {val} &times;
+                {facetName}: {val} {t('Global-Times')}
               </button>
             )),
           )}
@@ -336,10 +338,10 @@ function SearchResultsComponent({
 
       <div className="search-results-layout">
         {/* Left Column: Facets panel */}
-        <aside className="search-facets-panel" aria-label="Search filters">
+        <aside className="search-facets-panel" aria-label={t('SearchResults-SearchFilters')}>
           <div className="search-panel-header">
-            <span className="search-panel-kicker">Filter Results</span>
-            <h4 className="search-panel-title">Facets</h4>
+            <span className="search-panel-kicker">{t('SearchResults-FilterResults')}</span>
+            <h4 className="search-panel-title">{t('SearchResults-Facets')}</h4>
           </div>
           <div className="search-facet-groups">
             {facets
@@ -367,7 +369,7 @@ function SearchResultsComponent({
                 </div>
               ))}
             {!loading && facets.filter((f) => f.name?.toLowerCase() !== "type").length === 0 && (
-              <p className="search-facet-empty">No filters available.</p>
+              <p className="search-facet-empty">{t('SearchResults-NoFiltersAvailable')}</p>
             )}
           </div>
         </aside>
@@ -385,7 +387,7 @@ function SearchResultsComponent({
                     : "text-gray-500 hover:text-gray-800"
                 }`}
               >
-                Products ({productCount})
+                {t('SearchResults-Products')}{productCount})
               </button>
               <button
                 onClick={() => setActiveTab("blogs")}
@@ -395,15 +397,15 @@ function SearchResultsComponent({
                     : "text-gray-500 hover:text-gray-800"
                 }`}
               >
-                Blogs & Pages ({blogCount})
+                {t('SearchResults-BlogsPages')}{blogCount})
               </button>
             </div>
           )}
 
           {error ? (
             <div className="search-error-state">
-              <span className="search-error-kicker">Oops!</span>
-              <h4 className="search-error-title">Something went wrong</h4>
+              <span className="search-error-kicker">{t('SearchResults-Oops')}</span>
+              <h4 className="search-error-title">{t('SearchResults-SomethingWentWrong')}</h4>
               <p className="search-error-copy">{error}</p>
             </div>
           ) : loading ? (
@@ -424,9 +426,9 @@ function SearchResultsComponent({
             </div>
           ) : results.length === 0 ? (
             <div className="search-empty-state">
-              <span className="search-empty-kicker">No Match Found</span>
+              <span className="search-empty-kicker">{t('SearchResults-NoMatchFound')}</span>
               <h4 className="search-empty-title">
-                {"We couldn't find what you're looking for"}
+                {t('SearchResults-WeCouldntFindWhat')}
               </h4>
               <p className="search-empty-copy">
                 {
@@ -438,18 +440,18 @@ function SearchResultsComponent({
                   className="search-clear-filters search-clear-filters--spaced"
                   onClick={clearAllFilters}
                 >
-                  Reset Filters
+                  {t('SearchResults-ResetFilters')}
                 </button>
               )}
             </div>
           ) : filteredResults.length === 0 ? (
             <div className="search-empty-state">
-              <span className="search-empty-kicker">No Match Found</span>
+              <span className="search-empty-kicker">{t('SearchResults-NoMatchFound')}</span>
               <h4 className="search-empty-title">
-                {activeTab === "products" ? "No products found in this category" : "No articles found in this category"}
+                {activeTab === "products" ? t('SearchResults-NoProductsFoundIn') : t('SearchResults-NoArticlesFoundIn')}
               </h4>
               <p className="search-empty-copy">
-                Try switching tabs to view other results.
+                {t('SearchResults-TrySwitchingTabsTo')}
               </p>
             </div>
           ) : (
@@ -518,7 +520,7 @@ function SearchResultsComponent({
                       )}
                       {isProduct && product?.isNew && discountPercent === 0 && (
                         <div className="absolute top-3 right-3 w-10 h-10 bg-[#2EC1AC] text-white rounded-full flex items-center justify-center font-bold text-xs shadow-xs z-10 font-poppins">
-                          New
+                          {t('Global-New')}
                         </div>
                       )}
                     </div>
@@ -532,12 +534,12 @@ function SearchResultsComponent({
                         )}
                         {isProduct && (product?.sku || (item.sku as string)) && (
                           <span className="text-[10px] font-bold text-gray-500 bg-gray-100 px-2.5 py-1 rounded-full">
-                            SKU: {product?.sku || (item.sku as string)}
+                            {t('Global-Sku1')} {product?.sku || (item.sku as string)}
                           </span>
                         )}
                         {item.author && !isProduct && (
                           <span className="text-[11px] text-gray-400">
-                            by {item.author as string}
+                            {t('Global-By')} {item.author as string}
                           </span>
                         )}
                       </div>
@@ -577,7 +579,7 @@ function SearchResultsComponent({
                                 <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                                 <path strokeLinecap="round" strokeLinejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                               </svg>
-                              View Details
+                              {t('Global-ViewDetails')}
                             </a>
                           </div>
                         ) : (
@@ -586,7 +588,7 @@ function SearchResultsComponent({
                             className="search-result-cta"
                             aria-label={`Read more about ${label}`}
                           >
-                            Read More
+                            {t('SearchResults-ReadMore')}
                           </button>
                         )}
                       </div>
@@ -606,12 +608,14 @@ export default function SearchResults(props: {
   rfkId: string;
   keyword?: string;
 }) {
+  const t = useTranslations(process.env.NEXT_PUBLIC_DEFAULT_SITE_NAME);
+
   return (
     <Suspense
       fallback={
         <div className="search-results-layout">
           <aside className="search-sidebar">
-            <div className="search-sidebar-title">Filters</div>
+            <div className="search-sidebar-title">{t('SearchResults-Filters')}</div>
             <div
               className="search-skeleton-facet"
               style={{ height: "40px", marginBottom: "1rem" }}

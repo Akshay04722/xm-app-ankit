@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import React from "react";
 import {
   NextImage as ContentSdkImage,
@@ -46,13 +47,18 @@ interface BlogDetailFields {
 
 type BlogDetailProps = ComponentProps & { fields?: BlogDetailFields };
 
-const NoDataFallback = ({ componentName }: { componentName: string }) => (
+const NoDataFallback = ({ componentName }: { componentName: string }) => {
+  const t = useTranslations(process.env.NEXT_PUBLIC_DEFAULT_SITE_NAME);
+  return (
   <div className="p-8 border-2 border-dashed border-gray-300 text-center text-gray-500 rounded-lg my-4 bg-gray-50">
     Component: <strong>{componentName}</strong>. Item could not be resolved. Please make sure this page is under Blog and has a corresponding template.
   </div>
 );
+};
 
 export const Default = (props: BlogDetailProps): React.JSX.Element => {
+  const t = useTranslations(process.env.NEXT_PUBLIC_DEFAULT_SITE_NAME);
+
   const { fields, params } = props;
   const { RenderingIdentifier: id, styles: paramsStyles } = params || {};
 
@@ -177,7 +183,7 @@ export const Default = (props: BlogDetailProps): React.JSX.Element => {
       <div className={styles.breadcrumbBar}>
         <div className={styles.breadcrumbContent}>
           <a href="/" className={styles.breadcrumbLink}>Home</a>
-          <span className={styles.breadcrumbArrow}>&gt;</span>
+          <span className={styles.breadcrumbArrow}>{t('Global-Gt')}</span>
           <a href="/Blog" className={styles.breadcrumbLink}>Blog</a>
           <span className={styles.breadcrumbArrow}>&gt;</span>
           <span className={styles.breadcrumbDivider}>|</span>

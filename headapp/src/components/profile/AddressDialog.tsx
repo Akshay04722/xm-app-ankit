@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import React, { useState, useEffect } from "react";
 import { Address } from "@/services/profileService";
 // @ts-ignore
@@ -35,6 +36,8 @@ export default function AddressDialog({
   address = null,
   saving = false,
 }: AddressDialogProps) {
+  const t = useTranslations(process.env.NEXT_PUBLIC_DEFAULT_SITE_NAME);
+
   const [fullName, setFullName] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
   const [addressLine1, setAddressLine1] = useState("");
@@ -168,13 +171,13 @@ export default function AddressDialog({
         {/* Modal Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
           <h3 className="text-xl font-bold text-gray-900">
-            {address ? "Edit Address" : "Add New Address"}
+            {address ? t('AddressDialog-EditAddress') : t('AddressDialog-AddNewAddress')}
           </h3>
           <button
             onClick={onClose}
             disabled={saving}
             className="text-gray-400 hover:text-gray-600 transition disabled:opacity-50"
-            aria-label="Close"
+            aria-label={t('Global-Close')}
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -194,7 +197,7 @@ export default function AddressDialog({
           {/* Full Name */}
           <div className="space-y-1">
             <label htmlFor="fullName" className="text-base font-semibold text-gray-700">
-              Full Name *
+              {t('AddressDialog-FullName')}
             </label>
             <input
               id="fullName"
@@ -202,7 +205,7 @@ export default function AddressDialog({
               className={`w-full px-4 py-2.5 rounded-xl border text-base transition focus:outline-hidden focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 ${
                 validationErrors.fullName ? "border-red-500" : "border-gray-200"
               }`}
-              placeholder="e.g. John Doe"
+              placeholder={t('AddressDialog-EgJohnDoe')}
               value={fullName}
               onChange={(e) => setFullName(e.target.value)}
               disabled={saving}
@@ -215,7 +218,7 @@ export default function AddressDialog({
           {/* Phone Number */}
           <div className="space-y-1">
             <label htmlFor="phone" className="text-base font-semibold text-gray-700">
-              Phone Number (10 digits) *
+              {t('AddressDialog-PhoneNumber10Digits')}
             </label>
             <input
               id="phone"
@@ -223,7 +226,7 @@ export default function AddressDialog({
               className={`w-full px-4 py-2.5 rounded-xl border text-base transition focus:outline-hidden focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 ${
                 validationErrors.phoneNumber ? "border-red-500" : "border-gray-200"
               }`}
-              placeholder="e.g. 5556667777"
+              placeholder={t('Global-Eg5556667777')}
               value={phoneNumber}
               onChange={(e) => setPhoneNumber(e.target.value)}
               disabled={saving}
@@ -236,7 +239,7 @@ export default function AddressDialog({
           {/* Address Line 1 */}
           <div className="space-y-1">
             <label htmlFor="line1" className="text-base font-semibold text-gray-700">
-              Address Line 1 *
+              {t('AddressDialog-AddressLine1')}
             </label>
             <input
               id="line1"
@@ -244,7 +247,7 @@ export default function AddressDialog({
               className={`w-full px-4 py-2.5 rounded-xl border text-base transition focus:outline-hidden focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 ${
                 validationErrors.addressLine1 ? "border-red-500" : "border-gray-200"
               }`}
-              placeholder="Street address, P.O. box, company name"
+              placeholder={t('AddressDialog-StreetAddressPoBox')}
               value={addressLine1}
               onChange={(e) => setAddressLine1(e.target.value)}
               disabled={saving}
@@ -257,13 +260,13 @@ export default function AddressDialog({
           {/* Address Line 2 */}
           <div className="space-y-1">
             <label htmlFor="line2" className="text-base font-semibold text-gray-700">
-              Address Line 2 (Optional)
+              {t('AddressDialog-AddressLine2Optional')}
             </label>
             <input
               id="line2"
               type="text"
               className="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-base transition focus:outline-hidden focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500"
-              placeholder="Apartment, suite, unit, building, floor, etc."
+              placeholder={t('AddressDialog-ApartmentSuiteUnitBuildin')}
               value={addressLine2}
               onChange={(e) => setAddressLine2(e.target.value)}
               disabled={saving}
@@ -273,13 +276,13 @@ export default function AddressDialog({
           {/* Landmark */}
           <div className="space-y-1">
             <label htmlFor="landmark" className="text-base font-semibold text-gray-700">
-              Landmark (Optional)
+              {t('AddressDialog-LandmarkOptional')}
             </label>
             <input
               id="landmark"
               type="text"
               className="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-base transition focus:outline-hidden focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500"
-              placeholder="e.g. Near Central Park"
+              placeholder={t('AddressDialog-EgNearCentralPark')}
               value={landmark}
               onChange={(e) => setLandmark(e.target.value)}
               disabled={saving}
@@ -290,7 +293,7 @@ export default function AddressDialog({
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-1">
               <label htmlFor="city" className="text-base font-semibold text-gray-700">
-                City *
+                {t('AddressDialog-City')}
               </label>
               <input
                 id="city"
@@ -298,7 +301,7 @@ export default function AddressDialog({
                 className={`w-full px-4 py-2.5 rounded-xl border text-base transition focus:outline-hidden focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 ${
                   validationErrors.city ? "border-red-500" : "border-gray-200"
                 }`}
-                placeholder="e.g. New York"
+                placeholder={t('AddressDialog-EgNewYork')}
                 value={city}
                 onChange={(e) => setCity(e.target.value)}
                 disabled={saving}
@@ -310,7 +313,7 @@ export default function AddressDialog({
 
             <div className="space-y-1">
               <label htmlFor="state" className="text-base font-semibold text-gray-700">
-                State *
+                {t('AddressDialog-State')}
               </label>
               {statesList.length > 0 ? (
                 <select
@@ -322,7 +325,7 @@ export default function AddressDialog({
                   onChange={(e) => setState(e.target.value)}
                   disabled={saving}
                 >
-                  <option value="">Select State</option>
+                  <option value="">{t('AddressDialog-SelectState')}</option>
                   {statesList.map((s) => (
                     <option key={s.id} value={s.name}>
                       {s.name}
@@ -336,7 +339,7 @@ export default function AddressDialog({
                   className={`w-full px-4 py-2.5 rounded-xl border text-base transition focus:outline-hidden focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 ${
                     validationErrors.state ? "border-red-500" : "border-gray-200"
                   }`}
-                  placeholder="e.g. State/Province"
+                  placeholder={t('AddressDialog-EgStateprovince')}
                   value={state}
                   onChange={(e) => setState(e.target.value)}
                   disabled={saving || !country}
@@ -352,7 +355,7 @@ export default function AddressDialog({
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-1">
               <label htmlFor="country" className="text-base font-semibold text-gray-700">
-                Country *
+                {t('AddressDialog-Country')}
               </label>
               <select
                 id="country"
@@ -366,7 +369,7 @@ export default function AddressDialog({
                 }}
                 disabled={saving}
               >
-                <option value="">Select Country</option>
+                <option value="">{t('AddressDialog-SelectCountry')}</option>
                 {countriesData.map((c) => (
                   <option key={c.iso2} value={c.name}>
                     {c.emoji} {c.name}
@@ -380,7 +383,7 @@ export default function AddressDialog({
 
             <div className="space-y-1">
               <label htmlFor="postalCode" className="text-base font-semibold text-gray-700">
-                Postal Code *
+                {t('AddressDialog-PostalCode')}
               </label>
               <input
                 id="postalCode"
@@ -388,7 +391,7 @@ export default function AddressDialog({
                 className={`w-full px-4 py-2.5 rounded-xl border text-base transition focus:outline-hidden focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 ${
                   validationErrors.postalCode ? "border-red-500" : "border-gray-200"
                 }`}
-                placeholder="e.g. 10001"
+                placeholder={t('AddressDialog-Eg10001')}
                 value={postalCode}
                 onChange={(e) => setPostalCode(e.target.value)}
                 disabled={saving}
@@ -402,7 +405,7 @@ export default function AddressDialog({
           {/* Address Type Selector */}
           <div className="space-y-1">
             <label className="text-base font-semibold text-gray-700 block mb-1">
-              Address Type
+              {t('AddressDialog-AddressType')}
             </label>
             <div className="grid grid-cols-3 gap-2">
               {(["Home", "Work", "Other"] as const).map((type) => (
@@ -434,7 +437,7 @@ export default function AddressDialog({
               disabled={saving}
             />
             <label htmlFor="isDefault" className="text-base text-gray-700 cursor-pointer select-none">
-              Make this my default address
+              {t('AddressDialog-MakeThisMyDefault')}
             </label>
           </div>
 
@@ -446,14 +449,14 @@ export default function AddressDialog({
               disabled={saving}
               className="px-6 py-3 border border-gray-200 rounded-xl text-base font-semibold text-gray-700 hover:bg-gray-50 transition disabled:opacity-50"
             >
-              Cancel
+              {t('Global-Cancel')}
             </button>
             <button
               type="submit"
               disabled={saving}
               className="px-6 py-3 bg-amber-600 hover:bg-amber-700 text-white font-semibold text-base rounded-xl shadow-xs transition flex items-center justify-center gap-1.5 disabled:opacity-75"
             >
-              {saving ? "Saving..." : address ? "Update Address" : "Add Address"}
+              {saving ? t('AddressDialog-Saving') : address ? "Update Address" : "Add Address"}
             </button>
           </div>
         </form>

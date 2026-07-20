@@ -1,4 +1,5 @@
 'use client';
+import { useTranslations } from "next-intl";
 import React, { useState, JSX } from 'react';
 import { LinkField, Text, TextField, useSitecore } from '@sitecore-content-sdk/nextjs';
 import { CompatibleLink } from 'components/content-sdk/CompatibleLink';
@@ -26,6 +27,8 @@ interface NavigationProps extends ComponentProps {
 }
 
 const getTextContent = (fields: Fields): JSX.Element | string => {
+  const t = useTranslations(process.env.NEXT_PUBLIC_DEFAULT_SITE_NAME);
+
   if (fields.NavigationTitle) return <Text field={fields.NavigationTitle} />;
   if (fields.Title) return <Text field={fields.Title} />;
   return fields.DisplayName;
@@ -47,6 +50,7 @@ const NavigationListItem: React.FC<NavigationListItemProps> = ({
   handleClick,
   relativeLevel,
 }) => {
+  const t = useTranslations(process.env.NEXT_PUBLIC_DEFAULT_SITE_NAME);
   const [isActive, setIsActive] = useState(false);
   const { page } = useSitecore();
 
@@ -118,6 +122,7 @@ const NavigationListItem: React.FC<NavigationListItemProps> = ({
 };
 
 export const Default = ({ params, fields }: NavigationProps) => {
+  const t = useTranslations(process.env.NEXT_PUBLIC_DEFAULT_SITE_NAME);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { page } = useSitecore();
   const { styles, RenderingIdentifier: id } = params;
@@ -125,7 +130,7 @@ export const Default = ({ params, fields }: NavigationProps) => {
   if (!Object.values(fields).length) {
     return (
       <div className={`component navigation ${styles}`} id={id}>
-        <div className="component-content">[Navigation]</div>
+        <div className="component-content">{t('Navigation-Navigation')}</div>
       </div>
     );
   }
@@ -158,11 +163,11 @@ export const Default = ({ params, fields }: NavigationProps) => {
           className="menu-mobile-navigate"
           checked={isMenuOpen}
           onChange={() => handleToggleMenu()}
-          aria-label={isMenuOpen ? 'Close navigation menu' : 'Open navigation menu'}
+          aria-label={isMenuOpen ? t('Navigation-CloseNavigationMenu') : t('Navigation-OpenNavigationMenu')}
         />
-        <label htmlFor="mobile-menu-checkbox" className="menu-humburger" aria-label="Toggle menu" />
+        <label htmlFor="mobile-menu-checkbox" className="menu-humburger" aria-label={t('Global-ToggleMenu')} />
         <div className="component-content">
-          <nav aria-label="Main navigation">
+          <nav aria-label={t('Global-MainNavigation')}>
             <ul className="clearfix">{navigationItems}</ul>
           </nav>
         </div>

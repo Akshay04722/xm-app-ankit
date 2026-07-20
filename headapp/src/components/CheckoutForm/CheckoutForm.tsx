@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import React, { useState, useEffect } from "react";
 import { useCart } from "@/lib/CartContext";
 import { useAuth } from "@/lib/AuthContext";
@@ -25,6 +26,7 @@ interface CheckoutFormProps {
 export default function CheckoutForm(
   props: CheckoutFormProps,
 ): React.JSX.Element {
+  const t = useTranslations(process.env.NEXT_PUBLIC_DEFAULT_SITE_NAME);
   const { fields } = props;
   const { datasource } = fields?.data || {};
 
@@ -207,7 +209,7 @@ export default function CheckoutForm(
     return (
       <div className={styles.container}>
         <div className={styles.authWrapper}>
-          <h2>Please Login to Checkout</h2>
+          <h2>{t('CheckoutForm-PleaseLoginToCheckout')}</h2>
           <p>
             You need to be signed in to select a shipping address and complete
             your purchase.
@@ -216,7 +218,7 @@ export default function CheckoutForm(
             href="/sign-in?redirect=/checkout"
             className={styles.btnPrimary}
           >
-            Sign In
+            {t('Global-SignIn')}
           </Link>
         </div>
       </div>
@@ -227,12 +229,12 @@ export default function CheckoutForm(
     return (
       <div className={styles.container}>
         <div className={styles.emptyCartWrapper}>
-          <h2>Your Cart is Empty</h2>
+          <h2>{t('Global-YourCartIsEmpty')}</h2>
           <p>
-            Please add some items to your cart before proceeding to checkout.
+            {t('CheckoutForm-PleaseAddSomeItems')}
           </p>
           <Link href="/shop" className={styles.btnPrimary}>
-            Back to Shop
+            {t('Global-BackToShop')}
           </Link>
         </div>
       </div>
@@ -247,7 +249,7 @@ export default function CheckoutForm(
     <div className={styles.container}>
       <div className={styles.header}>
         <h1 className={styles.title}>
-          {sitecoreTitle?.value ? <Text field={sitecoreTitle} /> : "Checkout"}
+          {sitecoreTitle?.value ? <Text field={sitecoreTitle} /> : t('Global-Checkout')}
         </h1>
         <div className={styles.subtitle}>
           {sitecoreSummaryText?.value ? (
@@ -264,18 +266,18 @@ export default function CheckoutForm(
         {/* Left Column: Shipping Address */}
         <div className={styles.shippingSection}>
           <div className={styles.sectionHeader}>
-            <h2>Select Delivery Address</h2>
+            <h2>{t('CheckoutForm-SelectDeliveryAddress')}</h2>
             <button
               type="button"
               onClick={() => setIsAddressDialogOpen(true)}
               className={styles.btnAddAddress}
             >
-              + Add Address
+              {t('CheckoutForm-AddAddress')}
             </button>
           </div>
 
           {loadingAddresses ? (
-            <div className={styles.loader}>Loading your saved addresses...</div>
+            <div className={styles.loader}>{t('CheckoutForm-LoadingYourSavedAddresses')}</div>
           ) : addresses.length === 0 ? (
             <div className={styles.noAddressCard}>
               <p>
@@ -287,7 +289,7 @@ export default function CheckoutForm(
                 onClick={() => setIsAddressDialogOpen(true)}
                 className={styles.btnPrimary}
               >
-                Add Shipping Address
+                {t('CheckoutForm-AddShippingAddress')}
               </button>
             </div>
           ) : (
@@ -308,19 +310,19 @@ export default function CheckoutForm(
                       {addr.addressType}
                     </span>
                     {addr.isDefault && (
-                      <span className={styles.defaultBadge}>Default</span>
+                      <span className={styles.defaultBadge}>{t('Global-Default')}</span>
                     )}
                   </div>
                   <div className={styles.addressDetails}>
                     <p>{addr.addressLine1}</p>
                     {addr.addressLine2 && <p>{addr.addressLine2}</p>}
-                    {addr.landmark && <p>Landmark: {addr.landmark}</p>}
+                    {addr.landmark && <p>{t('Global-Landmark')} {addr.landmark}</p>}
                     <p>
                       {addr.city}, {addr.state} - {addr.postalCode}
                     </p>
                     <p>{addr.country}</p>
                     <p className={styles.addressPhone}>
-                      Phone: {addr.phoneNumber}
+                      {t('Global-Phone')} {addr.phoneNumber}
                     </p>
                   </div>
                 </div>
@@ -331,7 +333,7 @@ export default function CheckoutForm(
 
         {/* Right Column: Order Summary */}
         <div className={styles.summarySection}>
-          <h2>Order Summary</h2>
+          <h2>{t('CheckoutForm-OrderSummary')}</h2>
           <div className={styles.summaryItems}>
             {cartItems.map((item) => {
               const activePrice = item.price;
@@ -354,7 +356,7 @@ export default function CheckoutForm(
                   <div className={styles.itemDetails}>
                     <div className={styles.itemTitle}>{item.title}</div>
                     <div className={styles.itemMeta}>
-                      Qty: {item.quantity}
+                      {t('CheckoutForm-Qty')} {item.quantity}
                       {item.selectedColor && ` | Color: ${item.selectedColor}`}
                       {item.selectedSize && ` | Size: ${item.selectedSize}`}
                     </div>
@@ -369,22 +371,22 @@ export default function CheckoutForm(
 
           <div className={styles.summaryTotals}>
             <div className={styles.totalsRow}>
-              <span>Subtotal</span>
+              <span>{t('Global-Subtotal')}</span>
               <span>{formatPrice(subtotal)}</span>
             </div>
             <div className={styles.totalsRow}>
-              <span>Shipping</span>
-              <span className={styles.freeShipping}>FREE</span>
+              <span>{t('Global-Shipping')}</span>
+              <span className={styles.freeShipping}>{t('Global-Free')}</span>
             </div>
             <div className={`${styles.totalsRow} ${styles.totalsRowTotal}`}>
-              <span>Total Amount</span>
+              <span>{t('CheckoutForm-TotalAmount')}</span>
               <span>{formatPrice(subtotal)}</span>
             </div>
           </div>
 
           {selectedAddress && (
             <div className={styles.selectedAddressPreview}>
-              <h3>Deliver to:</h3>
+              <h3>{t('CheckoutForm-DeliverTo')}</h3>
               <p>
                 <strong>{selectedAddress.fullName}</strong> (
                 {selectedAddress.addressType})
@@ -402,7 +404,7 @@ export default function CheckoutForm(
             onClick={handlePayment}
             className={styles.btnPay}
           >
-            {paymentLoading ? "Processing Payment..." : "Pay with Razorpay"}
+            {paymentLoading ? t('CheckoutForm-ProcessingPayment') : t('CheckoutForm-PayWithRazorpay')}
           </button>
         </div>
       </div>

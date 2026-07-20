@@ -29,7 +29,6 @@ const poppins = Poppins({
 
 import { AuthProvider } from "@/lib/AuthContext";
 import { CartProvider } from "@/lib/CartContext";
-import ProfileCompletionDialog from "@/components/profile/ProfileCompletionDialog";
 
 export default function RootLayout({
   children,
@@ -54,7 +53,6 @@ export default function RootLayout({
           <CDPProvider>
             <CartProvider>
               <CloudSdkBootstrap />
-              <ProfileCompletionDialog />
               {children}
             </CartProvider>
           </CDPProvider>

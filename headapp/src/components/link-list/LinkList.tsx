@@ -1,3 +1,4 @@
+import { useTranslations } from "next-intl";
 import React from 'react';
 import { Text, LinkField, TextField } from '@sitecore-content-sdk/nextjs';
 import { CompatibleLink } from 'components/content-sdk/CompatibleLink';
@@ -34,6 +35,7 @@ const LinkListItem = ({
   total: number;
   field: LinkField;
 }) => {
+  const t = useTranslations(process.env.NEXT_PUBLIC_DEFAULT_SITE_NAME);
   const classNames = [
     `item${index}`,
     index % 2 === 0 ? 'odd' : 'even',
@@ -53,13 +55,14 @@ const LinkListItem = ({
 };
 
 export const Default = ({ params, fields }: LinkListProps) => {
+  const t = useTranslations(process.env.NEXT_PUBLIC_DEFAULT_SITE_NAME);
   const datasource = fields?.data?.datasource;
   const styles = `component link-list ${params.styles || ''}`.trim();
   const id = params.RenderingIdentifier;
 
   const renderContent = () => {
     if (!datasource) {
-      return <h3>Link List</h3>;
+      return <h3>{t('LinkList-LinkList')}</h3>;
     }
 
     const links = datasource.children.results

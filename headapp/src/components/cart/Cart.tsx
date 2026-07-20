@@ -1,11 +1,14 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import React, { useState } from "react";
 import { useCart } from "@/lib/CartContext";
 import { useAuth } from "@/lib/AuthContext";
 import Link from "next/link";
 
 export const Default = (props: any): React.JSX.Element => {
+  const t = useTranslations(process.env.NEXT_PUBLIC_DEFAULT_SITE_NAME);
+
   const { cartItems, removeFromCart, updateQuantity, clearCart, subtotal } = useCart();
   const { user } = useAuth();
   const [couponCode, setCouponCode] = useState("");
@@ -38,15 +41,15 @@ export const Default = (props: any): React.JSX.Element => {
               <path strokeLinecap="round" strokeLinejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
             </svg>
           </div>
-          <h2 className="text-[20px] font-bold text-gray-900 mb-2">Your cart is empty</h2>
+          <h2 className="text-[20px] font-bold text-gray-900 mb-2">{t('Global-YourCartIsEmpty')}</h2>
           <p className="text-gray-500 max-w-sm mx-auto mb-8 text-[13px]">
-            Looks like you haven't added anything to your cart yet. Explore our beautiful range of products and find something you love!
+            {t('Cart-LooksLikeYouHavent')}
           </p>
           <Link
             href="/shop"
             className="inline-block border border-[#B88E2F] bg-[#B88E2F] hover:bg-[#a37924] text-white px-8 py-3 text-[13px] font-bold uppercase tracking-wider rounded-xl transition-all active:scale-95 cursor-pointer decoration-none shadow-xs hover:shadow-md"
           >
-            Go to Shop
+            {t('Cart-GoToShop')}
           </Link>
         </div>
       </div>
@@ -63,11 +66,11 @@ export const Default = (props: any): React.JSX.Element => {
             {/* Desktop Table Headers */}
             <div className="hidden md:grid grid-cols-12 bg-[#F9F1E7] py-3.5 px-6 rounded-lg text-sm font-semibold uppercase tracking-wider text-gray-700 mb-6">
               <div className="col-span-6 flex gap-4">
-                <span className="ml-24">Product</span>
+                <span className="ml-24">{t('Global-Product')}</span>
               </div>
-              <div className="col-span-2 text-center">Price</div>
-              <div className="col-span-2 text-center">Quantity</div>
-              <div className="col-span-2 text-right">Subtotal</div>
+              <div className="col-span-2 text-center">{t('Global-Price')}</div>
+              <div className="col-span-2 text-center">{t('Cart-Quantity')}</div>
+              <div className="col-span-2 text-right">{t('Global-Subtotal')}</div>
             </div>
 
             {/* Cart Items */}
@@ -83,7 +86,7 @@ export const Default = (props: any): React.JSX.Element => {
                           type="button"
                           onClick={() => removeFromCart(item.sku, item.selectedColor, item.selectedSize)}
                           className="text-[#B88E2F] hover:text-red-500 transition-colors cursor-pointer mr-2 flex items-center justify-center"
-                          aria-label="Remove item"
+                          aria-label={t('Cart-RemoveItem')}
                         >
                           <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
@@ -105,13 +108,13 @@ export const Default = (props: any): React.JSX.Element => {
                             {item.title}
                           </span>
                           <div className="text-[13px] text-gray-400 flex flex-wrap gap-x-2">
-                            <span>SKU: {item.sku}</span>
+                            <span>{t('Global-Sku1')} {item.sku}</span>
                             {item.selectedColor && (
                               <span className="flex items-center gap-1">
-                                Color: <span className="inline-block w-2 h-2 rounded-full border border-gray-200" style={{ backgroundColor: item.selectedColor }} />
+                                {t('Global-Color')} <span className="inline-block w-2 h-2 rounded-full border border-gray-200" style={{ backgroundColor: item.selectedColor }} />
                               </span>
                             )}
-                            {item.selectedSize && <span>Size: {item.selectedSize}</span>}
+                            {item.selectedSize && <span>{t('Global-Size')} {item.selectedSize}</span>}
                           </div>
                         </div>
                       </div>
@@ -153,7 +156,7 @@ export const Default = (props: any): React.JSX.Element => {
                         type="button"
                         onClick={() => removeFromCart(item.sku, item.selectedColor, item.selectedSize)}
                         className="absolute top-3 right-3 text-[#B88E2F] hover:text-red-500 transition-colors cursor-pointer"
-                        aria-label="Remove item"
+                        aria-label={t('Cart-RemoveItem')}
                       >
                         <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
@@ -174,13 +177,13 @@ export const Default = (props: any): React.JSX.Element => {
                         <div>
                           <div className="font-medium text-[#242424] text-base line-clamp-1 pr-6">{item.title}</div>
                           <div className="text-[13px] text-gray-400 mt-0.5 flex flex-wrap gap-x-2">
-                            <span>SKU: {item.sku}</span>
+                            <span>{t('Global-Sku1')} {item.sku}</span>
                             {item.selectedColor && (
                               <span className="flex items-center gap-1">
-                                Color: <span className="w-2 h-2 rounded-full" style={{ backgroundColor: item.selectedColor }} />
+                                {t('Global-Color')} <span className="w-2 h-2 rounded-full" style={{ backgroundColor: item.selectedColor }} />
                               </span>
                             )}
-                            {item.selectedSize && <span>Size: {item.selectedSize}</span>}
+                            {item.selectedSize && <span>{t('Global-Size')} {item.selectedSize}</span>}
                           </div>
                         </div>
                         <div className="flex items-center justify-between mt-2">
@@ -202,7 +205,7 @@ export const Default = (props: any): React.JSX.Element => {
                             </button>
                           </div>
                           <div className="text-right flex flex-col">
-                            <span className="text-[11px] text-gray-400">Subtotal:</span>
+                            <span className="text-[11px] text-gray-400">{t('Cart-Subtotal')}</span>
                             <span className="text-sm font-semibold text-[#B88E2F]">{formatPrice(activePrice * item.quantity)}</span>
                           </div>
                         </div>
@@ -218,7 +221,7 @@ export const Default = (props: any): React.JSX.Element => {
               <form onSubmit={handleApplyCoupon} className="flex gap-3 w-full sm:w-auto">
                 <input
                   type="text"
-                  placeholder="Coupon code"
+                  placeholder={t('Cart-CouponCode')}
                   value={couponCode}
                   onChange={(e) => setCouponCode(e.target.value)}
                   disabled={couponApplied}
@@ -229,7 +232,7 @@ export const Default = (props: any): React.JSX.Element => {
                   disabled={couponApplied}
                   className="border border-black hover:bg-black hover:text-white text-black font-normal px-5 py-2 rounded-lg text-[15px] transition-all duration-200 cursor-pointer whitespace-nowrap active:scale-95 disabled:border-gray-300 disabled:text-gray-400 disabled:bg-transparent disabled:cursor-not-allowed"
                 >
-                  {couponApplied ? "Applied" : "Apply coupon"}
+                  {couponApplied ? t('Cart-Applied') : t('Cart-ApplyCoupon')}
                 </button>
               </form>
               <button
@@ -237,7 +240,7 @@ export const Default = (props: any): React.JSX.Element => {
                 className="border border-gray-300 text-gray-400 font-normal px-5 py-2 rounded-lg text-[15px] transition-all cursor-not-allowed w-full sm:w-auto bg-gray-50"
                 disabled
               >
-                Update cart
+                {t('Cart-UpdateCart')}
               </button>
             </div>
           </div>
@@ -245,15 +248,15 @@ export const Default = (props: any): React.JSX.Element => {
           {/* Cart Totals Card */}
           <div className="bg-[#F9F1E7] rounded-none px-6 py-8 flex flex-col justify-between h-fit w-full lg:w-1/3 mt-8 lg:mt-0 shadow-xs border border-[#f4ebdf]">
             <div className="w-full">
-              <div className="text-xl font-bold text-gray-900 text-center mb-6">Cart Totals</div>
+              <div className="text-xl font-bold text-gray-900 text-center mb-6">{t('Cart-CartTotals')}</div>
               
               <div className="flex justify-between items-center pb-4 mb-4 border-b border-[#ebdcca] px-2">
-                <span className="text-base font-semibold text-gray-900">Subtotal</span>
+                <span className="text-base font-semibold text-gray-900">{t('Global-Subtotal')}</span>
                 <span className="text-base text-gray-400 font-medium">{formatPrice(subtotal)}</span>
               </div>
               
               <div className="flex justify-between items-center mb-8 px-2">
-                <span className="text-base font-semibold text-gray-900">Total</span>
+                <span className="text-base font-semibold text-gray-900">{t('Cart-Total')}</span>
                 <span className="text-xl font-bold text-[#B88E2F]">{formatPrice(subtotal)}</span>
               </div>
             </div>
@@ -265,14 +268,14 @@ export const Default = (props: any): React.JSX.Element => {
                   onClick={handleCheckout}
                   className="w-full bg-black hover:bg-[#B88E2F] border border-black hover:border-[#B88E2F] text-white py-3 px-6 rounded-xl text-base font-semibold transition-all duration-200 cursor-pointer text-center active:scale-98"
                 >
-                  Proceed to checkout
+                  {t('Cart-ProceedToCheckout')}
                 </button>
               ) : (
                 <Link
                   href="/sign-in?redirect=/cart"
                   className="w-full bg-black hover:bg-[#B88E2F] border border-black hover:border-[#B88E2F] text-white py-3 px-6 rounded-xl text-base font-semibold transition-all duration-200 cursor-pointer text-center active:scale-98 block decoration-none"
                 >
-                  Login to proceed to checkout
+                  {t('Cart-LoginToProceedTo')}
                 </Link>
               )}
             </div>

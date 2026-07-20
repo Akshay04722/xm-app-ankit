@@ -1,4 +1,5 @@
 "use client";
+import { useTranslations } from "next-intl";
 import React, { useState, useEffect, useRef, JSX } from "react";
 import styles from "./Chatbot.module.css";
 import Link from "next/link";
@@ -29,6 +30,7 @@ interface Product {
 }
 
 export default function Chatbot(): JSX.Element {
+  const t = useTranslations(process.env.NEXT_PUBLIC_DEFAULT_SITE_NAME);
   const [isOpen, setIsOpen] = useState(false);
   const [inputVal, setInputVal] = useState("");
   const [messages, setMessages] = useState<Message[]>([
@@ -112,6 +114,7 @@ export default function Chatbot(): JSX.Element {
   };
 
   const generateResponse = (input: string, activeProducts: Product[]): Message => {
+
     const text = input.toLowerCase();
     const botMsgTimestamp = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     const baseMsg = {
@@ -237,7 +240,7 @@ export default function Chatbot(): JSX.Element {
       <button
         onClick={() => setIsOpen(!isOpen)}
         className={`${styles.chatButton} ${isOpen ? styles.chatButtonActive : ""}`}
-        aria-label="Toggle Shopping Assistant Chatbot"
+        aria-label={t('Chatbot-ToggleShoppingAssistantCh')}
       >
         {isOpen ? (
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
@@ -265,9 +268,9 @@ export default function Chatbot(): JSX.Element {
               </svg>
             </div>
             <div className={styles.headerText}>
-              <span className={styles.title}>Furniro Assistant</span>
+              <span className={styles.title}>{t('Chatbot-FurniroAssistant')}</span>
               <span className={styles.subtitle}>
-                <span className={styles.onlineIndicator} /> Online
+                <span className={styles.onlineIndicator} /> {t('Global-Online')}
               </span>
             </div>
           </div>
@@ -313,7 +316,7 @@ export default function Chatbot(): JSX.Element {
                             className={styles.prodLink}
                             onClick={() => setIsOpen(false)}
                           >
-                            Details
+                            {t('Global-Details')}
                           </Link>
                         </div>
                       ))}
@@ -342,10 +345,10 @@ export default function Chatbot(): JSX.Element {
               type="text"
               value={inputVal}
               onChange={(e) => setInputVal(e.target.value)}
-              placeholder="Ask a question..."
+              placeholder={t('Chatbot-AskAQuestion')}
               className={styles.input}
             />
-            <button type="submit" className={styles.sendButton} aria-label="Send message">
+            <button type="submit" className={styles.sendButton} aria-label={t('Chatbot-SendMessage')}>
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                 <line x1="22" y1="2" x2="11" y2="13" />
                 <polygon points="22 2 15 22 11 13 2 9 22 2" />

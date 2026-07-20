@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import React, { useEffect, useState, JSX } from "react";
 import styles from "./ShopProductsList.module.css";
 import { ComponentProps } from "@/lib/component-props";
@@ -36,13 +37,16 @@ interface ShopProductsListProps extends ComponentProps {
   };
 }
 
-const NoDataFallback = ({ componentName }: { componentName: string }) => (
+const NoDataFallback = ({ componentName }: { componentName: string }) => {
+  const t = useTranslations(process.env.NEXT_PUBLIC_DEFAULT_SITE_NAME);
+  return (
   <div className="component-content text-center py-10 bg-slate-50 rounded-lg">
     <span className="text-gray-400 font-semibold">
       {componentName} (Empty Datasource)
     </span>
   </div>
 );
+};
 
 interface ProductImageSliderProps {
   galleryImages: string[];
@@ -53,6 +57,7 @@ const ProductImageSlider: React.FC<ProductImageSliderProps> = ({
   galleryImages,
   title,
 }) => {
+  const t = useTranslations(process.env.NEXT_PUBLIC_DEFAULT_SITE_NAME);
   const [currentIndex, setCurrentIndex] = useState(0);
   const timerRef = React.useRef<any>(null);
 
@@ -109,6 +114,8 @@ const ProductImageSlider: React.FC<ProductImageSliderProps> = ({
 };
 
 export const Default = (props: ShopProductsListProps): JSX.Element => {
+  const t = useTranslations(process.env.NEXT_PUBLIC_DEFAULT_SITE_NAME);
+
   const { fields } = props;
   console.log("fields", fields);
   const pathname = usePathname();
@@ -568,7 +575,7 @@ export const Default = (props: ShopProductsListProps): JSX.Element => {
 
           {/* Facets Grid */}
           <div className={styles.filterGrid}>
-            {/* Category Filter */}
+            {/* {t('Global-Category')} Filter */}
             <div className={styles.filterSection}>
               <h4 className={styles.filterTitle}>Category</h4>
               <div className={styles.categoryList}>
@@ -668,7 +675,7 @@ export const Default = (props: ShopProductsListProps): JSX.Element => {
               </div>
             </div>
 
-            {/* Price Filter */}
+            {/* {t('Global-Price')} Filter */}
             <div className={styles.filterSection}>
               <h4 className={styles.filterTitle}>Price</h4>
               <div className={styles.priceList}>
@@ -1137,7 +1144,7 @@ export const Default = (props: ShopProductsListProps): JSX.Element => {
                       ))}
                     </div>
 
-                    {/* 2. SKU Row */}
+                    {/* 2. {t('Global-Sku')} Row */}
                     <div className={rowClass}>
                       <div className={styles.compareCellHeader}>SKU</div>
                       {compareProducts.map((p) => (
@@ -1147,7 +1154,7 @@ export const Default = (props: ShopProductsListProps): JSX.Element => {
                       ))}
                     </div>
 
-                    {/* 3. Category Row */}
+                    {/* 3. {t('Global-Category')} Row */}
                     <div className={rowClass}>
                       <div className={styles.compareCellHeader}>Category</div>
                       {compareProducts.map((p) => (

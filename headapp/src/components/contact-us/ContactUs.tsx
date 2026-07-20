@@ -1,10 +1,13 @@
 "use client";
+import { useTranslations } from "next-intl";
 import React, { JSX, useState } from "react";
 import { ComponentProps } from "lib/component-props";
 
 interface ContactUsProps extends ComponentProps {}
 
 export const Default = (props: ContactUsProps): JSX.Element => {
+  const t = useTranslations(process.env.NEXT_PUBLIC_DEFAULT_SITE_NAME);
+
   const { params } = props;
   const id = params.RenderingIdentifier;
   const styles = `component contact-us w-full ${params.styles || ""}`.trim();
@@ -50,11 +53,11 @@ export const Default = (props: ContactUsProps): JSX.Element => {
               <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
             </svg>
           </div>
-          <h1 className="text-[48px] font-medium text-black font-poppins mb-1">Contact</h1>
+          <h1 className="text-[48px] font-medium text-black font-poppins mb-1">{t('Global-Contact')}</h1>
           <div className="flex items-center gap-2 text-[16px] font-poppins font-light">
-            <a href="/" className="font-medium text-black hover:text-[#B88E2F] transition-colors">Home</a>
-            <span className="text-black font-medium">&gt;</span>
-            <span className="text-black/60">Contact</span>
+            <a href="/" className="font-medium text-black hover:text-[#B88E2F] transition-colors">{t('Global-Home')}</a>
+            <span className="text-black font-medium">{t('Global-Gt')}</span>
+            <span className="text-black/60">{t('Global-Contact')}</span>
           </div>
         </div>
       </div>
@@ -63,9 +66,9 @@ export const Default = (props: ContactUsProps): JSX.Element => {
       <div className="max-w-[1240px] mx-auto px-4 py-[80px]">
         {/* Section Intro */}
         <div className="text-center max-w-[644px] mx-auto mb-[60px]">
-          <h2 className="text-[36px] font-semibold text-black font-poppins mb-[15px]">Get In Touch With Us</h2>
+          <h2 className="text-[36px] font-semibold text-black font-poppins mb-[15px]">{t('ContactUs-GetInTouchWith')}</h2>
           <p className="text-[16px] text-[#9F9F9F] font-poppins font-normal leading-[24px]">
-            For More Information About Our Product & Services. Please Feel Free To Drop Us An Email. Our Staff Always Be There To Help You Out. Do Not Hesitate!
+            {t('ContactUs-ForMoreInformationAbout')}
           </p>
         </div>
 
@@ -84,9 +87,9 @@ export const Default = (props: ContactUsProps): JSX.Element => {
                 </svg>
               </div>
               <div className="flex flex-col">
-                <h4 className="text-[24px] font-medium text-black font-poppins mb-[6px]">Address</h4>
+                <h4 className="text-[24px] font-medium text-black font-poppins mb-[6px]">{t('Global-Address')}</h4>
                 <p className="text-[16px] text-black font-poppins font-normal leading-[22px] max-w-[212px]">
-                  236 5th SE Avenue, New York NY10000, United States
+                  {t('ContactUs-2365thSeAvenue')}
                 </p>
               </div>
             </div>
@@ -99,10 +102,10 @@ export const Default = (props: ContactUsProps): JSX.Element => {
                 </svg>
               </div>
               <div className="flex flex-col">
-                <h4 className="text-[24px] font-medium text-black font-poppins mb-[6px]">Phone</h4>
+                <h4 className="text-[24px] font-medium text-black font-poppins mb-[6px]">{t('ContactUs-Phone')}</h4>
                 <p className="text-[16px] text-black font-poppins font-normal leading-[22px]">
-                  Mobile: +(84) 546-6789<br />
-                  Hotline: +(84) 456-6789
+                  {t('ContactUs-Mobile845466789')}<br />
+                  {t('ContactUs-Hotline844566789')}
                 </p>
               </div>
             </div>
@@ -116,10 +119,10 @@ export const Default = (props: ContactUsProps): JSX.Element => {
                 </svg>
               </div>
               <div className="flex flex-col">
-                <h4 className="text-[24px] font-medium text-black font-poppins mb-[6px]">Working Time</h4>
+                <h4 className="text-[24px] font-medium text-black font-poppins mb-[6px]">{t('ContactUs-WorkingTime')}</h4>
                 <p className="text-[16px] text-black font-poppins font-normal leading-[22px]">
-                  Monday-Friday: 9:00 - 22:00<br />
-                  Saturday-Sunday: 9:00 - 21:00
+                  {t('ContactUs-Mondayfriday9002200')}<br />
+                  {t('ContactUs-Saturdaysunday9002100')}
                 </p>
               </div>
             </div>
@@ -132,13 +135,13 @@ export const Default = (props: ContactUsProps): JSX.Element => {
               
               {/* Name */}
               <div className="flex flex-col gap-[12px]">
-                <label className="text-[16px] font-medium text-black font-poppins">Your name</label>
+                <label className="text-[16px] font-medium text-black font-poppins">{t('ContactUs-YourName')}</label>
                 <input
                   type="text"
                   name="name"
                   value={formData.name}
                   onChange={handleChange}
-                  placeholder="Abc"
+                  placeholder={t('ContactUs-Abc')}
                   className="w-full h-[75px] px-[30px] border border-[#9F9F9F] rounded-[10px] font-poppins text-[16px] focus:outline-none focus:border-[#B88E2F] transition-colors"
                   required
                 />
@@ -146,13 +149,13 @@ export const Default = (props: ContactUsProps): JSX.Element => {
 
               {/* Email */}
               <div className="flex flex-col gap-[12px]">
-                <label className="text-[16px] font-medium text-black font-poppins">Email address</label>
+                <label className="text-[16px] font-medium text-black font-poppins">{t('Global-EmailAddress')}</label>
                 <input
                   type="email"
                   name="email"
                   value={formData.email}
                   onChange={handleChange}
-                  placeholder="Abc@def.com"
+                  placeholder={t('ContactUs-Abcdefcom')}
                   className="w-full h-[75px] px-[30px] border border-[#9F9F9F] rounded-[10px] font-poppins text-[16px] focus:outline-none focus:border-[#B88E2F] transition-colors"
                   required
                 />
@@ -160,25 +163,25 @@ export const Default = (props: ContactUsProps): JSX.Element => {
 
               {/* Subject */}
               <div className="flex flex-col gap-[12px]">
-                <label className="text-[16px] font-medium text-black font-poppins">Subject</label>
+                <label className="text-[16px] font-medium text-black font-poppins">{t('ContactUs-Subject')}</label>
                 <input
                   type="text"
                   name="subject"
                   value={formData.subject}
                   onChange={handleChange}
-                  placeholder="This is an optional"
+                  placeholder={t('ContactUs-ThisIsAnOptional')}
                   className="w-full h-[75px] px-[30px] border border-[#9F9F9F] rounded-[10px] font-poppins text-[16px] focus:outline-none focus:border-[#B88E2F] transition-colors"
                 />
               </div>
 
               {/* Message */}
               <div className="flex flex-col gap-[12px]">
-                <label className="text-[16px] font-medium text-black font-poppins">Message</label>
+                <label className="text-[16px] font-medium text-black font-poppins">{t('ContactUs-Message')}</label>
                 <textarea
                   name="message"
                   value={formData.message}
                   onChange={handleChange}
-                  placeholder="Hi! i’d like to ask about"
+                  placeholder={t('ContactUs-HiIdLikeTo')}
                   rows={4}
                   className="w-full min-h-[120px] p-[30px] border border-[#9F9F9F] rounded-[10px] font-poppins text-[16px] focus:outline-none focus:border-[#B88E2F] transition-colors resize-y"
                   required
@@ -198,19 +201,19 @@ export const Default = (props: ContactUsProps): JSX.Element => {
                         <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                         <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
                       </svg>
-                      Sending...
+                      {t('Global-Sending')}
                     </span>
                   ) : "Submit"}
                 </button>
 
                 {status === "success" && (
                   <div className="p-4 bg-green-50 text-green-700 rounded-md font-poppins text-sm border border-green-200">
-                    Message sent successfully! We will get back to you shortly.
+                    {t('ContactUs-MessageSentSuccessfullyWe')}
                   </div>
                 )}
                 {status === "error" && (
                   <div className="p-4 bg-red-50 text-red-700 rounded-md font-poppins text-sm border border-red-200">
-                    Failed to send message. Please fill out all required fields and try again.
+                    {t('ContactUs-FailedToSendMessage')}
                   </div>
                 )}
               </div>
@@ -232,8 +235,8 @@ export const Default = (props: ContactUsProps): JSX.Element => {
               <circle cx="26.5" cy="30" r="10" />
             </svg>
             <div className="flex flex-col">
-              <h4 className="text-[25px] font-semibold text-black font-poppins">High Quality</h4>
-              <p className="text-[16px] text-[#898989] font-poppins font-normal">crafted from top materials</p>
+              <h4 className="text-[25px] font-semibold text-black font-poppins">{t('ContactUs-HighQuality')}</h4>
+              <p className="text-[16px] text-[#898989] font-poppins font-normal">{t('ContactUs-CraftedFromTopMaterials')}</p>
             </div>
           </div>
 
@@ -244,8 +247,8 @@ export const Default = (props: ContactUsProps): JSX.Element => {
               <path d="M16 30l7 7 14-14" />
             </svg>
             <div className="flex flex-col">
-              <h4 className="text-[25px] font-semibold text-black font-poppins">Warranty Protection</h4>
-              <p className="text-[16px] text-[#898989] font-poppins font-normal">Over 2 years</p>
+              <h4 className="text-[25px] font-semibold text-black font-poppins">{t('ContactUs-WarrantyProtection')}</h4>
+              <p className="text-[16px] text-[#898989] font-poppins font-normal">{t('ContactUs-Over2Years')}</p>
             </div>
           </div>
 
@@ -258,8 +261,8 @@ export const Default = (props: ContactUsProps): JSX.Element => {
               <circle cx="48" cy="40" r="4" />
             </svg>
             <div className="flex flex-col">
-              <h4 className="text-[25px] font-semibold text-black font-poppins">Free Shipping</h4>
-              <p className="text-[16px] text-[#898989] font-poppins font-normal">Order over 150 $</p>
+              <h4 className="text-[25px] font-semibold text-black font-poppins">{t('ContactUs-FreeShipping')}</h4>
+              <p className="text-[16px] text-[#898989] font-poppins font-normal">{t('ContactUs-OrderOver150')}</p>
             </div>
           </div>
 
@@ -271,8 +274,8 @@ export const Default = (props: ContactUsProps): JSX.Element => {
               <circle cx="26.5" cy="26.5" r="3" />
             </svg>
             <div className="flex flex-col">
-              <h4 className="text-[25px] font-semibold text-black font-poppins">24 / 7 Support</h4>
-              <p className="text-[16px] text-[#898989] font-poppins font-normal">Dedicated support</p>
+              <h4 className="text-[25px] font-semibold text-black font-poppins">{t('ContactUs-247Support')}</h4>
+              <p className="text-[16px] text-[#898989] font-poppins font-normal">{t('ContactUs-DedicatedSupport')}</p>
             </div>
           </div>
 

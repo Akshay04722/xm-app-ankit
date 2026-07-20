@@ -1,9 +1,12 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import React, { useRef, useEffect } from "react";
 import { useCart, CartItem } from "@/lib/CartContext";
 
 export default function CartDrawer() {
+  const t = useTranslations(process.env.NEXT_PUBLIC_DEFAULT_SITE_NAME);
+
   const {
     cartItems,
     isCartOpen,
@@ -77,9 +80,9 @@ export default function CartDrawer() {
               {/* Header */}
               <div className="flex items-center justify-between border-b border-gray-250 px-6 py-5 bg-gradient-to-r from-[#f9f1e7]/30 to-transparent">
                 <div className="flex items-baseline gap-2">
-                  <h2 className="text-lg font-bold text-gray-900">Shopping Cart</h2>
+                  <h2 className="text-lg font-bold text-gray-900">{t('Global-ShoppingCart')}</h2>
                   <span className="text-xs font-bold text-[#B88E2F] bg-[#f9f1e7] px-2 py-0.5 rounded-full">
-                    {totalItems} {totalItems === 1 ? "item" : "items"}
+                    {totalItems} {totalItems === 1 ? t('CartDrawer-Item') : t('Global-Items')}
                   </span>
                 </div>
                 <button
@@ -87,7 +90,7 @@ export default function CartDrawer() {
                   className="rounded-full text-gray-400 hover:text-[#B88E2F] hover:bg-[#f9f1e7] p-2 transition-all duration-200"
                   onClick={() => setCartOpen(false)}
                 >
-                  <span className="sr-only">Close panel</span>
+                  <span className="sr-only">{t('CartDrawer-ClosePanel')}</span>
                   <svg
                     className="h-5 w-5"
                     fill="none"
@@ -124,15 +127,15 @@ export default function CartDrawer() {
                         />
                       </svg>
                     </div>
-                    <h3 className="text-base font-bold text-gray-900">Your cart is empty</h3>
+                    <h3 className="text-base font-bold text-gray-900">{t('Global-YourCartIsEmpty')}</h3>
                     <p className="mt-1 text-xs text-gray-500 max-w-[240px]">
-                      Add products from the store or search to get started.
+                      {t('CartDrawer-AddProductsFromThe')}
                     </p>
                     <button
                       onClick={() => setCartOpen(false)}
                       className="mt-6 inline-flex items-center justify-center border border-transparent bg-[#B88E2F] px-5 py-2.5 text-xs font-bold uppercase tracking-wider text-white shadow-xs hover:bg-[#a37924] transition-all rounded-lg active:scale-95 cursor-pointer"
                     >
-                      Continue Shopping
+                      {t('Global-ContinueShopping')}
                     </button>
                   </div>
                 ) : (
@@ -179,13 +182,13 @@ export default function CartDrawer() {
                                 </p>
                               </div>
                               <div className="mt-0.5 flex flex-wrap gap-x-3 text-[10px] text-gray-400">
-                                <span>SKU: {item.sku}</span>
+                                <span>{t('Global-Sku1')} {item.sku}</span>
                                 {item.selectedColor && (
                                   <span className="flex items-center gap-1">
-                                    Color: <span className="inline-block w-2.5 h-2.5 rounded-full border border-gray-200" style={{ backgroundColor: item.selectedColor }} />
+                                    {t('Global-Color')} <span className="inline-block w-2.5 h-2.5 rounded-full border border-gray-200" style={{ backgroundColor: item.selectedColor }} />
                                   </span>
                                 )}
-                                {item.selectedSize && <span>Size: {item.selectedSize}</span>}
+                                {item.selectedSize && <span>{t('Global-Size')} {item.selectedSize}</span>}
                               </div>
                             </div>
 
@@ -229,7 +232,7 @@ export default function CartDrawer() {
                                     d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
                                   />
                                 </svg>
-                                <span className="text-[10px]">Remove</span>
+                                <span className="text-[10px]">{t('CartDrawer-Remove')}</span>
                               </button>
                             </div>
                           </div>
@@ -244,18 +247,18 @@ export default function CartDrawer() {
               {cartItems.length > 0 && (
                 <div className="border-t border-gray-200 px-6 py-6 bg-gray-50/50">
                   <div className="flex justify-between text-sm font-bold text-gray-900 mb-2">
-                    <span>Subtotal</span>
+                    <span>{t('Global-Subtotal')}</span>
                     <span className="text-[#B88E2F] text-lg font-extrabold">{formatPrice(subtotal)}</span>
                   </div>
                   <p className="text-[10px] text-gray-400 mb-5">
-                    Shipping and taxes calculated at checkout.
+                    {t('CartDrawer-ShippingAndTaxesCalculate')}
                   </p>
                   <div className="grid grid-cols-2 gap-3.5">
                     <button
                       onClick={clearCart}
                       className="flex items-center justify-center border-2 border-gray-200 bg-white text-gray-700 hover:bg-gray-50 px-4 py-3 text-xs font-bold uppercase tracking-wider rounded-xl transition-all duration-200 active:scale-95 cursor-pointer"
                     >
-                      Clear
+                      {t('CartDrawer-Clear')}
                     </button>
                     <button
                       onClick={handleCheckout}
@@ -264,7 +267,7 @@ export default function CartDrawer() {
                       <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
                       </svg>
-                      Checkout
+                      {t('Global-Checkout')}
                     </button>
                   </div>
                   <div className="mt-4 flex justify-center text-center text-xs text-gray-500">
@@ -273,7 +276,7 @@ export default function CartDrawer() {
                       className="font-bold text-[#B88E2F] hover:text-[#a37924] transition-colors"
                       onClick={() => setCartOpen(false)}
                     >
-                      Continue Shopping &rarr;
+                      {t('CartDrawer-ContinueShoppingRarr')}
                     </button>
                   </div>
                 </div>

@@ -1,3 +1,4 @@
+import { useTranslations } from "next-intl";
 import React from "react";
 
 interface EmptyAddressProps {
@@ -5,6 +6,8 @@ interface EmptyAddressProps {
 }
 
 export default function EmptyAddress({ onAddClick }: EmptyAddressProps) {
+  const t = useTranslations(process.env.NEXT_PUBLIC_DEFAULT_SITE_NAME);
+
   return (
     <div className="flex flex-col items-center justify-center p-8 bg-white border border-dashed border-gray-200 rounded-2xl shadow-sm text-center">
       <div className="w-16 h-16 bg-amber-50 rounded-full flex items-center justify-center mb-4">
@@ -28,15 +31,15 @@ export default function EmptyAddress({ onAddClick }: EmptyAddressProps) {
           />
         </svg>
       </div>
-      <h4 className="text-lg font-semibold text-gray-900 mb-1">No Addresses Saved</h4>
+      <h4 className="text-lg font-semibold text-gray-900 mb-1">{t('EmptyAddress-NoAddressesSaved')}</h4>
       <p className="text-sm text-gray-500 max-w-sm mb-5">
-        You haven't added any shipping or billing addresses to your account yet.
+        {t('EmptyAddress-YouHaventAddedAny')}
       </p>
       <button
         onClick={onAddClick}
         className="px-5 py-2.5 bg-amber-600 hover:bg-amber-700 text-white font-medium text-sm rounded-xl shadow-sm hover:shadow transition duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2"
       >
-        Add Address
+        {t('Global-AddAddress')}
       </button>
     </div>
   );

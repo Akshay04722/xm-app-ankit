@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import React, { useState, useEffect } from "react";
 import { useAuth } from "@/lib/AuthContext";
 import { ComponentProps } from "lib/component-props";
@@ -92,6 +93,7 @@ interface OrderRecord {
 }
 
 export const Default: React.FC<ComponentProps> = () => {
+  const t = useTranslations(process.env.NEXT_PUBLIC_DEFAULT_SITE_NAME);
   const { user, loading: authLoading } = useAuth();
   
   // Dashboard view toggle
@@ -577,7 +579,7 @@ export const Default: React.FC<ComponentProps> = () => {
     return (
       <div className={styles.loadingContainer}>
         <div className={styles.spinner}></div>
-        <p>Verifying admin session...</p>
+        <p>{t('AdminDashboard-VerifyingAdminSession')}</p>
       </div>
     );
   }
@@ -592,9 +594,9 @@ export const Default: React.FC<ComponentProps> = () => {
             </svg>
           </div>
         </div>
-        <h2>Access Denied</h2>
-        <p>This administrative dashboard is restricted to users with admin privileges only.</p>
-        <Link href="/" className={styles.backHomeBtn}>Return Home</Link>
+        <h2>{t('AdminDashboard-AccessDenied')}</h2>
+        <p>{t('AdminDashboard-ThisAdministrativeDashboa')}</p>
+        <Link href="/" className={styles.backHomeBtn}>{t('AdminDashboard-ReturnHome')}</Link>
       </div>
     );
   }
@@ -627,10 +629,10 @@ export const Default: React.FC<ComponentProps> = () => {
     <div className={styles.dashboardContainer}>
       {/* Breadcrumbs */}
       <div className={styles.breadcrumbs}>
-        <Link href="/admin">Admin</Link>
+        <Link href="/admin">{t('AdminDashboard-Admin')}</Link>
         <span className={styles.breadcrumbsSep}>/</span>
         <span className={styles.breadcrumbsMuted}>
-          {activeConsole === "users" ? "Users Console" : activeConsole === "products" ? "Products Console" : "Orders Console"}
+          {activeConsole === "users" ? t('AdminDashboard-UsersConsole') : activeConsole === "products" ? "Products Console" : "Orders Console"}
         </span>
       </div>
 
@@ -638,8 +640,8 @@ export const Default: React.FC<ComponentProps> = () => {
       <div className={styles.dashboardHeader}>
         <div className={styles.headerTop}>
           <div className={styles.titleSection}>
-            <h1>Furniro Admin Dashboard</h1>
-            <p>Manage application users, product catalog listings, sync data, and manage stock counts.</p>
+            <h1>{t('AdminDashboard-FurniroAdminDashboard')}</h1>
+            <p>{t('AdminDashboard-ManageApplicationUsersPro')}</p>
           </div>
           <div className={styles.headerActions}>
             {activeConsole === "products" && (
@@ -666,14 +668,14 @@ export const Default: React.FC<ComponentProps> = () => {
                   {syncing ? (
                     <>
                       <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" style={{ width: '16px', height: '16px', borderRadius: '50%', border: '2px solid white', borderTopColor: 'transparent', animation: 'spin 1s linear infinite' }}></div>
-                      Syncing...
+                      {t('AdminDashboard-Syncing')}
                     </>
                   ) : (
                     <>
                       <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
                         <path d="M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6 0 1.01-.25 1.97-.7 2.8l1.46 1.46C19.54 15.03 20 13.57 20 12c0-4.41-3.59-8-8-8zm-8 8c0 1.57.46 3.03 1.24 4.26L6.7 17.7C5.25 16.03 4 13.88 4 12c0-4.41 3.59-8 8-8v3l4-4-4-4v3c-4.41 0-8 3.59-8 8z" />
                       </svg>
-                      Sync Products to Sitecore
+                      {t('AdminDashboard-SyncProductsToSitecore')}
                     </>
                   )}
                 </button>
@@ -697,7 +699,7 @@ export const Default: React.FC<ComponentProps> = () => {
                   <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
                     <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" />
                   </svg>
-                  Add Product
+                  {t('AdminDashboard-AddProduct')}
                 </button>
               </>
             )}
@@ -710,19 +712,19 @@ export const Default: React.FC<ComponentProps> = () => {
             className={`${styles.tabSelectorBtn} ${activeConsole === "products" ? styles.tabSelectorBtnActive : ""}`}
             onClick={() => setActiveConsole("products")}
           >
-            Products Console
+            {t('AdminDashboard-ProductsConsole')}
           </button>
           <button
             className={`${styles.tabSelectorBtn} ${activeConsole === "users" ? styles.tabSelectorBtnActive : ""}`}
             onClick={() => setActiveConsole("users")}
           >
-            Users Console
+            {t('AdminDashboard-UsersConsole')}
           </button>
           <button
             className={`${styles.tabSelectorBtn} ${activeConsole === "orders" ? styles.tabSelectorBtnActive : ""}`}
             onClick={() => setActiveConsole("orders")}
           >
-            Orders Console
+            {t('AdminDashboard-OrdersConsole')}
           </button>
         </div>
 
@@ -737,7 +739,7 @@ export const Default: React.FC<ComponentProps> = () => {
                 <input
                   type="text"
                   className={styles.searchInput}
-                  placeholder="Search email, name or UID..."
+                  placeholder={t('AdminDashboard-SearchEmailNameOr')}
                   value={userSearch}
                   onChange={(e) => setUserSearch(e.target.value)}
                 />
@@ -745,7 +747,7 @@ export const Default: React.FC<ComponentProps> = () => {
                 <input
                   type="text"
                   className={styles.searchInput}
-                  placeholder="Search products by title, category, SKU..."
+                  placeholder={t('AdminDashboard-SearchProductsByTitle')}
                   value={productSearch}
                   onChange={(e) => setProductSearch(e.target.value)}
                 />
@@ -761,13 +763,13 @@ export const Default: React.FC<ComponentProps> = () => {
                 <input
                   type="text"
                   className={styles.searchInput}
-                  placeholder="Search by Order ID, Name, Phone..."
+                  placeholder={t('AdminDashboard-SearchByOrderId')}
                   value={orderSearch}
                   onChange={(e) => setOrderSearch(e.target.value)}
                 />
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <label htmlFor="adminStatusFilterSelect" style={{ fontSize: '13px', fontWeight: 600, color: '#898989' }}>Status:</label>
+                <label htmlFor="adminStatusFilterSelect" style={{ fontSize: '13px', fontWeight: 600, color: '#898989' }}>{t('AdminDashboard-Status')}</label>
                 <select
                   id="adminStatusFilterSelect"
                   value={statusFilter}
@@ -786,12 +788,12 @@ export const Default: React.FC<ComponentProps> = () => {
                     width: 'auto'
                   }}
                 >
-                  <option value="all">All Statuses</option>
-                  <option value="pending">Pending</option>
-                  <option value="success">Success</option>
-                  <option value="failed">Failed</option>
-                  <option value="cancelled">Cancelled</option>
-                  <option value="returned">Returned</option>
+                  <option value="all">{t('AdminDashboard-AllStatuses')}</option>
+                  <option value="pending">{t('AdminDashboard-Pending')}</option>
+                  <option value="success">{t('AdminDashboard-Success')}</option>
+                  <option value="failed">{t('AdminDashboard-Failed')}</option>
+                  <option value="cancelled">{t('AdminDashboard-Cancelled')}</option>
+                  <option value="returned">{t('AdminDashboard-Returned')}</option>
                 </select>
               </div>
             </div>
@@ -810,7 +812,7 @@ export const Default: React.FC<ComponentProps> = () => {
             </div>
             <div className={styles.metricContent}>
               <span className={styles.metricValue}>{users.length}</span>
-              <span className={styles.metricLabel}>Total Users</span>
+              <span className={styles.metricLabel}>{t('AdminDashboard-TotalUsers')}</span>
             </div>
           </div>
           <div className={styles.metricCard}>
@@ -821,7 +823,7 @@ export const Default: React.FC<ComponentProps> = () => {
             </div>
             <div className={styles.metricContent}>
               <span className={styles.metricValue}>{users.filter((u) => u.isAdmin).length}</span>
-              <span className={styles.metricLabel}>Administrators</span>
+              <span className={styles.metricLabel}>{t('AdminDashboard-Administrators')}</span>
             </div>
           </div>
           <div className={styles.metricCard}>
@@ -829,8 +831,8 @@ export const Default: React.FC<ComponentProps> = () => {
               <span className={styles.pulseDot}></span>
             </div>
             <div className={styles.metricContent}>
-              <span className={styles.statusIndicator}>Online</span>
-              <span className={styles.metricLabel}>Auth Status</span>
+              <span className={styles.statusIndicator}>{t('Global-Online')}</span>
+              <span className={styles.metricLabel}>{t('AdminDashboard-AuthStatus')}</span>
             </div>
           </div>
         </div>
@@ -844,7 +846,7 @@ export const Default: React.FC<ComponentProps> = () => {
             </div>
             <div className={styles.metricContent}>
               <span className={styles.metricValue}>{products.length}</span>
-              <span className={styles.metricLabel}>Total Products</span>
+              <span className={styles.metricLabel}>{t('AdminDashboard-TotalProducts')}</span>
             </div>
           </div>
           <div className={styles.metricCard}>
@@ -857,7 +859,7 @@ export const Default: React.FC<ComponentProps> = () => {
               <span className={styles.metricValue}>
                 {new Set(products.map(p => p.category).filter(Boolean)).size}
               </span>
-              <span className={styles.metricLabel}>Categories</span>
+              <span className={styles.metricLabel}>{t('Global-Categories')}</span>
             </div>
           </div>
           <div className={styles.metricCard}>
@@ -870,7 +872,7 @@ export const Default: React.FC<ComponentProps> = () => {
               <span className={styles.metricValue}>
                 {products.reduce((acc, p) => acc + (p.stockCount || 0), 0)}
               </span>
-              <span className={styles.metricLabel}>Total Items Stock</span>
+              <span className={styles.metricLabel}>{t('AdminDashboard-TotalItemsStock')}</span>
             </div>
           </div>
         </div>
@@ -884,7 +886,7 @@ export const Default: React.FC<ComponentProps> = () => {
             </div>
             <div className={styles.metricContent}>
               <span className={styles.metricValue}>{orders.filter(Boolean).length}</span>
-              <span className={styles.metricLabel}>Total Orders</span>
+              <span className={styles.metricLabel}>{t('AdminDashboard-TotalOrders')}</span>
             </div>
           </div>
           <div className={styles.metricCard}>
@@ -895,9 +897,9 @@ export const Default: React.FC<ComponentProps> = () => {
             </div>
             <div className={styles.metricContent}>
               <span className={styles.metricValue}>
-                Rs. {orders.filter(o => o && o.status === "success").reduce((acc, o) => acc + (o.amount || 0), 0).toLocaleString("en-IN")}
+                {t('AdminDashboard-Rs')} {orders.filter(o => o && o.status === "success").reduce((acc, o) => acc + (o.amount || 0), 0).toLocaleString("en-IN")}
               </span>
-              <span className={styles.metricLabel}>Total Revenue</span>
+              <span className={styles.metricLabel}>{t('AdminDashboard-TotalRevenue')}</span>
             </div>
           </div>
           <div className={styles.metricCard}>
@@ -910,7 +912,7 @@ export const Default: React.FC<ComponentProps> = () => {
               <span className={styles.metricValue}>
                 {orders.filter(o => o && o.status === "pending").length}
               </span>
-              <span className={styles.metricLabel}>Pending Payments</span>
+              <span className={styles.metricLabel}>{t('AdminDashboard-PendingPayments')}</span>
             </div>
           </div>
         </div>
@@ -939,25 +941,25 @@ export const Default: React.FC<ComponentProps> = () => {
         usersLoading && users.length === 0 ? (
           <div className={styles.loadingContainer}>
             <div className={styles.spinner}></div>
-            <p>Fetching user accounts...</p>
+            <p>{t('AdminDashboard-FetchingUserAccounts')}</p>
           </div>
         ) : (
           <div className={styles.tableWrapper}>
             <table className={styles.usersTable}>
               <thead>
                 <tr>
-                  <th>User Profile</th>
-                  <th>Created At</th>
-                  <th>Last Login</th>
-                  <th>Role Switcher</th>
-                  <th>Actions</th>
+                  <th>{t('AdminDashboard-UserProfile')}</th>
+                  <th>{t('AdminDashboard-CreatedAt')}</th>
+                  <th>{t('AdminDashboard-LastLogin')}</th>
+                  <th>{t('AdminDashboard-RoleSwitcher')}</th>
+                  <th>{t('Global-Actions')}</th>
                 </tr>
               </thead>
               <tbody>
                 {users.length === 0 ? (
                   <tr>
                     <td colSpan={5} style={{ textAlign: "center", padding: "40px", color: "#9f9f9f" }}>
-                      No users matching your query.
+                      {t('AdminDashboard-NoUsersMatchingYour')}
                     </td>
                   </tr>
                 ) : (
@@ -974,12 +976,12 @@ export const Default: React.FC<ComponentProps> = () => {
                             <span className={styles.displayName}>
                               {u.displayName || u.email.split("@")[0]}
                             </span>
-                            <span className={styles.uidSub}>UID: {u.uid}</span>
+                            <span className={styles.uidSub}>{t('AdminDashboard-Uid')} {u.uid}</span>
                           </div>
                         </div>
                       </td>
-                      <td>{u.metadata.creationTime ? new Date(u.metadata.creationTime).toLocaleDateString() : "N/A"}</td>
-                      <td>{u.metadata.lastSignInTime ? new Date(u.metadata.lastSignInTime).toLocaleDateString() : "N/A"}</td>
+                      <td>{u.metadata.creationTime ? new Date(u.metadata.creationTime).toLocaleDateString() : t('AdminDashboard-Na')}</td>
+                      <td>{u.metadata.lastSignInTime ? new Date(u.metadata.lastSignInTime).toLocaleDateString() : t('AdminDashboard-Na')}</td>
                       <td>
                         <div className={styles.roleToggleWrapper}>
                           <label className={styles.switch}>
@@ -992,7 +994,7 @@ export const Default: React.FC<ComponentProps> = () => {
                             <span className={styles.slider}></span>
                           </label>
                           <span className={`${styles.roleBadge} ${u.isAdmin ? styles.roleAdmin : styles.roleUser}`}>
-                            {u.isAdmin ? "Admin" : "User"}
+                            {u.isAdmin ? t('AdminDashboard-Admin') : t('AdminDashboard-User')}
                           </span>
                         </div>
                       </td>
@@ -1005,7 +1007,7 @@ export const Default: React.FC<ComponentProps> = () => {
                           <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2.5">
                             <path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                           </svg>
-                          Delete
+                          {t('AdminDashboard-Delete')}
                         </button>
                       </td>
                     </tr>
@@ -1019,26 +1021,26 @@ export const Default: React.FC<ComponentProps> = () => {
         productsLoading && products.length === 0 ? (
           <div className={styles.loadingContainer}>
             <div className={styles.spinner}></div>
-            <p>Fetching product catalog...</p>
+            <p>{t('AdminDashboard-FetchingProductCatalog')}</p>
           </div>
         ) : (
           <div className={styles.tableWrapper}>
             <table className={styles.usersTable}>
               <thead>
                 <tr>
-                  <th>Product</th>
-                  <th>SKU</th>
-                  <th>Price</th>
-                  <th>Category</th>
-                  <th>Stock</th>
-                  <th>Actions</th>
+                  <th>{t('Global-Product')}</th>
+                  <th>{t('Global-Sku')}</th>
+                  <th>{t('Global-Price')}</th>
+                  <th>{t('Global-Category')}</th>
+                  <th>{t('AdminDashboard-Stock')}</th>
+                  <th>{t('Global-Actions')}</th>
                 </tr>
               </thead>
               <tbody>
                 {filteredProducts.length === 0 ? (
                   <tr>
                     <td colSpan={6} style={{ textAlign: "center", padding: "40px", color: "#9f9f9f" }}>
-                      No products found in catalog.
+                      {t('AdminDashboard-NoProductsFoundIn')}
                     </td>
                   </tr>
                 ) : (
@@ -1064,10 +1066,10 @@ export const Default: React.FC<ComponentProps> = () => {
                       <td style={{ fontFamily: "monospace", fontWeight: "700" }}>{p.sku}</td>
                       <td>
                         <div>
-                          <span style={{ fontWeight: 700 }}>Rs. {p.price}</span>
+                          <span style={{ fontWeight: 700 }}>{t('AdminDashboard-Rs')} {p.price}</span>
                           {p.discountPrice > p.price && (
                             <span style={{ textDecoration: "line-through", color: "#b0b0b0", marginLeft: 8, fontSize: 12 }}>
-                              Rs. {p.discountPrice}
+                              {t('AdminDashboard-Rs')} {p.discountPrice}
                             </span>
                           )}
                         </div>
@@ -1075,7 +1077,7 @@ export const Default: React.FC<ComponentProps> = () => {
                       <td>{p.category}</td>
                       <td>
                         <span style={{ fontWeight: 700, color: p.stockCount < 10 ? '#dc2626' : 'inherit' }}>
-                          {p.stockCount} items
+                          {p.stockCount} {t('Global-Items')}
                         </span>
                       </td>
                       <td>
@@ -1087,7 +1089,7 @@ export const Default: React.FC<ComponentProps> = () => {
                             <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2.5">
                               <path strokeLinecap="round" strokeLinejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
                             </svg>
-                            Edit
+                            {t('Global-Edit')}
                           </button>
                           <button
                             className={styles.deleteBtn}
@@ -1096,7 +1098,7 @@ export const Default: React.FC<ComponentProps> = () => {
                             <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2.5">
                               <path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                             </svg>
-                            Delete
+                            {t('AdminDashboard-Delete')}
                           </button>
                         </div>
                       </td>
@@ -1111,26 +1113,26 @@ export const Default: React.FC<ComponentProps> = () => {
         ordersLoading && orders.length === 0 ? (
           <div className={styles.loadingContainer}>
             <div className={styles.spinner}></div>
-            <p>Fetching order history...</p>
+            <p>{t('AdminDashboard-FetchingOrderHistory')}</p>
           </div>
         ) : (
           <div className={styles.tableWrapper}>
             <table className={styles.usersTable}>
               <thead>
                 <tr>
-                  <th>Order ID</th>
-                  <th>Customer</th>
-                  <th>Date</th>
-                  <th>Amount</th>
-                  <th>Status</th>
-                  <th>Actions</th>
+                  <th>{t('Global-OrderId')}</th>
+                  <th>{t('Global-Customer')}</th>
+                  <th>{t('Global-Date')}</th>
+                  <th>{t('Global-Amount')}</th>
+                  <th>{t('Global-Status')}</th>
+                  <th>{t('Global-Actions')}</th>
                 </tr>
               </thead>
               <tbody>
                 {filteredOrders.length === 0 ? (
                   <tr>
                     <td colSpan={6} style={{ textAlign: "center", padding: "40px", color: "#9f9f9f" }}>
-                      No orders found matching your query.
+                      {t('AdminDashboard-NoOrdersFoundMatching')}
                     </td>
                   </tr>
                 ) : (
@@ -1143,9 +1145,9 @@ export const Default: React.FC<ComponentProps> = () => {
                           <span style={{ fontSize: '12px', color: '#898989' }}>{o.address?.phoneNumber || "N/A"}</span>
                         </div>
                       </td>
-                      <td>{o.createdAt ? new Date(o.createdAt).toLocaleDateString("en-IN", { year: 'numeric', month: 'short', day: 'numeric' }) : "N/A"}</td>
+                      <td>{o.createdAt ? new Date(o.createdAt).toLocaleDateString("en-IN", { year: 'numeric', month: 'short', day: 'numeric' }) : t('AdminDashboard-Na')}</td>
                       <td style={{ fontWeight: 700 }}>
-                        Rs. {o.amount?.toLocaleString("en-IN")}
+                        {t('AdminDashboard-Rs')} {o.amount?.toLocaleString("en-IN")}
                       </td>
                       <td>
                         <span className={`${styles.statusBadge} ${styles['status' + (o.status ? o.status.charAt(0).toUpperCase() + o.status.slice(1) : 'Pending')]}`}>
@@ -1165,7 +1167,7 @@ export const Default: React.FC<ComponentProps> = () => {
                             <circle cx="12" cy="12" r="3" />
                             <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
                           </svg>
-                          View Details
+                          {t('Global-ViewDetails')}
                         </button>
                       </td>
                     </tr>
@@ -1182,7 +1184,7 @@ export const Default: React.FC<ComponentProps> = () => {
         <div className={styles.modalOverlay}>
           <div className={styles.modalContent}>
             <div className={styles.modalHeader}>
-              <h2>{selectedProduct ? "Edit Product Details" : "Add Product to Catalog"}</h2>
+              <h2>{selectedProduct ? t('AdminDashboard-EditProductDetails') : t('AdminDashboard-AddProductToCatalog')}</h2>
               <button className={styles.closeBtn} onClick={() => setIsProductModalOpen(false)}>
                 <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
@@ -1194,12 +1196,12 @@ export const Default: React.FC<ComponentProps> = () => {
               <div className={styles.formGrid}>
                 {/* SKU */}
                 <div className={styles.formGroup}>
-                  <label htmlFor="sku">Product SKU *</label>
+                  <label htmlFor="sku">{t('AdminDashboard-ProductSku')}</label>
                   <input
                     id="sku"
                     type="text"
                     className={styles.formInput}
-                    placeholder="e.g. 11, SS001"
+                    placeholder={t('AdminDashboard-Eg11Ss001')}
                     value={formSku}
                     disabled={!!selectedProduct}
                     onChange={(e) => setFormSku(e.target.value)}
@@ -1209,12 +1211,12 @@ export const Default: React.FC<ComponentProps> = () => {
 
                 {/* Title */}
                 <div className={styles.formGroup}>
-                  <label htmlFor="title">Product Title *</label>
+                  <label htmlFor="title">{t('AdminDashboard-ProductTitle')}</label>
                   <input
                     id="title"
                     type="text"
                     className={styles.formInput}
-                    placeholder="e.g. Lolito Sofa"
+                    placeholder={t('AdminDashboard-EgLolitoSofa')}
                     value={formTitle}
                     onChange={(e) => setFormTitle(e.target.value)}
                     required
@@ -1223,12 +1225,12 @@ export const Default: React.FC<ComponentProps> = () => {
 
                 {/* Price */}
                 <div className={styles.formGroup}>
-                  <label htmlFor="price">Sale Price (in Rs.) *</label>
+                  <label htmlFor="price">{t('AdminDashboard-SalePriceInRs')}</label>
                   <input
                     id="price"
                     type="number"
                     className={styles.formInput}
-                    placeholder="e.g. 2500"
+                    placeholder={t('AdminDashboard-Eg2500')}
                     value={formPrice}
                     onChange={(e) => setFormPrice(e.target.value)}
                     required
@@ -1237,12 +1239,12 @@ export const Default: React.FC<ComponentProps> = () => {
 
                 {/* Discount / Strike-through Price */}
                 <div className={styles.formGroup}>
-                  <label htmlFor="discountPrice">Original Price (Strike-through)</label>
+                  <label htmlFor="discountPrice">{t('AdminDashboard-OriginalPriceStrikethroug')}</label>
                   <input
                     id="discountPrice"
                     type="number"
                     className={styles.formInput}
-                    placeholder="e.g. 3500 (leave 0 or empty if no discount)"
+                    placeholder={t('AdminDashboard-Eg3500Leave0')}
                     value={formDiscountPrice}
                     onChange={(e) => setFormDiscountPrice(e.target.value)}
                   />
@@ -1250,7 +1252,7 @@ export const Default: React.FC<ComponentProps> = () => {
 
                 {/* Category */}
                 <div className={styles.formGroup}>
-                  <label htmlFor="category">Category *</label>
+                  <label htmlFor="category">{t('AdminDashboard-Category')}</label>
                   <select
                     id="category"
                     className={styles.formSelect}
@@ -1265,12 +1267,12 @@ export const Default: React.FC<ComponentProps> = () => {
 
                 {/* Stock Count */}
                 <div className={styles.formGroup}>
-                  <label htmlFor="stock">Stock Count *</label>
+                  <label htmlFor="stock">{t('AdminDashboard-StockCount')}</label>
                   <input
                     id="stock"
                     type="number"
                     className={styles.formInput}
-                    placeholder="e.g. 50"
+                    placeholder={t('AdminDashboard-Eg50')}
                     value={formStockCount}
                     onChange={(e) => setFormStockCount(e.target.value)}
                     required
@@ -1279,7 +1281,7 @@ export const Default: React.FC<ComponentProps> = () => {
 
                 {/* Main Image URL */}
                 <div className={`${styles.formGroup} ${styles.formGridFull}`}>
-                  <label htmlFor="mainImage">Main Image URL</label>
+                  <label htmlFor="mainImage">{t('AdminDashboard-MainImageUrl')}</label>
                   <input
                     id="mainImage"
                     type="text"
@@ -1292,7 +1294,7 @@ export const Default: React.FC<ComponentProps> = () => {
 
                 {/* Gallery Images URLs */}
                 <div className={`${styles.formGroup} ${styles.formGridFull}`}>
-                  <label htmlFor="galleryImages">Gallery Images (Comma-separated URLs)</label>
+                  <label htmlFor="galleryImages">{t('AdminDashboard-GalleryImagesCommaseparat')}</label>
                   <input
                     id="galleryImages"
                     type="text"
@@ -1305,12 +1307,12 @@ export const Default: React.FC<ComponentProps> = () => {
 
                 {/* Short Description */}
                 <div className={`${styles.formGroup} ${styles.formGridFull}`}>
-                  <label htmlFor="shortDesc">Short Description</label>
+                  <label htmlFor="shortDesc">{t('AdminDashboard-ShortDescription')}</label>
                   <textarea
                     id="shortDesc"
                     rows={2}
                     className={styles.formTextarea}
-                    placeholder="Brief description of the product..."
+                    placeholder={t('AdminDashboard-BriefDescriptionOfThe')}
                     value={formShortDesc}
                     onChange={(e) => setFormShortDesc(e.target.value)}
                   />
@@ -1318,12 +1320,12 @@ export const Default: React.FC<ComponentProps> = () => {
 
                 {/* Long Description */}
                 <div className={`${styles.formGroup} ${styles.formGridFull}`}>
-                  <label htmlFor="longDesc">Detailed Description</label>
+                  <label htmlFor="longDesc">{t('AdminDashboard-DetailedDescription')}</label>
                   <textarea
                     id="longDesc"
                     rows={3}
                     className={styles.formTextarea}
-                    placeholder="Detailed information and specs..."
+                    placeholder={t('AdminDashboard-DetailedInformationAndSpe')}
                     value={formLongDesc}
                     onChange={(e) => setFormLongDesc(e.target.value)}
                   />
@@ -1331,7 +1333,7 @@ export const Default: React.FC<ComponentProps> = () => {
 
                 {/* Sizes checkboxes */}
                 <div className={`${styles.formGroup} ${styles.formGridFull}`}>
-                  <label>Available Sizes</label>
+                  <label>{t('Global-AvailableSizes')}</label>
                   <div className={styles.checkboxGroup}>
                     {availableSizes.map((size) => (
                       <label key={size} className={styles.checkboxLabel}>
@@ -1348,7 +1350,7 @@ export const Default: React.FC<ComponentProps> = () => {
 
                 {/* Colors checkboxes */}
                 <div className={`${styles.formGroup} ${styles.formGridFull}`}>
-                  <label>Available Colors</label>
+                  <label>{t('Global-AvailableColors')}</label>
                   <div className={styles.checkboxGroup}>
                     {availableColors.map((color) => (
                       <label key={color} className={styles.checkboxLabel}>
@@ -1365,12 +1367,12 @@ export const Default: React.FC<ComponentProps> = () => {
 
                 {/* Tags */}
                 <div className={`${styles.formGroup} ${styles.formGridFull}`}>
-                  <label htmlFor="tags">Tags (Comma-separated)</label>
+                  <label htmlFor="tags">{t('AdminDashboard-TagsCommaseparated')}</label>
                   <input
                     id="tags"
                     type="text"
                     className={styles.formInput}
-                    placeholder="e.g. Sofa, Living Room, Comfort"
+                    placeholder={t('AdminDashboard-EgSofaLivingRoom')}
                     value={formTags}
                     onChange={(e) => setFormTags(e.target.value)}
                   />
@@ -1384,14 +1386,14 @@ export const Default: React.FC<ComponentProps> = () => {
                   onClick={() => setIsProductModalOpen(false)}
                   disabled={productActionLoading}
                 >
-                  Cancel
+                  {t('Global-Cancel')}
                 </button>
                 <button
                   type="submit"
                   className={styles.submitBtn}
                   disabled={productActionLoading}
                 >
-                  {productActionLoading ? "Saving Product..." : "Save Product"}
+                  {productActionLoading ? t('AdminDashboard-SavingProduct') : t('AdminDashboard-SaveProduct')}
                 </button>
               </div>
             </form>
@@ -1404,7 +1406,7 @@ export const Default: React.FC<ComponentProps> = () => {
         <div className={styles.modalOverlay}>
           <div className={styles.modalContent} style={{ maxWidth: '950px' }}>
             <div className={styles.modalHeader}>
-              <h2>Order Details: {selectedOrder.id}</h2>
+              <h2>{t('AdminDashboard-OrderDetails')} {selectedOrder.id}</h2>
               <button className={styles.closeBtn} onClick={() => { setIsOrderModalOpen(false); setSelectedOrder(null); }}>
                 <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
@@ -1418,7 +1420,7 @@ export const Default: React.FC<ComponentProps> = () => {
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
                   {/* Items list */}
                   <div style={{ border: '1px solid #f6f3eb', borderRadius: '12px', padding: '20px', backgroundColor: '#ffffff' }}>
-                    <h3 style={{ fontSize: '16px', fontWeight: 700, margin: '0 0 16px 0', borderBottom: '1px solid #f6f3eb', paddingBottom: '10px' }}>Items Purchased</h3>
+                    <h3 style={{ fontSize: '16px', fontWeight: 700, margin: '0 0 16px 0', borderBottom: '1px solid #f6f3eb', paddingBottom: '10px' }}>{t('Global-ItemsPurchased')}</h3>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                       {selectedOrder.cart && selectedOrder.cart.map((item, idx) => (
                         <div key={`${item.sku}-${idx}`} style={{ display: 'flex', alignItems: 'center', gap: '16px', borderBottom: idx < (selectedOrder.cart?.length || 0) - 1 ? '1px solid #fcfbf9' : 'none', paddingBottom: idx < (selectedOrder.cart?.length || 0) - 1 ? '16px' : '0' }}>
@@ -1432,16 +1434,16 @@ export const Default: React.FC<ComponentProps> = () => {
                           <div style={{ flex: 1 }}>
                             <div style={{ fontWeight: 600, fontSize: '14px', color: '#1a1a1a' }}>{item.title}</div>
                             <div style={{ fontSize: '12px', color: '#898989', marginTop: '4px' }}>
-                              SKU: {item.sku}
+                              {t('Global-Sku1')} {item.sku}
                               {item.selectedColor && ` | Color: ${item.selectedColor}`}
                               {item.selectedSize && ` | Size: ${item.selectedSize}`}
                             </div>
                             <div style={{ fontSize: '13px', color: '#3a3a3a', marginTop: '4px' }}>
-                              {item.quantity} x Rs. {item.activePrice?.toLocaleString("en-IN")}
+                              {item.quantity} {t('AdminDashboard-XRs')} {item.activePrice?.toLocaleString("en-IN")}
                             </div>
                           </div>
                           <div style={{ fontWeight: 700, fontSize: '14px', color: '#1a1a1a' }}>
-                            Rs. {item.itemTotal?.toLocaleString("en-IN")}
+                            {t('AdminDashboard-Rs')} {item.itemTotal?.toLocaleString("en-IN")}
                           </div>
                         </div>
                       ))}
@@ -1451,18 +1453,18 @@ export const Default: React.FC<ComponentProps> = () => {
                   {/* Delivery Address */}
                   {selectedOrder.address && (
                     <div style={{ border: '1px solid #f6f3eb', borderRadius: '12px', padding: '20px', backgroundColor: '#ffffff' }}>
-                      <h3 style={{ fontSize: '16px', fontWeight: 700, margin: '0 0 16px 0', borderBottom: '1px solid #f6f3eb', paddingBottom: '10px' }}>Delivery Address</h3>
+                      <h3 style={{ fontSize: '16px', fontWeight: 700, margin: '0 0 16px 0', borderBottom: '1px solid #f6f3eb', paddingBottom: '10px' }}>{t('Global-DeliveryAddress')}</h3>
                       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
                         <div>
-                          <p style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', color: '#898989', margin: '0 0 4px 0', letterSpacing: '0.05em' }}>Customer Name</p>
+                          <p style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', color: '#898989', margin: '0 0 4px 0', letterSpacing: '0.05em' }}>{t('AdminDashboard-CustomerName')}</p>
                           <p style={{ fontSize: '14px', margin: 0, fontWeight: 600, color: '#3a3a3a' }}>{selectedOrder.address.fullName}</p>
                         </div>
                         <div>
-                          <p style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', color: '#898989', margin: '0 0 4px 0', letterSpacing: '0.05em' }}>Phone Number</p>
+                          <p style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', color: '#898989', margin: '0 0 4px 0', letterSpacing: '0.05em' }}>{t('AdminDashboard-PhoneNumber')}</p>
                           <p style={{ fontSize: '14px', margin: 0, fontWeight: 600, color: '#3a3a3a' }}>{selectedOrder.address.phoneNumber}</p>
                         </div>
                         <div style={{ gridColumn: 'span 2' }}>
-                          <p style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', color: '#898989', margin: '0 0 4px 0', letterSpacing: '0.05em' }}>Address</p>
+                          <p style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', color: '#898989', margin: '0 0 4px 0', letterSpacing: '0.05em' }}>{t('Global-Address')}</p>
                           <p style={{ fontSize: '14px', margin: 0, color: '#3a3a3a', lineHeight: '1.5' }}>
                             {selectedOrder.address.addressLine1}
                             {selectedOrder.address.addressLine2 ? `, ${selectedOrder.address.addressLine2}` : ""}
@@ -1470,19 +1472,19 @@ export const Default: React.FC<ComponentProps> = () => {
                           </p>
                         </div>
                         <div>
-                          <p style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', color: '#898989', margin: '0 0 4px 0', letterSpacing: '0.05em' }}>City</p>
+                          <p style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', color: '#898989', margin: '0 0 4px 0', letterSpacing: '0.05em' }}>{t('AdminDashboard-City')}</p>
                           <p style={{ fontSize: '14px', margin: 0, color: '#3a3a3a' }}>{selectedOrder.address.city}</p>
                         </div>
                         <div>
-                          <p style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', color: '#898989', margin: '0 0 4px 0', letterSpacing: '0.05em' }}>State</p>
+                          <p style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', color: '#898989', margin: '0 0 4px 0', letterSpacing: '0.05em' }}>{t('AdminDashboard-State')}</p>
                           <p style={{ fontSize: '14px', margin: 0, color: '#3a3a3a' }}>{selectedOrder.address.state}</p>
                         </div>
                         <div>
-                          <p style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', color: '#898989', margin: '0 0 4px 0', letterSpacing: '0.05em' }}>Postal Code</p>
+                          <p style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', color: '#898989', margin: '0 0 4px 0', letterSpacing: '0.05em' }}>{t('AdminDashboard-PostalCode')}</p>
                           <p style={{ fontSize: '14px', margin: 0, color: '#3a3a3a' }}>{selectedOrder.address.postalCode}</p>
                         </div>
                         <div>
-                          <p style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', color: '#898989', margin: '0 0 4px 0', letterSpacing: '0.05em' }}>Country</p>
+                          <p style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', color: '#898989', margin: '0 0 4px 0', letterSpacing: '0.05em' }}>{t('AdminDashboard-Country')}</p>
                           <p style={{ fontSize: '14px', margin: 0, color: '#3a3a3a' }}>{selectedOrder.address.country}</p>
                         </div>
                       </div>
@@ -1491,27 +1493,27 @@ export const Default: React.FC<ComponentProps> = () => {
 
                   {/* Payment Details */}
                   <div style={{ border: '1px solid #f6f3eb', borderRadius: '12px', padding: '20px', backgroundColor: '#ffffff' }}>
-                    <h3 style={{ fontSize: '16px', fontWeight: 700, margin: '0 0 16px 0', borderBottom: '1px solid #f6f3eb', paddingBottom: '10px' }}>Payment & System Logs</h3>
+                    <h3 style={{ fontSize: '16px', fontWeight: 700, margin: '0 0 16px 0', borderBottom: '1px solid #f6f3eb', paddingBottom: '10px' }}>{t('AdminDashboard-PaymentSystemLogs')}</h3>
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
                       <div>
-                        <p style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', color: '#898989', margin: '0 0 4px 0', letterSpacing: '0.05em' }}>Razorpay Order ID</p>
+                        <p style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', color: '#898989', margin: '0 0 4px 0', letterSpacing: '0.05em' }}>{t('AdminDashboard-RazorpayOrderId')}</p>
                         <p style={{ fontSize: '13px', margin: 0, fontFamily: 'monospace', color: '#3a3a3a' }}>{selectedOrder.razorpay_order_id || selectedOrder.orderId}</p>
                       </div>
                       {selectedOrder.razorpay_payment_id && (
                         <div>
-                          <p style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', color: '#898989', margin: '0 0 4px 0', letterSpacing: '0.05em' }}>Razorpay Payment ID</p>
+                          <p style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', color: '#898989', margin: '0 0 4px 0', letterSpacing: '0.05em' }}>{t('AdminDashboard-RazorpayPaymentId')}</p>
                           <p style={{ fontSize: '13px', margin: 0, fontFamily: 'monospace', color: '#3a3a3a' }}>{selectedOrder.razorpay_payment_id}</p>
                         </div>
                       )}
                       <div>
-                        <p style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', color: '#898989', margin: '0 0 4px 0', letterSpacing: '0.05em' }}>Created Date</p>
+                        <p style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', color: '#898989', margin: '0 0 4px 0', letterSpacing: '0.05em' }}>{t('AdminDashboard-CreatedDate')}</p>
                         <p style={{ fontSize: '13px', margin: 0, color: '#3a3a3a' }}>
-                          {selectedOrder.createdAt ? new Date(selectedOrder.createdAt).toLocaleString("en-IN") : "N/A"}
+                          {selectedOrder.createdAt ? new Date(selectedOrder.createdAt).toLocaleString("en-IN") : t('AdminDashboard-Na')}
                         </p>
                       </div>
                       {selectedOrder.updatedAt && (
                         <div>
-                          <p style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', color: '#898989', margin: '0 0 4px 0', letterSpacing: '0.05em' }}>Last Updated</p>
+                          <p style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', color: '#898989', margin: '0 0 4px 0', letterSpacing: '0.05em' }}>{t('AdminDashboard-LastUpdated')}</p>
                           <p style={{ fontSize: '13px', margin: 0, color: '#3a3a3a' }}>
                             {new Date(selectedOrder.updatedAt).toLocaleString("en-IN")}
                           </p>
@@ -1521,11 +1523,11 @@ export const Default: React.FC<ComponentProps> = () => {
 
                     {selectedOrder.status === 'cancelled' && (
                       <div style={{ borderLeft: '4px solid #ff5c5c', backgroundColor: '#fff5f5', padding: '12px 16px', borderRadius: '4px', marginTop: '16px' }}>
-                        <p style={{ color: '#c53030', fontWeight: 700, margin: '0 0 4px 0', fontSize: '14px' }}>Cancellation Info</p>
-                        <p style={{ margin: 0, fontSize: '13px', color: '#3a3a3a' }}><strong>Reason:</strong> {selectedOrder.cancelReason || 'No reason provided'}</p>
+                        <p style={{ color: '#c53030', fontWeight: 700, margin: '0 0 4px 0', fontSize: '14px' }}>{t('AdminDashboard-CancellationInfo')}</p>
+                        <p style={{ margin: 0, fontSize: '13px', color: '#3a3a3a' }}><strong>{t('Global-Reason')}</strong> {selectedOrder.cancelReason || 'No reason provided'}</p>
                         {selectedOrder.cancelledAt && (
                           <p style={{ margin: '4px 0 0 0', fontSize: '12px', color: '#742a2a' }}>
-                            <strong>Cancelled At:</strong> {new Date(selectedOrder.cancelledAt).toLocaleString("en-IN")}
+                            <strong>{t('AdminDashboard-CancelledAt')}</strong> {new Date(selectedOrder.cancelledAt).toLocaleString("en-IN")}
                           </p>
                         )}
                       </div>
@@ -1533,14 +1535,14 @@ export const Default: React.FC<ComponentProps> = () => {
 
                     {selectedOrder.status === 'returned' && (
                       <div style={{ borderLeft: '4px solid #5c5c8a', backgroundColor: '#f5f5fa', padding: '12px 16px', borderRadius: '4px', marginTop: '16px' }}>
-                        <p style={{ color: '#4a4a74', fontWeight: 700, margin: '0 0 4px 0', fontSize: '14px' }}>Return Info</p>
-                        <p style={{ margin: 0, fontSize: '13px', color: '#3a3a3a' }}><strong>Reason:</strong> {selectedOrder.returnReason || 'No reason provided'}</p>
+                        <p style={{ color: '#4a4a74', fontWeight: 700, margin: '0 0 4px 0', fontSize: '14px' }}>{t('AdminDashboard-ReturnInfo')}</p>
+                        <p style={{ margin: 0, fontSize: '13px', color: '#3a3a3a' }}><strong>{t('Global-Reason')}</strong> {selectedOrder.returnReason || 'No reason provided'}</p>
                         {selectedOrder.returnComment && (
-                          <p style={{ margin: '4px 0 0 0', fontSize: '13px', color: '#3a3a3a' }}><strong>Comments:</strong> {selectedOrder.returnComment}</p>
+                          <p style={{ margin: '4px 0 0 0', fontSize: '13px', color: '#3a3a3a' }}><strong>{t('Global-Comments')}</strong> {selectedOrder.returnComment}</p>
                         )}
                         {selectedOrder.returnedAt && (
                           <p style={{ margin: '4px 0 0 0', fontSize: '12px', color: '#3b3b5c' }}>
-                            <strong>Returned At:</strong> {new Date(selectedOrder.returnedAt).toLocaleString("en-IN")}
+                            <strong>{t('AdminDashboard-ReturnedAt')}</strong> {new Date(selectedOrder.returnedAt).toLocaleString("en-IN")}
                           </p>
                         )}
                       </div>
@@ -1548,10 +1550,10 @@ export const Default: React.FC<ComponentProps> = () => {
 
                     {selectedOrder.refund && (
                       <div style={{ borderLeft: '4px solid #2ec1ac', backgroundColor: '#e6f7f0', padding: '12px 16px', borderRadius: '4px', marginTop: '16px' }}>
-                        <p style={{ color: '#1a8475', fontWeight: 700, margin: '0 0 4px 0', fontSize: '14px' }}>Refund Executed</p>
-                        <p style={{ margin: 0, fontSize: '13px', color: '#3a3a3a' }}><strong>Refund ID:</strong> {selectedOrder.refund.refundId}</p>
-                        <p style={{ margin: '2px 0 0 0', fontSize: '13px', color: '#3a3a3a' }}><strong>Amount:</strong> Rs. {selectedOrder.refund.amount?.toLocaleString("en-IN")}</p>
-                        <p style={{ margin: '2px 0 0 0', fontSize: '13px', color: '#3a3a3a' }}><strong>Status:</strong> {selectedOrder.refund.status}</p>
+                        <p style={{ color: '#1a8475', fontWeight: 700, margin: '0 0 4px 0', fontSize: '14px' }}>{t('AdminDashboard-RefundExecuted')}</p>
+                        <p style={{ margin: 0, fontSize: '13px', color: '#3a3a3a' }}><strong>{t('AdminDashboard-RefundId')}</strong> {selectedOrder.refund.refundId}</p>
+                        <p style={{ margin: '2px 0 0 0', fontSize: '13px', color: '#3a3a3a' }}><strong>{t('AdminDashboard-Amount')}</strong> {t('AdminDashboard-Rs')} {selectedOrder.refund.amount?.toLocaleString("en-IN")}</p>
+                        <p style={{ margin: '2px 0 0 0', fontSize: '13px', color: '#3a3a3a' }}><strong>{t('AdminDashboard-Status')}</strong> {selectedOrder.refund.status}</p>
                       </div>
                     )}
                   </div>
@@ -1561,11 +1563,11 @@ export const Default: React.FC<ComponentProps> = () => {
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
                   {/* Status management */}
                   <div style={{ border: '1px solid #f6f3eb', borderRadius: '12px', padding: '20px', backgroundColor: '#ffffff' }}>
-                    <h3 style={{ fontSize: '16px', fontWeight: 700, margin: '0 0 16px 0', borderBottom: '1px solid #f6f3eb', paddingBottom: '10px' }}>Order Status</h3>
+                    <h3 style={{ fontSize: '16px', fontWeight: 700, margin: '0 0 16px 0', borderBottom: '1px solid #f6f3eb', paddingBottom: '10px' }}>{t('AdminDashboard-OrderStatus')}</h3>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                       <div>
                         <label style={{ fontSize: '13px', fontWeight: 600, color: '#898989', marginBottom: '8px', display: 'block' }}>
-                          Current Status:
+                          {t('AdminDashboard-CurrentStatus')}
                         </label>
                         <span className={`${styles.statusBadge} ${styles['status' + (selectedOrder.status ? selectedOrder.status.charAt(0).toUpperCase() + selectedOrder.status.slice(1) : 'Pending')]}`}>
                           {selectedOrder.status || 'pending'}
@@ -1574,7 +1576,7 @@ export const Default: React.FC<ComponentProps> = () => {
 
                       <div style={{ borderTop: '1px solid #f6f3eb', paddingTop: '16px' }}>
                         <label htmlFor="adminOrderStatusSelect" style={{ fontSize: '13px', fontWeight: 600, color: '#3a3a3a', marginBottom: '8px', display: 'block' }}>
-                          Update Status To:
+                          {t('AdminDashboard-UpdateStatusTo')}
                         </label>
                         <select
                           id="adminOrderStatusSelect"
@@ -1584,11 +1586,11 @@ export const Default: React.FC<ComponentProps> = () => {
                           style={{ width: '100%', marginBottom: '12px', padding: '8px', fontSize: '14px', borderRadius: '6px' }}
                           disabled={orderActionLoading}
                         >
-                          <option value="pending">Pending</option>
-                          <option value="success">Success</option>
-                          <option value="failed">Failed</option>
-                          <option value="cancelled">Cancelled</option>
-                          <option value="returned">Returned</option>
+                          <option value="pending">{t('AdminDashboard-Pending')}</option>
+                          <option value="success">{t('AdminDashboard-Success')}</option>
+                          <option value="failed">{t('AdminDashboard-Failed')}</option>
+                          <option value="cancelled">{t('AdminDashboard-Cancelled')}</option>
+                          <option value="returned">{t('AdminDashboard-Returned')}</option>
                         </select>
                         <button
                           type="button"
@@ -1597,7 +1599,7 @@ export const Default: React.FC<ComponentProps> = () => {
                           style={{ width: '100%', padding: '10px', fontSize: '14px', fontWeight: 600 }}
                           disabled={orderActionLoading || (selectedStatus === selectedOrder.status)}
                         >
-                          {orderActionLoading ? "Updating Status..." : "Save Status"}
+                          {orderActionLoading ? t('AdminDashboard-UpdatingStatus') : t('AdminDashboard-SaveStatus')}
                         </button>
                       </div>
                     </div>
@@ -1605,19 +1607,19 @@ export const Default: React.FC<ComponentProps> = () => {
 
                   {/* Summary card */}
                   <div style={{ border: '1px solid #ecdcb9', borderRadius: '12px', padding: '20px', backgroundColor: '#fdfbf7' }}>
-                    <h3 style={{ fontSize: '16px', fontWeight: 700, margin: '0 0 16px 0', borderBottom: '1px solid #f6f3eb', paddingBottom: '10px', color: '#1a1a1a' }}>Amount Details</h3>
+                    <h3 style={{ fontSize: '16px', fontWeight: 700, margin: '0 0 16px 0', borderBottom: '1px solid #f6f3eb', paddingBottom: '10px', color: '#1a1a1a' }}>{t('AdminDashboard-AmountDetails')}</h3>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                       <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '14px', color: '#3a3a3a' }}>
-                        <span>Subtotal</span>
-                        <span>Rs. {selectedOrder.amount?.toLocaleString("en-IN")}</span>
+                        <span>{t('Global-Subtotal')}</span>
+                        <span>{t('AdminDashboard-Rs')} {selectedOrder.amount?.toLocaleString("en-IN")}</span>
                       </div>
                       <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '14px', color: '#3a3a3a' }}>
-                        <span>Shipping</span>
-                        <span style={{ color: '#2ec1ac', fontWeight: 'bold' }}>FREE</span>
+                        <span>{t('Global-Shipping')}</span>
+                        <span style={{ color: '#2ec1ac', fontWeight: 'bold' }}>{t('Global-Free')}</span>
                       </div>
                       <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '15px', fontWeight: 700, borderTop: '1px dashed #e2d1bc', paddingTop: '12px', color: '#1a1a1a' }}>
-                        <span>Total Paid</span>
-                        <span>Rs. {selectedOrder.amount?.toLocaleString("en-IN")}</span>
+                        <span>{t('Global-TotalPaid')}</span>
+                        <span>{t('AdminDashboard-Rs')} {selectedOrder.amount?.toLocaleString("en-IN")}</span>
                       </div>
                     </div>
                   </div>

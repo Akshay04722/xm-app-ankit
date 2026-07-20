@@ -1,10 +1,12 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import styles from "./CheckoutError.module.css";
 
 export default function CheckoutError(): React.JSX.Element {
+  const t = useTranslations(process.env.NEXT_PUBLIC_DEFAULT_SITE_NAME);
   const [errorReason, setErrorReason] = useState<string | null>(null);
 
   useEffect(() => {
@@ -33,24 +35,24 @@ export default function CheckoutError(): React.JSX.Element {
           </svg>
         </div>
 
-        <h1 className={styles.title}>Payment Failed</h1>
+        <h1 className={styles.title}>{t('CheckoutError-PaymentFailed')}</h1>
         <p className={styles.subtitle}>
-          Unfortunately, we could not process your transaction. Please try again.
+          {t('CheckoutError-UnfortunatelyWeCouldNot')}
         </p>
 
         {errorReason && (
           <div className={styles.errorBox}>
-            <span className={styles.label}>Reason:</span>
+            <span className={styles.label}>{t('Global-Reason')}</span>
             <span className={styles.value}>{errorReason}</span>
           </div>
         )}
 
         <div className={styles.btnGroup}>
           <Link href="/checkout" className={styles.btnPrimary}>
-            Retry Checkout
+            {t('CheckoutError-RetryCheckout')}
           </Link>
           <Link href="/shop" className={styles.btnSecondary}>
-            Back to Shop
+            {t('Global-BackToShop')}
           </Link>
         </div>
       </div>

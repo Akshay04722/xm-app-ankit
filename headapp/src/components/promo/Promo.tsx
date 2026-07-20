@@ -1,3 +1,4 @@
+import { useTranslations } from "next-intl";
 import React, { JSX } from 'react';
 import {
   NextImage as ContentSdkImage,
@@ -27,6 +28,7 @@ interface PromoContentProps extends PromoProps {
 }
 
 const PromoContent = (props: PromoContentProps): JSX.Element => {
+  const t = useTranslations(process.env.NEXT_PUBLIC_DEFAULT_SITE_NAME);
   const { fields, params, renderText } = props;
   const { styles, RenderingIdentifier: id } = params;
 
@@ -44,7 +46,7 @@ const PromoContent = (props: PromoContentProps): JSX.Element => {
   if (!fields) {
     return (
       <Wrapper>
-        <span className="is-empty-hint">Promo</span>
+        <span className="is-empty-hint">{t('Promo-Promo')}</span>
       </Wrapper>
     );
   }
@@ -75,7 +77,10 @@ const PromoContent = (props: PromoContentProps): JSX.Element => {
 };
 
 export const Default = (props: PromoProps): JSX.Element => {
-  const renderText = (fields: Fields) => (
+  const t = useTranslations(process.env.NEXT_PUBLIC_DEFAULT_SITE_NAME);
+
+  const renderText = (fields: Fields) => {
+  return (
     <>
       <div className="field-promotext">
         <ContentSdkRichText field={fields.PromoText} />
@@ -85,12 +90,15 @@ export const Default = (props: PromoProps): JSX.Element => {
       </div>
     </>
   );
+};
 
   return <PromoContent {...props} renderText={renderText} />;
 };
 
 export const WithText = (props: PromoProps): JSX.Element => {
-  const renderText = (fields: Fields) => (
+  const t = useTranslations(process.env.NEXT_PUBLIC_DEFAULT_SITE_NAME);
+  const renderText = (fields: Fields) => {
+  return (
     <>
       <div className="field-promotext">
         <ContentSdkRichText className="promo-text" field={fields.PromoText} />
@@ -100,6 +108,7 @@ export const WithText = (props: PromoProps): JSX.Element => {
       </div>
     </>
   );
+};
 
   return <PromoContent {...props} renderText={renderText} />;
 };

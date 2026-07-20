@@ -1,4 +1,5 @@
 "use client";
+import { useTranslations } from "next-intl";
 import React, { JSX, useState, useEffect } from "react";
 import {
   Text,
@@ -61,6 +62,7 @@ const ProductImageSlider: React.FC<ProductImageSliderProps> = ({
   galleryImages,
   title,
 }) => {
+  const t = useTranslations(process.env.NEXT_PUBLIC_DEFAULT_SITE_NAME);
   const [currentIndex, setCurrentIndex] = useState(0);
 
   useEffect(() => {
@@ -74,7 +76,7 @@ const ProductImageSlider: React.FC<ProductImageSliderProps> = ({
   }, [galleryImages]);
 
   if (galleryImages.length === 0) {
-    return <div className="w-full h-full flex items-center justify-center text-gray-400">No Image</div>;
+    return <div className="w-full h-full flex items-center justify-center text-gray-400">{t('Global-NoImage')}</div>;
   }
 
   return (
@@ -113,15 +115,20 @@ const ProductImageSlider: React.FC<ProductImageSliderProps> = ({
   );
 };
 
-const NoDataFallback = ({ componentName }: { componentName: string }) => (
+const NoDataFallback = ({ componentName }: { componentName: string }) => {
+  const t = useTranslations(process.env.NEXT_PUBLIC_DEFAULT_SITE_NAME);
+  return (
   <div className="component-content text-center py-10 bg-slate-50 rounded-lg">
     <span className="text-gray-400 font-semibold">
       {componentName} (Empty Datasource)
     </span>
   </div>
 );
+};
 
 export const Default = (props: OurProductsProps): JSX.Element => {
+  const t = useTranslations(process.env.NEXT_PUBLIC_DEFAULT_SITE_NAME);
+
   const { fields, params } = props;
   const datasource = fields?.data?.datasource;
   const styles = `component our-products w-full ${params.styles || ""}`.trim();

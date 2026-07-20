@@ -1,3 +1,4 @@
+import { useTranslations } from "next-intl";
 import React, { JSX } from 'react';
 import {
   RichText as ContentSdkRichText,
@@ -16,6 +17,8 @@ type PageContentProps = ComponentProps & {
 };
 
 export const Default = ({ params, fields, page }: PageContentProps): JSX.Element => {
+  const t = useTranslations(process.env.NEXT_PUBLIC_DEFAULT_SITE_NAME);
+
   const { styles, RenderingIdentifier: id } = params;
 
   const field = fields?.Content ?? (page.layout.sitecore.route?.fields?.Content as RichTextField);
@@ -32,7 +35,7 @@ export const Default = ({ params, fields, page }: PageContentProps): JSX.Element
     >
       <div className="component-content">
         <div className="field-content" itemProp="articleBody">
-          {field ? <ContentSdkRichText field={field} /> : '[Content]'}
+          {field ? <ContentSdkRichText field={field} /> : t('PageContent-Content')}
         </div>
       </div>
       {(headline || articleBodyHtml) && (

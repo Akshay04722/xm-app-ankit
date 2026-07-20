@@ -1,3 +1,4 @@
+import { useTranslations } from "next-intl";
 import React from "react";
 import { Address } from "@/services/profileService";
 import AddressCard from "./AddressCard";
@@ -18,6 +19,8 @@ export default function AddressList({
   onAddClick,
   disabled = false,
 }: AddressListProps) {
+  const t = useTranslations(process.env.NEXT_PUBLIC_DEFAULT_SITE_NAME);
+
   if (addresses.length === 0) {
     return <EmptyAddress onAddClick={onAddClick} />;
   }
@@ -26,8 +29,8 @@ export default function AddressList({
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h3 className="text-lg font-bold text-gray-900">Saved Addresses</h3>
-          <p className="text-sm text-gray-500 mt-0.5">Manage your shipping and billing locations</p>
+          <h3 className="text-lg font-bold text-gray-900">{t('AddressList-SavedAddresses')}</h3>
+          <p className="text-sm text-gray-500 mt-0.5">{t('AddressList-ManageYourShippingAnd')}</p>
         </div>
         <button
           onClick={onAddClick}
@@ -44,7 +47,7 @@ export default function AddressList({
           >
             <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
           </svg>
-          Add Address
+          {t('Global-AddAddress')}
         </button>
       </div>
 

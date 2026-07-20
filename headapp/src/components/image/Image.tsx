@@ -1,3 +1,4 @@
+import { useTranslations } from "next-intl";
 import {
   Field,
   ImageField,
@@ -29,11 +30,13 @@ const ImageWrapper: React.FC<{
   </figure>
 );
 
-const ImageDefault: React.FC<ImageProps> = ({ params }) => (
+const ImageDefault: React.FC<ImageProps> = ({ params }) => {
+  return (
   <ImageWrapper className={`component image ${params.styles}`}>
     <span className="is-empty-hint">Image</span>
   </ImageWrapper>
 );
+};
 
 export const Banner: React.FC<ImageProps> = ({ params, fields }) => {
   const { styles, RenderingIdentifier: id } = params;
@@ -79,7 +82,8 @@ export const Default: React.FC<ImageProps> = (props) => {
     return <ImageDefault {...props} />;
   }
 
-  const Image = () => (
+  const Image = () => {
+  return (
     <ContentSdkImage
       field={fields.Image}
       sizes="(max-width: 640px) 100vw, (max-width: 768px) 100vw, (max-width: 1024px) 90vw, 1200px"
@@ -90,6 +94,7 @@ export const Default: React.FC<ImageProps> = (props) => {
       }
     />
   );
+};
   const shouldWrapWithLink =
     !page?.mode?.isEditing && fields.TargetUrl?.value?.href;
 

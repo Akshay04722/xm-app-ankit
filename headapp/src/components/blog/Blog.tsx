@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import React from "react";
 import {
   NextImage as ContentSdkImage,
@@ -37,12 +38,15 @@ interface BlogFields {
 
 type BlogProps = ComponentProps & { fields?: BlogFields };
 
-const NoDataFallback = ({ componentName }: { componentName: string }) => (
+const NoDataFallback = ({ componentName }: { componentName: string }) => {
+  const t = useTranslations(process.env.NEXT_PUBLIC_DEFAULT_SITE_NAME);
+  return (
   <div className="p-8 border-2 border-dashed border-gray-300 text-center text-gray-500 rounded-lg my-4 bg-gray-50">
     Missing datasource for component: <strong>{componentName}</strong>. Please
     associate a datasource item in Sitecore.
   </div>
 );
+};
 
 const UserIcon = (): React.JSX.Element => (
   <svg
@@ -115,6 +119,8 @@ const SearchIcon = (): React.JSX.Element => (
 );
 
 export const Default = (props: BlogProps): React.JSX.Element => {
+  const t = useTranslations(process.env.NEXT_PUBLIC_DEFAULT_SITE_NAME);
+
   const { fields, params } = props;
   const { RenderingIdentifier: id, styles: paramsStyles } = params || {};
 
@@ -386,7 +392,7 @@ export const Default = (props: BlogProps): React.JSX.Element => {
                 <button
                   className={`${styles.pageButton} ${styles.nextButton}`}
                   onClick={handleNextPage}
-                  aria-label="Next Page"
+                  aria-label="{t('Global-Next')} Page"
                 >
                   Next
                 </button>

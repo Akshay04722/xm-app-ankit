@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import React, { useEffect, useState, useRef, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import SearchResults from "@/components/searchResults/SearchResults";
@@ -14,6 +15,7 @@ import {
 import { useCart } from "@/lib/CartContext";
 
 function UnifiedSearchComponent() {
+  const t = useTranslations(process.env.NEXT_PUBLIC_DEFAULT_SITE_NAME);
   const searchParams = useSearchParams();
   const [keyword, setKeyword] = useState("");
   const [blogs, setBlogs] = useState<SearchItem[]>([]);
@@ -180,8 +182,8 @@ function UnifiedSearchComponent() {
     <div className="search-experience" ref={containerRef}>
       <div className="search-shell">
         <div className="search-hero">
-          <span className="search-eyebrow">Discover</span>
-          <h2 className="search-heading">Explore Our Insights</h2>
+          <span className="search-eyebrow">{t('UnifiedSearch-Discover')}</span>
+          <h2 className="search-heading">{t('UnifiedSearch-ExploreOurInsights')}</h2>
           <p className="search-subheading">
             Search our comprehensive list of articles, tutorials, and blogs.
             Enjoy automatic typo tolerance, synonym recommendations, and instant
@@ -211,12 +213,12 @@ function UnifiedSearchComponent() {
               </span>
               <input
                 type="text"
-                placeholder="Search blogs, articles, tutorials…"
+                placeholder={t('UnifiedSearch-SearchBlogsArticlesTutori')}
                 value={keyword}
                 onChange={(e) => setKeyword(e.target.value)}
                 onKeyDown={handleKeyDown}
                 className="search-input"
-                aria-label="Search blogs input"
+                aria-label={t('UnifiedSearch-SearchBlogsInput')}
                 aria-autocomplete="list"
                 role="combobox"
                 aria-expanded={showSuggestions && blogs.length > 0}
@@ -232,7 +234,7 @@ function UnifiedSearchComponent() {
                 }
               />
               <button type="submit" className="search-submit">
-                Search
+                {t('Global-Search')}
               </button>
             </div>
           </form>
@@ -250,13 +252,13 @@ function UnifiedSearchComponent() {
               id="suggestions-listbox"
               className="search-suggestions"
               role="listbox"
-              aria-label="Search suggestions"
+              aria-label={t('UnifiedSearch-SearchSuggestions')}
             >
               <span
                 className="search-suggestions-header"
                 role="presentation"
               >
-                Recommended for you
+                {t('UnifiedSearch-RecommendedForYou')}
               </span>
               {blogs.map((blog, idx) => {
                 const title = getItemLabel(blog);
@@ -311,7 +313,7 @@ function UnifiedSearchComponent() {
                           </span>
                         )}
                         {blog.author && !isProduct && (
-                          <span className="text-[10px] text-gray-400">by {blog.author as string}</span>
+                          <span className="text-[10px] text-gray-400">{t('Global-By')} {blog.author as string}</span>
                         )}
                       </div>
                       <h5
@@ -352,6 +354,8 @@ function UnifiedSearchComponent() {
 }
 
 export default function UnifiedSearch() {
+  const t = useTranslations(process.env.NEXT_PUBLIC_DEFAULT_SITE_NAME);
+
   return (
     <Suspense fallback={<div className="search-suggestions-loading" />}>
       <UnifiedSearchComponent />

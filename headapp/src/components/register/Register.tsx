@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import React, { JSX, useState, useEffect } from 'react';
 import { useAuth } from '@/lib/AuthContext';
 import styles from '../../assets/components/Register/Register.module.css';
@@ -27,6 +28,8 @@ interface RegisterProps extends ComponentProps {
 }
 
 export const Default = (props: RegisterProps): JSX.Element => {
+  const t = useTranslations(process.env.NEXT_PUBLIC_DEFAULT_SITE_NAME);
+
   const { fields, params } = props;
   const datasource = fields?.data?.datasource;
   const id = params?.RenderingIdentifier;
@@ -108,7 +111,7 @@ export const Default = (props: RegisterProps): JSX.Element => {
     return (
       <section className={styles.registerContainer} id={id || undefined}>
         <div className={styles.registerCard}>
-          <p className="text-center text-gray-500">Loading session...</p>
+          <p className="text-center text-gray-500">{t('Global-LoadingSession')}</p>
         </div>
       </section>
     );
@@ -131,42 +134,42 @@ export const Default = (props: RegisterProps): JSX.Element => {
 
           <form onSubmit={handleRegister}>
             <div className={styles.formGroup}>
-              <label className={styles.formLabel} htmlFor="email">Email Address</label>
+              <label className={styles.formLabel} htmlFor="email">{t('Global-EmailAddress')}</label>
               <input
                 id="email"
                 type="email"
                 className={styles.formInput}
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="Enter your email"
+                placeholder={t('Global-EnterYourEmail')}
                 required
                 disabled={formLoading}
               />
             </div>
 
             <div className={styles.formGroup}>
-              <label className={styles.formLabel} htmlFor="password">Password</label>
+              <label className={styles.formLabel} htmlFor="password">{t('Global-Password')}</label>
               <input
                 id="password"
                 type="password"
                 className={styles.formInput}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                placeholder="Create a password"
+                placeholder={t('Register-CreateAPassword')}
                 required
                 disabled={formLoading}
               />
             </div>
 
             <div className={styles.formGroup}>
-              <label className={styles.formLabel} htmlFor="confirmPassword">Confirm Password</label>
+              <label className={styles.formLabel} htmlFor="confirmPassword">{t('Register-ConfirmPassword')}</label>
               <input
                 id="confirmPassword"
                 type="password"
                 className={styles.formInput}
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
-                placeholder="Confirm your password"
+                placeholder={t('Register-ConfirmYourPassword')}
                 required
                 disabled={formLoading}
               />
@@ -177,14 +180,14 @@ export const Default = (props: RegisterProps): JSX.Element => {
               disabled={formLoading}
               className={styles.registerButton}
             >
-              {formLoading ? 'Registering...' : 'Register'}
+              {formLoading ? t('Register-Registering') : t('Register-Register')}
             </button>
           </form>
 
           <div className={styles.loginLinkContainer}>
-            Already have an account?
+            {t('Register-AlreadyHaveAnAccount')}
             <Link href="/sign-in" className={styles.loginLink}>
-              Sign In
+              {t('Global-SignIn')}
             </Link>
           </div>
         </div>

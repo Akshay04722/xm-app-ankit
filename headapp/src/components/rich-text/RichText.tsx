@@ -1,3 +1,4 @@
+import { useTranslations } from "next-intl";
 import React, { JSX } from 'react';
 import { Field, RichText as ContentSdkRichText } from '@sitecore-content-sdk/nextjs';
 import { ComponentProps } from 'lib/component-props';
@@ -11,6 +12,8 @@ export type RichTextProps = ComponentProps & {
 };
 
 export const Default = ({ params, fields }: RichTextProps): JSX.Element => {
+  const t = useTranslations(process.env.NEXT_PUBLIC_DEFAULT_SITE_NAME);
+
   const { RenderingIdentifier, styles } = params;
 
   return (
@@ -19,7 +22,7 @@ export const Default = ({ params, fields }: RichTextProps): JSX.Element => {
         {fields ? (
           <ContentSdkRichText field={fields.Text} />
         ) : (
-          <span className="is-empty-hint">Rich text</span>
+          <span className="is-empty-hint">{t('RichText-RichText')}</span>
         )}
       </div>
     </div>

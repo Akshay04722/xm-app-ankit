@@ -1,11 +1,14 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import React, { useEffect, useState } from "react";
 import { useAuth } from "@/lib/AuthContext";
 import { useRouter, usePathname } from "next/navigation";
 import { checkProfileCompletion } from "@/services/profileService";
 
 export default function ProfileCompletionDialog() {
+  const t = useTranslations(process.env.NEXT_PUBLIC_DEFAULT_SITE_NAME);
+
   const { user, userProfile, loadingProfile } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
   const router = useRouter();
@@ -79,9 +82,9 @@ export default function ProfileCompletionDialog() {
           </svg>
         </div>
 
-        <h3 className="text-xl font-bold text-gray-900 mb-2">Complete Your Profile</h3>
+        <h3 className="text-xl font-bold text-gray-900 mb-2">{t('ProfileCompletionDialog-CompleteYourProfile')}</h3>
         <p className="text-base text-gray-500 leading-relaxed mb-6">
-          Some important information is missing from your account. Please complete your profile to enjoy all features.
+          {t('ProfileCompletionDialog-SomeImportantInformationI')}
         </p>
 
         <div className="flex items-center gap-3">
@@ -89,13 +92,13 @@ export default function ProfileCompletionDialog() {
             onClick={handleClose}
             className="flex-1 py-3 border border-gray-200 hover:bg-gray-50 text-gray-700 font-semibold text-base rounded-xl transition cursor-pointer"
           >
-            Close
+            {t('Global-Close')}
           </button>
           <button
             onClick={handleUpdate}
             className="flex-1 py-3 bg-amber-600 hover:bg-amber-700 text-white font-semibold text-base rounded-xl shadow-xs hover:shadow transition cursor-pointer"
           >
-            Update Profile
+            {t('ProfileCompletionDialog-UpdateProfile')}
           </button>
         </div>
       </div>

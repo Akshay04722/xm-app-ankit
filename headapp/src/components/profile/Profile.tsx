@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import React, { useState, useEffect } from "react";
 import { ComponentProps } from "lib/component-props";
 import { useAuth } from "@/lib/AuthContext";
@@ -15,6 +16,8 @@ import OrdersList from "../OrdersList/OrdersList";
 interface ProfileProps extends ComponentProps {}
 
 export const Default = (props: ProfileProps): React.JSX.Element => {
+  const t = useTranslations(process.env.NEXT_PUBLIC_DEFAULT_SITE_NAME);
+
   const { user, loading: authLoading } = useAuth();
   const {
     profile,
@@ -86,15 +89,15 @@ export const Default = (props: ProfileProps): React.JSX.Element => {
             />
           </svg>
         </div>
-        <h3 className="text-2xl font-bold text-gray-900 mb-2 text-center">Access Restricted</h3>
+        <h3 className="text-2xl font-bold text-gray-900 mb-2 text-center">{t('Profile-AccessRestricted')}</h3>
         <p className="text-base text-gray-500 max-w-md mb-8 text-center mx-auto">
-          Please sign in to view and manage your profile details.
+          {t('Profile-PleaseSignInTo')}
         </p>
         <Link
           href="/sign-in"
           className="px-8 py-3.5 bg-amber-600 hover:bg-amber-700 text-white font-semibold text-base rounded-xl transition shadow-xs mx-auto inline-block"
         >
-          Sign In
+          {t('Global-SignIn')}
         </Link>
       </div>
     );
@@ -118,7 +121,7 @@ export const Default = (props: ProfileProps): React.JSX.Element => {
           </svg>
           <span>{success}</span>
           <button onClick={() => setSuccess(null)} className="ml-2 hover:opacity-85 text-white/90 text-lg">
-            &times;
+            {t('Global-Times')}
           </button>
         </div>
       )}
@@ -141,7 +144,7 @@ export const Default = (props: ProfileProps): React.JSX.Element => {
           </svg>
           <span>{error}</span>
           <button onClick={() => setError(null)} className="ml-2 hover:opacity-85 text-white/90 text-lg">
-            &times;
+            {t('Global-Times')}
           </button>
         </div>
       )}
@@ -150,7 +153,7 @@ export const Default = (props: ProfileProps): React.JSX.Element => {
         // Loading Spinner Centered
         <div className="flex flex-col items-center justify-center min-h-[50vh] text-center w-full py-16 mx-auto">
           <div className="animate-spin rounded-full h-12 w-12 border-4 border-amber-500 border-t-transparent mb-4 mx-auto"></div>
-          <p className="text-base text-gray-500 font-medium">Loading profile details...</p>
+          <p className="text-base text-gray-500 font-medium">{t('Profile-LoadingProfileDetails')}</p>
         </div>
       ) : (
         // Rendered Dashboard
@@ -168,7 +171,7 @@ export const Default = (props: ProfileProps): React.JSX.Element => {
                   : "border-transparent text-gray-400 hover:text-gray-900"
               }`}
             >
-              Profile Details & Addresses
+              {t('Profile-ProfileDetailsAddresses')}
             </button>
             <button
               type="button"
@@ -179,7 +182,7 @@ export const Default = (props: ProfileProps): React.JSX.Element => {
                   : "border-transparent text-gray-400 hover:text-gray-900"
               }`}
             >
-              My Orders
+              {t('Global-MyOrders')}
             </button>
           </div>
 

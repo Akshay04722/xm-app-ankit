@@ -10,7 +10,7 @@ import Layout, { RouteFields } from "src/Layout";
 import components from ".sitecore/component-map";
 import Providers from "src/Providers";
 import { NextIntlClientProvider } from "next-intl";
-import { setRequestLocale } from "next-intl/server";
+import { setRequestLocale, getMessages } from "next-intl/server";
 import { getBaseUrl } from "src/lib/utils";
 import { stripHtml } from "src/lib/searchUtils";
 
@@ -165,8 +165,12 @@ export default async function Page({ params, searchParams }: PageProps) {
     components,
   );
 
+  const messages = await getMessages();
+
+  console.log("NextIntl messages keys:", Object.keys(messages || {}));
+
   return (
-    <NextIntlClientProvider>
+    <NextIntlClientProvider messages={messages} locale={locale}>
       <Providers page={page} componentProps={componentProps}>
         <Layout page={page} baseUrl={baseUrl || undefined} />
       </Providers>

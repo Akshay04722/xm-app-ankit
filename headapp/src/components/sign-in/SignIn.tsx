@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import React, { JSX, useState, useEffect } from 'react';
 import { useAuth } from '@/lib/AuthContext';
 import styles from '../../assets/components/SignIn/SignIn.module.css';
@@ -27,6 +28,8 @@ interface SignInProps extends ComponentProps {
 }
 
 export const Default = (props: SignInProps): JSX.Element => {
+  const t = useTranslations(process.env.NEXT_PUBLIC_DEFAULT_SITE_NAME);
+
   const { fields, params } = props;
   const datasource = fields?.data?.datasource;
   const id = params?.RenderingIdentifier;
@@ -187,7 +190,7 @@ export const Default = (props: SignInProps): JSX.Element => {
     return (
       <section className={styles.signInContainer} id={id || undefined}>
         <div className={styles.signInCard}>
-          <p className="text-center text-gray-500">Loading session...</p>
+          <p className="text-center text-gray-500">{t('Global-LoadingSession')}</p>
         </div>
       </section>
     );
@@ -202,24 +205,24 @@ export const Default = (props: SignInProps): JSX.Element => {
         {user ? (
           <div className={styles.sessionState}>
             <div className={styles.signInHeader}>
-              <h2 className={styles.signInTitle}>Welcome Back!</h2>
-              <p className={styles.signInSubtitle}>You are currently signed in.</p>
+              <h2 className={styles.signInTitle}>{t('SignIn-WelcomeBack')}</h2>
+              <p className={styles.signInSubtitle}>{t('SignIn-YouAreCurrentlySigned')}</p>
             </div>
             <div className={styles.successMessage}>
-              Signed in as <span className={styles.sessionEmail}>{user.email}</span>
+              {t('SignIn-SignedInAs')} <span className={styles.sessionEmail}>{user.email}</span>
             </div>
             <button
               onClick={handleSignOut}
               className={styles.signOutButton}
             >
-              Sign Out
+              {t('Global-SignOut')}
             </button>
           </div>
         ) : isForgotPassword ? (
           <div>
             <div className={styles.signInHeader}>
-              <h2 className={styles.signInTitle}>Reset Password</h2>
-              <p className={styles.signInSubtitle}>Enter your email to receive a password reset link</p>
+              <h2 className={styles.signInTitle}>{t('SignIn-ResetPassword')}</h2>
+              <p className={styles.signInSubtitle}>{t('SignIn-EnterYourEmailTo')}</p>
             </div>
 
             {error && <div className={styles.errorMessage}>{error}</div>}
@@ -227,14 +230,14 @@ export const Default = (props: SignInProps): JSX.Element => {
 
             <form onSubmit={handleResetPassword}>
               <div className={styles.formGroup}>
-                <label className={styles.formLabel} htmlFor="email">Email Address</label>
+                <label className={styles.formLabel} htmlFor="email">{t('Global-EmailAddress')}</label>
                 <input
                   id="email"
                   type="email"
                   className={styles.formInput}
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="Enter your email"
+                  placeholder={t('Global-EnterYourEmail')}
                   required
                   disabled={formLoading}
                 />
@@ -245,12 +248,12 @@ export const Default = (props: SignInProps): JSX.Element => {
                 disabled={formLoading}
                 className={styles.signInButton}
               >
-                {formLoading ? 'Sending...' : 'Send Reset Link'}
+                {formLoading ? t('Global-Sending') : t('SignIn-SendResetLink')}
               </button>
             </form>
 
             <div className={styles.backToSignInContainer}>
-              Remembered your password?
+              {t('SignIn-RememberedYourPassword')}
               <button
                 type="button"
                 onClick={() => {
@@ -260,7 +263,7 @@ export const Default = (props: SignInProps): JSX.Element => {
                 }}
                 className={styles.backToSignInButton}
               >
-                Sign In
+                {t('Global-SignIn')}
               </button>
             </div>
           </div>
@@ -276,14 +279,14 @@ export const Default = (props: SignInProps): JSX.Element => {
 
             <form onSubmit={handleSignIn}>
               <div className={styles.formGroup}>
-                <label className={styles.formLabel} htmlFor="email">Email Address</label>
+                <label className={styles.formLabel} htmlFor="email">{t('Global-EmailAddress')}</label>
                 <input
                   id="email"
                   type="email"
                   className={styles.formInput}
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="Enter your email"
+                  placeholder={t('Global-EnterYourEmail')}
                   required
                   disabled={formLoading}
                 />
@@ -291,7 +294,7 @@ export const Default = (props: SignInProps): JSX.Element => {
 
               <div className={styles.formGroup}>
                 <div className={styles.passwordLabelContainer}>
-                  <label className={styles.formLabel} htmlFor="password" style={{ marginBottom: 0 }}>Password</label>
+                  <label className={styles.formLabel} htmlFor="password" style={{ marginBottom: 0 }}>{t('Global-Password')}</label>
                   <button
                     type="button"
                     onClick={() => {
@@ -301,7 +304,7 @@ export const Default = (props: SignInProps): JSX.Element => {
                     }}
                     className={styles.forgotPasswordLink}
                   >
-                    Forgot Password?
+                    {t('SignIn-ForgotPassword')}
                   </button>
                 </div>
                 <input
@@ -310,7 +313,7 @@ export const Default = (props: SignInProps): JSX.Element => {
                   className={styles.formInput}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  placeholder="Enter your password"
+                  placeholder={t('SignIn-EnterYourPassword')}
                   required
                   disabled={formLoading}
                 />
@@ -321,12 +324,12 @@ export const Default = (props: SignInProps): JSX.Element => {
                 disabled={formLoading}
                 className={styles.signInButton}
               >
-                {formLoading ? 'Signing In...' : 'Sign In'}
+                {formLoading ? t('SignIn-SigningIn') : t('Global-SignIn')}
               </button>
             </form>
 
             <div className={styles.divider}>
-              <span className={styles.dividerText}>or</span>
+              <span className={styles.dividerText}>{t('SignIn-Or')}</span>
             </div>
 
             <button
@@ -353,13 +356,13 @@ export const Default = (props: SignInProps): JSX.Element => {
                   d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"
                 />
               </svg>
-              Continue with Google
+              {t('SignIn-ContinueWithGoogle')}
             </button>
 
             <div className={styles.registerLinkContainer}>
-              Don't have an account?
+              {t('SignIn-DontHaveAnAccount')}
               <Link href="/register" className={styles.registerLink}>
-                Create one
+                {t('SignIn-CreateOne')}
               </Link>
             </div>
           </div>

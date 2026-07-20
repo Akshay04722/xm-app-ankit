@@ -1,3 +1,4 @@
+import { useTranslations } from "next-intl";
 import React from "react";
 import { UserProfile } from "@/lib/AuthContext";
 
@@ -6,6 +7,8 @@ interface ProfileHeaderProps {
 }
 
 export default function ProfileHeader({ profile }: ProfileHeaderProps) {
+  const t = useTranslations(process.env.NEXT_PUBLIC_DEFAULT_SITE_NAME);
+
   const email = profile?.email || "";
   
   const getInitials = () => {
@@ -59,7 +62,7 @@ export default function ProfileHeader({ profile }: ProfileHeaderProps) {
         >
           {getInitials()}
         </div>
-        <div className="absolute bottom-1 right-1 w-5 h-5 bg-green-500 rounded-full border-2 border-white shadow-xs" title="Online" />
+        <div className="absolute bottom-1 right-1 w-5 h-5 bg-green-500 rounded-full border-2 border-white shadow-xs" title={t('Global-Online')} />
       </div>
 
       {/* User Info details */}
@@ -69,12 +72,12 @@ export default function ProfileHeader({ profile }: ProfileHeaderProps) {
             {getFullName()}
           </h2>
           <span className="text-xs font-semibold uppercase px-2.5 py-1 rounded bg-gray-100 text-gray-600 border border-gray-200 w-fit mx-auto md:mx-0">
-            Verified Account
+            {t('ProfileHeader-VerifiedAccount')}
           </span>
         </div>
         <p className="text-sm text-gray-500 font-medium">{email}</p>
         <p className="text-sm text-gray-400 mt-2">
-          Member since {profile?.createdAt ? new Date(profile.createdAt).toLocaleDateString(undefined, { year: 'numeric', month: 'long' }) : 'recently'}
+          {t('ProfileHeader-MemberSince')} {profile?.createdAt ? new Date(profile.createdAt).toLocaleDateString(undefined, { year: 'numeric', month: 'long' }) : t('ProfileHeader-Recently')}
         </p>
       </div>
     </div>

@@ -1,10 +1,12 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import styles from "./CheckoutSuccess.module.css";
 
 export default function CheckoutSuccess(): React.JSX.Element {
+  const t = useTranslations(process.env.NEXT_PUBLIC_DEFAULT_SITE_NAME);
   const [orderId, setOrderId] = useState<string | null>(null);
 
   useEffect(() => {
@@ -29,24 +31,24 @@ export default function CheckoutSuccess(): React.JSX.Element {
           </svg>
         </div>
 
-        <h1 className={styles.title}>Payment Successful!</h1>
+        <h1 className={styles.title}>{t('CheckoutSuccess-PaymentSuccessful')}</h1>
         <p className={styles.subtitle}>
-          Thank you for your purchase. Your order has been placed successfully.
+          {t('CheckoutSuccess-ThankYouForYour')}
         </p>
 
         {orderId && (
           <div className={styles.orderIdBox}>
-            <span className={styles.label}>Order ID:</span>
+            <span className={styles.label}>{t('CheckoutSuccess-OrderId')}</span>
             <span className={styles.value}>{orderId}</span>
           </div>
         )}
 
         <div className={styles.btnGroup}>
           <Link href="/profile?tab=orders" className={styles.btnPrimary}>
-            View Orders
+            {t('CheckoutSuccess-ViewOrders')}
           </Link>
           <Link href="/shop" className={styles.btnSecondary}>
-            Continue Shopping
+            {t('Global-ContinueShopping')}
           </Link>
         </div>
       </div>

@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import React, { useState, useEffect } from "react";
 import { UserProfile } from "@/lib/AuthContext";
 
@@ -14,6 +15,8 @@ export default function ProfileForm({
   onSave,
   saving = false,
 }: ProfileFormProps) {
+  const t = useTranslations(process.env.NEXT_PUBLIC_DEFAULT_SITE_NAME);
+
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
@@ -66,7 +69,7 @@ export default function ProfileForm({
         {/* First Name */}
         <div className="space-y-1">
           <label htmlFor="firstName" className="text-sm font-semibold text-gray-700">
-            First Name *
+            {t('ProfileForm-FirstName')}
           </label>
           <input
             id="firstName"
@@ -74,7 +77,7 @@ export default function ProfileForm({
             className={`w-full px-4 py-2.5 rounded-xl border text-sm transition focus:outline-hidden focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 ${
               validationErrors.firstName ? "border-red-500" : "border-gray-200"
             }`}
-            placeholder="John"
+            placeholder={t('ProfileForm-John')}
             value={firstName}
             onChange={(e) => setFirstName(e.target.value)}
             disabled={saving}
@@ -87,7 +90,7 @@ export default function ProfileForm({
         {/* Last Name */}
         <div className="space-y-1">
           <label htmlFor="lastName" className="text-sm font-semibold text-gray-700">
-            Last Name *
+            {t('ProfileForm-LastName')}
           </label>
           <input
             id="lastName"
@@ -95,7 +98,7 @@ export default function ProfileForm({
             className={`w-full px-4 py-2.5 rounded-xl border text-sm transition focus:outline-hidden focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 ${
               validationErrors.lastName ? "border-red-500" : "border-gray-200"
             }`}
-            placeholder="Doe"
+            placeholder={t('ProfileForm-Doe')}
             value={lastName}
             onChange={(e) => setLastName(e.target.value)}
             disabled={saving}
@@ -110,7 +113,7 @@ export default function ProfileForm({
         {/* Phone Number */}
         <div className="space-y-1">
           <label htmlFor="phoneNumber" className="text-sm font-semibold text-gray-700">
-            Phone Number *
+            {t('ProfileForm-PhoneNumber')}
           </label>
           <input
             id="phoneNumber"
@@ -118,7 +121,7 @@ export default function ProfileForm({
             className={`w-full px-4 py-2.5 rounded-xl border text-sm transition focus:outline-hidden focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 ${
               validationErrors.phoneNumber ? "border-red-500" : "border-gray-200"
             }`}
-            placeholder="e.g. 5556667777"
+            placeholder={t('Global-Eg5556667777')}
             value={phoneNumber}
             onChange={(e) => setPhoneNumber(e.target.value)}
             disabled={saving}
@@ -131,7 +134,7 @@ export default function ProfileForm({
         {/* Email (Read-only) */}
         <div className="space-y-1">
           <label htmlFor="email" className="text-sm font-semibold text-gray-700">
-            Email Address (Readonly)
+            {t('ProfileForm-EmailAddressReadonly')}
           </label>
           <div className="relative">
             <input
@@ -177,7 +180,7 @@ export default function ProfileForm({
                   d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                 />
               </svg>
-              Saving Changes...
+              {t('ProfileForm-SavingChanges')}
             </>
           ) : (
             "Save Changes"

@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import React, { useState, useEffect } from "react";
 import { useAuth } from "@/lib/AuthContext";
 import styles from "./OrdersList.module.css";
@@ -62,6 +63,7 @@ interface OrdersListProps {
 }
 
 export default function OrdersList({ embedded = false }: OrdersListProps): React.JSX.Element {
+  const t = useTranslations(process.env.NEXT_PUBLIC_DEFAULT_SITE_NAME);
   const { user } = useAuth();
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -305,6 +307,7 @@ export default function OrdersList({ embedded = false }: OrdersListProps): React
 
   useEffect(() => {
     async function fetchOrders() {
+
       if (!user) {
         setLoading(false);
         return;
@@ -477,8 +480,8 @@ export default function OrdersList({ embedded = false }: OrdersListProps): React
     return (
       <div className={embedded ? "" : styles.container}>
         <div className={styles.emptyState}>
-          <h2>Please Login to View Orders</h2>
-          <p>You must be logged in to view your purchase history.</p>
+          <h2>{t('OrdersList-PleaseLoginToView')}</h2>
+          <p>{t('OrdersList-YouMustBeLogged')}</p>
         </div>
       </div>
     );
@@ -487,7 +490,7 @@ export default function OrdersList({ embedded = false }: OrdersListProps): React
   if (loading) {
     return (
       <div className={embedded ? "" : styles.container}>
-        <div className={styles.loader}>Loading your order history...</div>
+        <div className={styles.loader}>{t('OrdersList-LoadingYourOrderHistory')}</div>
       </div>
     );
   }
@@ -504,8 +507,8 @@ export default function OrdersList({ embedded = false }: OrdersListProps): React
     <div className={embedded ? "" : styles.container}>
       {!embedded && (
         <>
-          <h1 className={styles.title}>My Orders</h1>
-          <p className={styles.subtitle}>Track and view details of all your previous purchases.</p>
+          <h1 className={styles.title}>{t('Global-MyOrders')}</h1>
+          <p className={styles.subtitle}>{t('OrdersList-TrackAndViewDetails')}</p>
         </>
       )}
 
@@ -524,19 +527,19 @@ export default function OrdersList({ embedded = false }: OrdersListProps): React
               d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"
             />
           </svg>
-          <h2>No Orders Found</h2>
-          <p>You haven't placed any orders yet. Visit our shop to make your first purchase!</p>
+          <h2>{t('OrdersList-NoOrdersFound')}</h2>
+          <p>{t('OrdersList-YouHaventPlacedAny')}</p>
         </div>
       ) : (
         <div className={styles.tableWrapper}>
           <table className={styles.ordersTable}>
             <thead>
               <tr>
-                <th>Order ID</th>
-                <th>Date</th>
-                <th>Amount</th>
-                <th>Status</th>
-                <th>Actions</th>
+                <th>{t('Global-OrderId')}</th>
+                <th>{t('Global-Date')}</th>
+                <th>{t('Global-Amount')}</th>
+                <th>{t('Global-Status')}</th>
+                <th>{t('Global-Actions')}</th>
               </tr>
             </thead>
             <tbody>
@@ -569,7 +572,7 @@ export default function OrdersList({ embedded = false }: OrdersListProps): React
                         onClick={() => handleCompletePayment(order)}
                         className={styles.btnPayNow}
                       >
-                        Pay Now
+                        {t('OrdersList-PayNow')}
                       </button>
                     )}
                     {order.status === "success" && (
@@ -579,7 +582,7 @@ export default function OrdersList({ embedded = false }: OrdersListProps): React
                         className={styles.btnDetails}
                         style={{ marginRight: "8px", backgroundColor: "#B88E2F", color: "white", border: "1px solid #B88E2F" }}
                       >
-                        Invoice
+                        {t('OrdersList-Invoice')}
                       </button>
                     )}
                     <button
@@ -587,7 +590,7 @@ export default function OrdersList({ embedded = false }: OrdersListProps): React
                       onClick={() => setSelectedOrder(order)}
                       className={styles.btnDetails}
                     >
-                      View Details
+                      {t('Global-ViewDetails')}
                     </button>
                   </td>
                 </tr>
@@ -603,29 +606,29 @@ export default function OrdersList({ embedded = false }: OrdersListProps): React
           <div className={styles.modalOverlayBg} onClick={() => setSelectedOrder(null)} />
           <div className={styles.modalCard}>
             <div className={styles.modalHeader}>
-              <h3>Order Details</h3>
+              <h3>{t('OrdersList-OrderDetails')}</h3>
               <button
                 type="button"
                 className={styles.btnClose}
                 onClick={() => setSelectedOrder(null)}
-                aria-label="Close"
+                aria-label={t('Global-Close')}
               >
-                &times;
+                {t('Global-Times')}
               </button>
             </div>
 
             <div className={styles.modalContent}>
               <div className={styles.metaSection}>
                 <div>
-                  <p className={styles.metaLabel}>Order ID</p>
+                  <p className={styles.metaLabel}>{t('Global-OrderId')}</p>
                   <p className={styles.metaVal}>{selectedOrder.id}</p>
                 </div>
                 <div>
-                  <p className={styles.metaLabel}>Date Placed</p>
+                  <p className={styles.metaLabel}>{t('OrdersList-DatePlaced')}</p>
                   <p className={styles.metaVal}>{formatDate(selectedOrder.createdAt)}</p>
                 </div>
                 <div>
-                  <p className={styles.metaLabel}>Status</p>
+                  <p className={styles.metaLabel}>{t('Global-Status')}</p>
                   <span
                     className={`${styles.statusBadge} ${
                       selectedOrder.status === "success"
@@ -644,26 +647,26 @@ export default function OrdersList({ embedded = false }: OrdersListProps): React
 
               {selectedOrder.status === "cancelled" ? (
                 <div className={styles.cancelledInfoBox}>
-                  <p><strong>This order has been cancelled.</strong></p>
+                  <p><strong>{t('OrdersList-ThisOrderHasBeen')}</strong></p>
                   {selectedOrder.cancelReason && (
-                    <p><strong>Reason:</strong> {selectedOrder.cancelReason}</p>
+                    <p><strong>{t('Global-Reason')}</strong> {selectedOrder.cancelReason}</p>
                   )}
                   {selectedOrder.refund && (
                     <p style={{ marginTop: "8px", fontSize: "13px", color: "#666" }}>
-                      <strong>Refund Status:</strong> {selectedOrder.refund.status} (ID: {selectedOrder.refund.refundId})
+                      <strong>{t('OrdersList-RefundStatus')}</strong> {selectedOrder.refund.status} {t('OrdersList-Id')} {selectedOrder.refund.refundId})
                     </p>
                   )}
                 </div>
               ) : selectedOrder.status === "returned" ? (
                 <div className={styles.returnedInfoBox}>
-                  <p><strong>This order has been returned.</strong></p>
-                  <p><strong>Reason:</strong> {selectedOrder.returnReason}</p>
+                  <p><strong>{t('OrdersList-ThisOrderHasBeen1')}</strong></p>
+                  <p><strong>{t('Global-Reason')}</strong> {selectedOrder.returnReason}</p>
                   {selectedOrder.returnComment && (
-                    <p><strong>Comments:</strong> {selectedOrder.returnComment}</p>
+                    <p><strong>{t('Global-Comments')}</strong> {selectedOrder.returnComment}</p>
                   )}
                   {selectedOrder.refund && (
                     <p style={{ marginTop: "8px", fontSize: "13px", color: "#666" }}>
-                      <strong>Refund Status:</strong> {selectedOrder.refund.status} (ID: {selectedOrder.refund.refundId})
+                      <strong>{t('OrdersList-RefundStatus')}</strong> {selectedOrder.refund.status} {t('OrdersList-Id')} {selectedOrder.refund.refundId})
                     </p>
                   )}
                 </div>
@@ -671,9 +674,9 @@ export default function OrdersList({ embedded = false }: OrdersListProps): React
                 <>
                   {cancellingOrderId === selectedOrder.id ? (
                     <div className={styles.cancelForm}>
-                      <h5>Cancel Order</h5>
+                      <h5>{t('OrdersList-CancelOrder')}</h5>
                       <textarea
-                        placeholder="Please enter a reason for cancellation..."
+                        placeholder={t('OrdersList-PleaseEnterAReason')}
                         value={cancelReason}
                         onChange={(e) => setCancelReason(e.target.value)}
                         className={styles.cancelTextarea}
@@ -686,7 +689,7 @@ export default function OrdersList({ embedded = false }: OrdersListProps): React
                           disabled={cancelLoading || !cancelReason.trim()}
                           className={styles.btnConfirmCancel}
                         >
-                          {cancelLoading ? "Processing..." : "Confirm Cancel"}
+                          {cancelLoading ? t('OrdersList-Processing') : t('OrdersList-ConfirmCancel')}
                         </button>
                         <button
                           type="button"
@@ -697,43 +700,43 @@ export default function OrdersList({ embedded = false }: OrdersListProps): React
                           }}
                           className={styles.btnCancelBack}
                         >
-                          Back
+                          {t('OrdersList-Back')}
                         </button>
                       </div>
                     </div>
                   ) : returningOrderId === selectedOrder.id ? (
                     <div className={styles.returnForm}>
-                      <h5>Return Order</h5>
+                      <h5>{t('OrdersList-ReturnOrder')}</h5>
                       <div className={styles.formGroup}>
-                        <label>Reason for Return:</label>
+                        <label>{t('OrdersList-ReasonForReturn')}</label>
                         <select
                           value={returnReason}
                           onChange={(e) => setReturnReason(e.target.value)}
                           className={styles.returnSelect}
                         >
-                          <option value="Wrong size/fit">Wrong size/fit</option>
-                          <option value="Damaged or defective item">Damaged or defective item</option>
-                          <option value="Item not as described">Item not as described</option>
-                          <option value="Changed my mind">Changed my mind</option>
-                          <option value="Other">Other</option>
+                          <option value={t('OrdersList-WrongSizefit')}>Wrong size/fit</option>
+                          <option value={t('OrdersList-DamagedOrDefectiveItem')}>Damaged or defective item</option>
+                          <option value={t('OrdersList-ItemNotAsDescribed')}>Item not as described</option>
+                          <option value={t('OrdersList-ChangedMyMind')}>Changed my mind</option>
+                          <option value={t('OrdersList-Other')}>Other</option>
                         </select>
                       </div>
                       <div className={styles.formGroup}>
-                        <label>Additional Comments:</label>
+                        <label>{t('OrdersList-AdditionalComments')}</label>
                         <textarea
-                          placeholder="Please write additional details here..."
+                          placeholder={t('OrdersList-PleaseWriteAdditionalDeta')}
                           value={returnComment}
                           onChange={(e) => setReturnComment(e.target.value)}
                           className={styles.returnTextarea}
                         />
                       </div>
                       <div className={styles.instructionsBox}>
-                        <h6>Return Instructions:</h6>
+                        <h6>{t('OrdersList-ReturnInstructions')}</h6>
                         <ul>
-                          <li>Keep the items unused, unwashed and with all original tags attached.</li>
-                          <li>Pack the items securely in their original packaging.</li>
-                          <li>A pickup agent will be assigned to collect the items in 2-3 business days.</li>
-                          <li>Once pick-up is verified, your refund will be processed back to your original payment method.</li>
+                          <li>{t('OrdersList-KeepTheItemsUnused')}</li>
+                          <li>{t('OrdersList-PackTheItemsSecurely')}</li>
+                          <li>{t('OrdersList-APickupAgentWill')}</li>
+                          <li>{t('OrdersList-OncePickupIsVerified')}</li>
                         </ul>
                       </div>
                       {returnError && <p className={styles.errorText}>{returnError}</p>}
@@ -744,7 +747,7 @@ export default function OrdersList({ embedded = false }: OrdersListProps): React
                           disabled={returnLoading}
                           className={styles.btnConfirmReturn}
                         >
-                          {returnLoading ? "Processing..." : "Confirm Return"}
+                          {returnLoading ? t('OrdersList-Processing') : t('OrdersList-ConfirmReturn')}
                         </button>
                         <button
                           type="button"
@@ -756,7 +759,7 @@ export default function OrdersList({ embedded = false }: OrdersListProps): React
                           }}
                           className={styles.btnCancelBack}
                         >
-                          Back
+                          {t('OrdersList-Back')}
                         </button>
                       </div>
                     </div>
@@ -769,7 +772,7 @@ export default function OrdersList({ embedded = false }: OrdersListProps): React
                           className={styles.btnPayNow}
                           disabled={cancelLoading || returnLoading}
                         >
-                          {cancelLoading ? "Processing..." : "Pay Now"}
+                          {cancelLoading ? t('OrdersList-Processing') : t('OrdersList-PayNow')}
                         </button>
                       )}
                       {selectedOrder.status === "success" && (
@@ -780,7 +783,7 @@ export default function OrdersList({ embedded = false }: OrdersListProps): React
                             className={styles.btnReturn}
                             style={{ backgroundColor: "#B88E2F", color: "white", border: "1px solid #B88E2F" }}
                           >
-                            Download Invoice
+                            {t('OrdersList-DownloadInvoice')}
                           </button>
                           <button
                             type="button"
@@ -788,7 +791,7 @@ export default function OrdersList({ embedded = false }: OrdersListProps): React
                             className={styles.btnReturn}
                             disabled={cancelLoading || returnLoading}
                           >
-                            Return Order
+                            {t('OrdersList-ReturnOrder')}
                           </button>
                         </>
                       )}
@@ -798,7 +801,7 @@ export default function OrdersList({ embedded = false }: OrdersListProps): React
                         className={styles.btnCancel}
                         disabled={cancelLoading || returnLoading}
                       >
-                        Cancel Order
+                        {t('OrdersList-CancelOrder')}
                       </button>
                     </div>
                   )}
@@ -808,11 +811,11 @@ export default function OrdersList({ embedded = false }: OrdersListProps): React
               {selectedOrder.razorpay_payment_id && (
                 <div className={styles.paymentInfo}>
                   <div className={styles.paymentInfoRow}>
-                    <strong>Razorpay Payment ID:</strong>
+                    <strong>{t('OrdersList-RazorpayPaymentId')}</strong>
                     <span>{selectedOrder.razorpay_payment_id}</span>
                   </div>
                   <div className={styles.paymentInfoRow}>
-                    <strong>Razorpay Order ID:</strong>
+                    <strong>{t('OrdersList-RazorpayOrderId')}</strong>
                     <span>{selectedOrder.razorpay_order_id}</span>
                   </div>
                 </div>
@@ -820,7 +823,7 @@ export default function OrdersList({ embedded = false }: OrdersListProps): React
 
               {/* Items Section */}
               <div className={styles.modalItemsSection}>
-                <h4>Items Purchased</h4>
+                <h4>{t('Global-ItemsPurchased')}</h4>
                 <div className={styles.itemsList}>
                   {selectedOrder.cart && selectedOrder.cart.map((item, idx) => (
                     <div key={`${item.sku}-${idx}`} className={styles.itemRow}>
@@ -834,7 +837,7 @@ export default function OrdersList({ embedded = false }: OrdersListProps): React
                       <div className={styles.itemInfoCol}>
                         <div className={styles.itemTitle}>{item.title}</div>
                         <div className={styles.itemMeta}>
-                          SKU: {item.sku}
+                          {t('Global-Sku1')} {item.sku}
                           {item.selectedColor && ` | Color: ${item.selectedColor}`}
                           {item.selectedSize && ` | Size: ${item.selectedSize}`}
                         </div>
@@ -854,7 +857,7 @@ export default function OrdersList({ embedded = false }: OrdersListProps): React
               <div className={styles.footerSection}>
                 {selectedOrder.address && (
                   <div className={styles.shippingCol}>
-                    <h4>Delivery Address</h4>
+                    <h4>{t('Global-DeliveryAddress')}</h4>
                     <p className={styles.addrName}>{selectedOrder.address.fullName}</p>
                     <p className={styles.addrLine}>{selectedOrder.address.addressLine1}</p>
                     {selectedOrder.address.addressLine2 && (
@@ -864,21 +867,21 @@ export default function OrdersList({ embedded = false }: OrdersListProps): React
                       {selectedOrder.address.city}, {selectedOrder.address.state} - {selectedOrder.address.postalCode}
                     </p>
                     <p className={styles.addrLine}>{selectedOrder.address.country}</p>
-                    <p className={styles.addrPhone}>Phone: {selectedOrder.address.phoneNumber}</p>
+                    <p className={styles.addrPhone}>{t('Global-Phone')} {selectedOrder.address.phoneNumber}</p>
                   </div>
                 )}
 
                 <div className={styles.totalCol}>
                   <div className={styles.totalRow}>
-                    <span>Subtotal</span>
+                    <span>{t('Global-Subtotal')}</span>
                     <span>{formatPrice(selectedOrder.amount)}</span>
                   </div>
                   <div className={styles.totalRow}>
-                    <span>Shipping</span>
-                    <span className={styles.freeShipping}>FREE</span>
+                    <span>{t('Global-Shipping')}</span>
+                    <span className={styles.freeShipping}>{t('Global-Free')}</span>
                   </div>
                   <div className={`${styles.totalRow} ${styles.totalRowFinal}`}>
-                    <span>Total Paid</span>
+                    <span>{t('Global-TotalPaid')}</span>
                     <span>{formatPrice(selectedOrder.amount)}</span>
                   </div>
                 </div>

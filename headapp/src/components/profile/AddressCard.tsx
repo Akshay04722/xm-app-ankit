@@ -1,3 +1,4 @@
+import { useTranslations } from "next-intl";
 import React from "react";
 import { Address } from "@/services/profileService";
 
@@ -14,6 +15,8 @@ export default function AddressCard({
   onMakeDefaultClick,
   disabled = false,
 }: AddressCardProps) {
+  const t = useTranslations(process.env.NEXT_PUBLIC_DEFAULT_SITE_NAME);
+
   const {
     addressId,
     fullName,
@@ -52,7 +55,7 @@ export default function AddressCard({
             </span>
             {isDefault && (
               <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-800 border border-amber-200">
-                Default
+                {t('Global-Default')}
               </span>
             )}
           </div>
@@ -61,7 +64,7 @@ export default function AddressCard({
         <div className="text-sm text-gray-600 leading-relaxed mb-6 space-y-0.5">
           <p>{addressLine1}</p>
           {addressLine2 && <p>{addressLine2}</p>}
-          {landmark && <p className="text-sm text-gray-500 italic">Landmark: {landmark}</p>}
+          {landmark && <p className="text-sm text-gray-500 italic">{t('Global-Landmark')} {landmark}</p>}
           <p>
             {city}, {state} {postalCode}
           </p>
@@ -91,7 +94,7 @@ export default function AddressCard({
               d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L6.83 20.013a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10"
             />
           </svg>
-          Edit
+          {t('Global-Edit')}
         </button>
 
         {!isDefault && (
@@ -100,7 +103,7 @@ export default function AddressCard({
             disabled={disabled}
             className="text-sm font-semibold text-amber-600 hover:text-amber-700 transition flex items-center gap-1 ml-auto disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            Mark as Default
+            {t('AddressCard-MarkAsDefault')}
           </button>
         )}
       </div>
