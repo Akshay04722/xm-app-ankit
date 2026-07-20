@@ -25,6 +25,7 @@ export async function POST(req: NextRequest) {
             discountPrice: field(name: "DiscountPrice") { jsonValue }
             isNew: field(name: "IsNew") { jsonValue }
             mainImage: field(name: "MainImage") { jsonValue }
+            galleryImages: field(name: "GalleryImages") { jsonValue }
             availableSizes: field(name: "AvailableSizes") { jsonValue }
             availableColors: field(name: "AvailableColors") { jsonValue }
             category: field(name: "Category") { jsonValue }

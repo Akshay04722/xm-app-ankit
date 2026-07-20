@@ -33,6 +33,9 @@ interface ProductItem {
   mainImage?: {
     jsonValue?: Field<string>;
   };
+  galleryImages?: {
+    jsonValue?: Field<string>;
+  };
 }
 
 interface OurProductsFields {
@@ -47,6 +50,67 @@ interface OurProductsFields {
 
 type OurProductsProps = ComponentProps & {
   fields: OurProductsFields;
+};
+
+interface ProductImageSliderProps {
+  galleryImages: string[];
+  title: string;
+}
+
+const ProductImageSlider: React.FC<ProductImageSliderProps> = ({
+  galleryImages,
+  title,
+}) => {
+  const [currentIndex, setCurrentIndex] = useState(0);
+
+  useEffect(() => {
+    if (galleryImages.length <= 1) return;
+
+    const timer = setInterval(() => {
+      setCurrentIndex((prev) => (prev + 1) % galleryImages.length);
+    }, 3000);
+
+    return () => clearInterval(timer);
+  }, [galleryImages]);
+
+  if (galleryImages.length === 0) {
+    return <div className="w-full h-full flex items-center justify-center text-gray-400">No Image</div>;
+  }
+
+  return (
+    <div className="w-full h-full relative overflow-hidden">
+      {/* Slider Track */}
+      <div
+        className="flex w-full h-full transition-transform duration-500 ease-in-out"
+        style={{
+          transform: `translateX(-${currentIndex * 100}%)`,
+        }}
+      >
+        {galleryImages.map((img, idx) => (
+          <img
+            key={img}
+            src={img}
+            alt={`${title} - image ${idx + 1}`}
+            className="w-full h-full object-cover shrink-0"
+          />
+        ))}
+      </div>
+
+      {/* Slider Indicators */}
+      {galleryImages.length > 1 && (
+        <div className="absolute bottom-3 left-1/2 transform -translate-x-1/2 flex gap-1.5 z-10 bg-black/30 px-2 py-1 rounded-full backdrop-blur-xs">
+          {galleryImages.map((_, idx) => (
+            <span
+              key={idx}
+              className={`w-1.5 h-1.5 rounded-full transition-all duration-300 ${
+                currentIndex === idx ? "bg-white scale-110" : "bg-white/50"
+              }`}
+            />
+          ))}
+        </div>
+      )}
+    </div>
+  );
 };
 
 const NoDataFallback = ({ componentName }: { componentName: string }) => (
@@ -221,6 +285,18 @@ export const Default = (props: OurProductsProps): JSX.Element => {
               ? mainImageField.value
               : (mainImageField?.value as any)?.src || "";
 
+            const galleryRaw = product.galleryImages?.jsonValue?.value || "";
+            const galleryImagesList: string[] = [];
+            if (imageUrl) galleryImagesList.push(imageUrl);
+            if (galleryRaw) {
+              galleryRaw.split(/[|,]/).forEach((url: string) => {
+                const trimmed = url.trim();
+                if (trimmed && !galleryImagesList.includes(trimmed)) {
+                  galleryImagesList.push(trimmed);
+                }
+              });
+            }
+
             const isNewVal = product.isNew?.jsonValue?.value === true || product.isNew?.jsonValue?.value === "1";
             const hasDiscount = discountPriceVal > priceVal;
             const discountPercent = hasDiscount
@@ -238,17 +314,10 @@ export const Default = (props: OurProductsProps): JSX.Element => {
               >
                 {/* Image and Badges Container */}
                 <div className="relative w-full h-[301px] bg-gray-200 overflow-hidden">
-                  {imageUrl ? (
-                    <img
-                      src={imageUrl}
-                      className="object-cover w-full h-full transition-transform duration-500 group-hover:scale-105"
-                      alt={titleVal}
-                    />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center text-gray-400">
-                      No Image
-                    </div>
-                  )}
+                  <ProductImageSlider
+                    galleryImages={galleryImagesList}
+                    title={titleVal}
+                  />
 
                   {/* Badges (Top-Right) */}
                   <div className="absolute top-4 right-4 flex flex-col gap-2 z-10">

@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, JSX } from "react";
+import Script from "next/script";
 import styles from "./ProductDetails.module.css";
 import { ComponentProps } from "@/lib/component-props";
 import { useSitecore } from "@sitecore-content-sdk/nextjs";
@@ -123,6 +124,46 @@ export const Default = (props: ProductDetailsProps): JSX.Element => {
         .catch((err) => console.error("Error fetching stock:", err));
     }
   }, [sku]);
+
+  // ---------- Razorpay Affordability Widget Integration ----------
+  const [scriptLoaded, setScriptLoaded] = useState(false);
+  const priceValue = routeFields?.Price?.value?.toString() || "0";
+
+  useEffect(() => {
+    const renderWidget = () => {
+      const container = document.getElementById("razorpay-affordability-widget");
+      if (!container) return;
+
+      // Clear the container to avoid duplicate widgets
+      container.innerHTML = "";
+
+      if (
+        typeof window !== "undefined" &&
+        (window as any).RazorpayAffordabilitySuite
+      ) {
+        try {
+          const amountInPaise = Math.round(parseFloat(priceValue) * 100);
+          const keyId =
+            process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || "rzp_test_TDLbbmORZsaDSC";
+
+          const widgetConfig = {
+            key: keyId,
+            amount: amountInPaise,
+            currency: "INR",
+          };
+
+          const rzpAffordabilitySuite = new (window as any).RazorpayAffordabilitySuite(
+            widgetConfig
+          );
+          rzpAffordabilitySuite.render();
+        } catch (error) {
+          console.error("Failed to render Razorpay Affordability Widget:", error);
+        }
+      }
+    };
+
+    renderWidget();
+  }, [priceValue, scriptLoaded]);
 
   // ---------- Helpers for Reviews ----------
   const getInitials = (name: string) => {
@@ -363,6 +404,13 @@ export const Default = (props: ProductDetailsProps): JSX.Element => {
               </span>
             )}
           </p>
+
+          {/* Razorpay Affordability Widget Container */}
+          <div id="razorpay-affordability-widget" className={styles.widgetContainer}></div>
+          <Script
+            src="https://cdn.razorpay.com/widgets/affordability/affordability.js"
+            onReady={() => setScriptLoaded(true)}
+          />
 
           {/* Rating row */}
           <div className={styles.ratingRow}>

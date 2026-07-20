@@ -175,7 +175,19 @@ export const Default = (props: HeaderProps): JSX.Element => {
   const { user, signOutUser } = useAuth();
   const { totalItems } = useCart();
   const [isPopupOpen, setIsPopupOpen] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
+
+  useEffect(() => {
+    if (isMenuOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [isMenuOpen]);
 
   useEffect(() => {
     if (user) {
@@ -504,7 +516,116 @@ export const Default = (props: HeaderProps): JSX.Element => {
             </span>
           )}
         </Link>
+
+        {/* Burger Menu Button (Visible on mobile/tablet) */}
+        <button
+          className="header__burger-btn"
+          onClick={() => setIsMenuOpen(!isMenuOpen)}
+          aria-label="Toggle Menu"
+          aria-expanded={isMenuOpen}
+        >
+          <span className={`header__burger-bar ${isMenuOpen ? "open" : ""}`}></span>
+          <span className={`header__burger-bar ${isMenuOpen ? "open" : ""}`}></span>
+          <span className={`header__burger-bar ${isMenuOpen ? "open" : ""}`}></span>
+        </button>
       </div>
+
+      {/* Sliding Mobile Menu Drawer */}
+      <div className={`header__drawer ${isMenuOpen ? "header__drawer--open" : ""}`}>
+        <div className="header__drawer-header">
+          {/* Logo */}
+          <div className="header__drawer-logo">
+            {logoImage?.value?.src ? (
+              <ContentSdkImage field={logoImage} alt="Logo" />
+            ) : (
+              <div className="flex items-center gap-1">
+                <LogoMark />
+                <span className="header__logo-text">{siteName}</span>
+              </div>
+            )}
+          </div>
+          {/* Close button */}
+          <button
+            className="header__drawer-close"
+            onClick={() => setIsMenuOpen(false)}
+            aria-label="Close Menu"
+          >
+            <svg viewBox="0 0 24 24" width="28" height="28" fill="currentColor">
+              <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" />
+            </svg>
+          </button>
+        </div>
+
+        {/* Mobile Navigation Links */}
+        <nav className="header__drawer-nav" aria-label="Mobile navigation">
+          {navigationLinks.map((item) => {
+            const linkField = item?.fields?.link || item?.fields?.Link;
+            if (!linkField?.value?.href) return null;
+            const labelText =
+              item?.fields?.label?.value ||
+              item?.fields?.Label?.value ||
+              linkField?.value?.text ||
+              linkField?.value?.title ||
+              "Link";
+            return (
+              <ContentSdkLink
+                key={item.id}
+                field={linkField}
+                className="header__drawer-link"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                {labelText}
+              </ContentSdkLink>
+            );
+          })}
+        </nav>
+
+        {/* Drawer Footer Actions */}
+        <div className="header__drawer-footer">
+          {user ? (
+            <div className="header__drawer-user">
+              <span className="header__drawer-user-email">{user.email}</span>
+              <Link
+                href="/profile"
+                className="header__drawer-btn-link"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                Manage Profile
+              </Link>
+              {isAdmin && (
+                <Link
+                  href="/admin"
+                  className="header__drawer-btn-link admin"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  Admin Dashboard
+                </Link>
+              )}
+              <button
+                className="header__drawer-signout-btn"
+                onClick={() => {
+                  setIsMenuOpen(false);
+                  handleSignOut();
+                }}
+              >
+                Sign Out
+              </button>
+            </div>
+          ) : (
+            <Link
+              href="/sign-in"
+              className="header__drawer-signin-btn"
+              onClick={() => setIsMenuOpen(false)}
+            >
+              Sign In
+            </Link>
+          )}
+        </div>
+      </div>
+
+      {isMenuOpen && (
+        <div className="header__drawer-backdrop" onClick={() => setIsMenuOpen(false)}></div>
+      )}
     </header>
   );
 };

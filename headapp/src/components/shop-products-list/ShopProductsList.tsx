@@ -54,51 +54,45 @@ const ProductImageSlider: React.FC<ProductImageSliderProps> = ({
   title,
 }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [isHovered, setIsHovered] = useState(false);
   const timerRef = React.useRef<any>(null);
 
   useEffect(() => {
-    if (isHovered && galleryImages.length > 1) {
-      timerRef.current = setInterval(() => {
-        setCurrentIndex((prev) => (prev + 1) % galleryImages.length);
-      }, 1500);
-    } else {
-      if (timerRef.current) {
-        clearInterval(timerRef.current);
-      }
-      setCurrentIndex(0);
-    }
+    if (galleryImages.length <= 1) return;
+
+    timerRef.current = setInterval(() => {
+      setCurrentIndex((prev) => (prev + 1) % galleryImages.length);
+    }, 3000);
 
     return () => {
       if (timerRef.current) clearInterval(timerRef.current);
     };
-  }, [isHovered, galleryImages]);
+  }, [galleryImages]);
 
   if (galleryImages.length === 0) {
     return <div className={styles.noImage}>No Image</div>;
   }
 
   return (
-    <div
-      className="w-full h-full relative overflow-hidden"
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-    >
-      {galleryImages.map((img, idx) => (
-        <img
-          key={img}
-          src={img}
-          alt={`${title} - image ${idx + 1}`}
-          className={`${styles.productImg} absolute inset-0 w-full h-full object-cover transition-opacity duration-500`}
-          style={{
-            opacity: currentIndex === idx ? 1 : 0,
-            zIndex: currentIndex === idx ? 1 : 0,
-          }}
-        />
-      ))}
+    <div className="w-full h-full relative overflow-hidden">
+      {/* Slider Track */}
+      <div
+        className="flex w-full h-full transition-transform duration-500 ease-in-out"
+        style={{
+          transform: `translateX(-${currentIndex * 100}%)`,
+        }}
+      >
+        {galleryImages.map((img, idx) => (
+          <img
+            key={img}
+            src={img}
+            alt={`${title} - image ${idx + 1}`}
+            className={`${styles.productImg} w-full h-full object-cover shrink-0`}
+          />
+        ))}
+      </div>
 
       {/* Slider Indicators */}
-      {isHovered && galleryImages.length > 1 && (
+      {galleryImages.length > 1 && (
         <div className="absolute bottom-3 left-1/2 transform -translate-x-1/2 flex gap-1.5 z-10 bg-black/30 px-2 py-1 rounded-full backdrop-blur-xs">
           {galleryImages.map((_, idx) => (
             <span

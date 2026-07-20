@@ -486,20 +486,43 @@
     font-size: 28px;
   }
 
+  .price {
+    font-size: 20px;
+  }
+
   .actionRow {
     flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .quantityStepper {
+    height: 50px;
+  }
+
+  .addToCartBtn,
+  .compareBtn {
+    height: 50px;
+    padding: 0 20px;
+    font-size: 15px;
+    border-radius: 10px;
   }
 
   .tabHeaders {
-    gap: 24px;
+    gap: 16px;
+    flex-wrap: wrap;
   }
 
   .tabBtn {
-    font-size: 18px;
+    font-size: 16px;
   }
 
   .tabImages {
     flex-direction: column;
+    gap: 16px;
+  }
+
+  .tabImageWrap {
+    height: 240px;
   }
 }
 
@@ -814,4 +837,10 @@
     border-bottom: 1px solid #ebdcca;
     padding-bottom: 20px;
   }
+}
+
+.widgetContainer {
+  margin-top: 10px;
+  margin-bottom: 20px;
+  min-height: 40px; /* Prevents layout shift while the widget script is loading */
 }
