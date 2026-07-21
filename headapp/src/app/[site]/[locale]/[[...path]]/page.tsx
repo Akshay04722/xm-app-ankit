@@ -80,10 +80,18 @@ async function fetchPage(resolvedPath: string[], site: string, locale: string) {
   return page;
 }
 
-async function fetchPageWithFallback(resolvedPath: string[], site: string, locale: string) {
+async function fetchPageWithFallback(
+  resolvedPath: string[],
+  site: string,
+  locale: string,
+) {
   let page = await fetchPage(resolvedPath, site, locale);
 
-  if (!page && resolvedPath.length === 1 && resolvedPath[0]?.toLowerCase() === "profile") {
+  if (
+    !page &&
+    resolvedPath.length === 1 &&
+    resolvedPath[0]?.toLowerCase() === "profile"
+  ) {
     const homePage = await fetchPage([], site, locale);
     if (homePage && homePage.layout?.sitecore?.route) {
       page = {
@@ -108,13 +116,13 @@ async function fetchPageWithFallback(resolvedPath: string[], site: string, local
                     uid: "profile-component-uid",
                     componentName: "Profile",
                     params: {},
-                    fields: {}
-                  }
-                ]
-              }
-            }
-          }
-        }
+                    fields: {},
+                  },
+                ],
+              },
+            },
+          },
+        },
       } as any;
     }
   }
@@ -237,7 +245,6 @@ export const generateMetadata = async ({ params }: PageProps) => {
     fields?.ogDescription?.value?.toString() ||
     fields?.pageSummary?.value?.toString() ||
     "Sitecore Next.js Skate Park Example";
-  console.log("Layout fields", fields);
   const description = stripHtml(rawDescription);
 
   return {

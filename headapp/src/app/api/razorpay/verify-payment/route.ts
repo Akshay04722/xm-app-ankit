@@ -89,7 +89,7 @@ export async function POST(req: NextRequest) {
       await orderRef.set(orderDoc);
     }
 
-    // 4. Atomic stock reduction in both Firestore and Sitecore
+    // 4. Atomic stock reduction and social proof purchase event recording
     if (shouldDecrementStock && Array.isArray(itemsToDecrement) && itemsToDecrement.length > 0) {
       const batch = db.batch();
       for (const item of itemsToDecrement) {
@@ -100,6 +100,14 @@ export async function POST(req: NextRequest) {
             stockCount: FieldValue.increment(-Number(item.quantity || 1)),
             updatedAt: new Date().toISOString(),
           }, { merge: true });
+
+          // Record purchase event for social proof
+          const eventRef = db.collection("socialProofEvents").doc();
+          batch.set(eventRef, {
+            sku: item.sku.trim(),
+            action: "purchase",
+            timestamp: new Date(),
+          });
         }
       }
       await batch.commit();

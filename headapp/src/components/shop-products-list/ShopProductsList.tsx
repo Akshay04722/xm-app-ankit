@@ -8,6 +8,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import client from "@/lib/sitecore-client";
 import { useCart } from "@/lib/CartContext";
+import { useRecentlyViewedCdp } from "@/components/cdp/CDPProvider";
 
 interface ProductColor {
   name: string;
@@ -96,19 +97,7 @@ const ProductImageSlider: React.FC<ProductImageSliderProps> = ({
         ))}
       </div>
 
-      {/* Slider Indicators */}
-      {galleryImages.length > 1 && (
-        <div className="absolute bottom-3 left-1/2 transform -translate-x-1/2 flex gap-1.5 z-10 bg-black/30 px-2 py-1 rounded-full backdrop-blur-xs">
-          {galleryImages.map((_, idx) => (
-            <span
-              key={idx}
-              className={`w-1.5 h-1.5 rounded-full transition-all duration-300 ${
-                currentIndex === idx ? "bg-white scale-110" : "bg-white/50"
-              }`}
-            />
-          ))}
-        </div>
-      )}
+
     </div>
   );
 };
@@ -120,8 +109,35 @@ export const Default = (props: ShopProductsListProps): JSX.Element => {
   console.log("fields", fields);
   const pathname = usePathname();
   const { addToCart } = useCart();
+  const { guestRef } = useRecentlyViewedCdp();
   const [products, setProducts] = useState<Product[]>([]);
   const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
+  const [socialProof, setSocialProof] = useState<
+    Record<string, { tagType: "trending" | "demand" | "views" | null; tagText: string }>
+  >({});
+
+  useEffect(() => {
+    if (products.length === 0) return;
+
+    const skus = products.map((p) => p.sku).filter(Boolean);
+    if (skus.length === 0) return;
+
+    fetch("/api/products/social-proof", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ skus }),
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error("Failed to fetch social proof");
+        return res.json();
+      })
+      .then((data) => {
+        if (data.stats) {
+          setSocialProof(data.stats);
+        }
+      })
+      .catch((err) => console.error("Error fetching social proof:", err));
+  }, [products]);
 
   // Filter and Toolbar states
   const [sortBy, setSortBy] = useState("default");
@@ -836,6 +852,21 @@ export const Default = (props: ShopProductsListProps): JSX.Element => {
                   </div>
                   <div className="flex flex-col justify-between py-2 flex-grow">
                     <div>
+                      {/* Social Proof Tag */}
+                      {socialProof[product.sku]?.tagType && (
+                        <div className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold font-poppins mb-2 shadow-xs border transition-all duration-300 ${
+                          socialProof[product.sku].tagType === "trending"
+                            ? "bg-red-50/90 text-red-600 border-red-200/50"
+                            : socialProof[product.sku].tagType === "demand"
+                            ? "bg-amber-50/90 text-[#b88e2f] border-amber-200/50"
+                            : "bg-blue-50/90 text-blue-600 border-blue-200/50"
+                        }`}>
+                          {socialProof[product.sku].tagType === "trending" && <span className="text-xs">🔥</span>}
+                          {socialProof[product.sku].tagType === "demand" && <span className="text-xs">🛒</span>}
+                          {socialProof[product.sku].tagType === "views" && <span className="text-xs">👁️</span>}
+                          <span>{socialProof[product.sku].tagText}</span>
+                        </div>
+                      )}
                       <h4 className="text-xl font-bold text-[#3a3a3a]">
                         {product.title}
                       </h4>
@@ -904,6 +935,28 @@ export const Default = (props: ShopProductsListProps): JSX.Element => {
                       <div className={styles.newBadge}>New</div>
                     )}
                   </div>
+
+                  {/* Social Proof Badge */}
+                  {socialProof[product.sku]?.tagType && (
+                    <div className={`${styles.socialProofBanner} ${
+                      socialProof[product.sku].tagType === "trending"
+                        ? styles.socialProofTrending
+                        : socialProof[product.sku].tagType === "demand"
+                        ? styles.socialProofDemand
+                        : styles.socialProofViews
+                    }`}>
+                      {socialProof[product.sku].tagType === "trending" && (
+                        <span className={styles.socialProofIcon}>🔥</span>
+                      )}
+                      {socialProof[product.sku].tagType === "demand" && (
+                        <span className={styles.socialProofIcon}>🛒</span>
+                      )}
+                      {socialProof[product.sku].tagType === "views" && (
+                        <span className={styles.socialProofIcon}>👁️</span>
+                      )}
+                      <span>{socialProof[product.sku].tagText}</span>
+                    </div>
+                  )}
                 </div>
 
                 {/* Info Box */}

@@ -165,8 +165,8 @@ export function CartProvider({ children }: { children: ReactNode }) {
           style={{
             backgroundColor: "#b88e2f",
             zIndex: 99999,
-            right: "20px",
-            top: "20px",
+            right: "30px",
+            bottom: "30px",
           }}
           className="fixed text-white px-5 py-3 rounded-2xl shadow-xl flex items-center gap-2.5 font-medium text-base animate-slide-in"
         >

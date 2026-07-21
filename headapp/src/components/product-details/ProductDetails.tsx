@@ -53,7 +53,7 @@ export const Default = (props: ProductDetailsProps): JSX.Element => {
   const route = page?.layout?.sitecore?.route;
   const routeFields = route?.fields as Record<string, any> | undefined;
   const { addToCart } = useCart();
-  const { trackPostClick } = useRecentlyViewedCdp();
+  const { trackPostClick, guestRef } = useRecentlyViewedCdp();
 
   const sku = routeFields?.SKU?.value || "";
 
@@ -68,6 +68,16 @@ export const Default = (props: ProductDetailsProps): JSX.Element => {
         imageSrc: imageVal,
         href: window.location.pathname,
       }).catch((err) => console.warn("Failed to track product view in CDP:", err));
+
+      const viewSessionKey = `viewed_sku_${sku}`;
+      if (!sessionStorage.getItem(viewSessionKey)) {
+        sessionStorage.setItem(viewSessionKey, "true");
+        fetch("/api/products/social-proof/increment", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ sku, action: "view" }),
+        }).catch((err) => console.warn("Failed to track product view count:", err));
+      }
     }
   }, [sku, routeFields, trackPostClick, route?.name]);
 
@@ -515,6 +525,12 @@ export const Default = (props: ProductDetailsProps): JSX.Element => {
                   selectedColor: selectedColor || undefined,
                   selectedSize: selectedSize || undefined,
                 }, quantity);
+
+                fetch("/api/products/social-proof/increment", {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({ sku, action: "add" }),
+                }).catch((err) => console.warn("Failed to track cart addition:", err));
               }}
               disabled={stockCount === 0}
             >

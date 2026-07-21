@@ -9,6 +9,7 @@ import {
 import { ComponentProps } from "lib/component-props";
 import { usePathname } from "next/navigation";
 import NextLink from "next/link";
+import { useRecentlyViewedCdp } from "@/components/cdp/CDPProvider";
 
 interface ProductItem {
   id: string;
@@ -98,19 +99,7 @@ const ProductImageSlider: React.FC<ProductImageSliderProps> = ({
         ))}
       </div>
 
-      {/* Slider Indicators */}
-      {galleryImages.length > 1 && (
-        <div className="absolute bottom-3 left-1/2 transform -translate-x-1/2 flex gap-1.5 z-10 bg-black/30 px-2 py-1 rounded-full backdrop-blur-xs">
-          {galleryImages.map((_, idx) => (
-            <span
-              key={idx}
-              className={`w-1.5 h-1.5 rounded-full transition-all duration-300 ${
-                currentIndex === idx ? "bg-white scale-110" : "bg-white/50"
-              }`}
-            />
-          ))}
-        </div>
-      )}
+
     </div>
   );
 };
@@ -144,6 +133,34 @@ export const Default = (props: OurProductsProps): JSX.Element => {
   const [products, setProducts] = useState<ProductItem[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+
+  const { guestRef } = useRecentlyViewedCdp();
+  const [socialProof, setSocialProof] = useState<
+    Record<string, { tagType: "trending" | "demand" | "views" | null; tagText: string }>
+  >({});
+
+  useEffect(() => {
+    if (products.length === 0) return;
+
+    const skus = products.map((p) => p.sku?.jsonValue?.value || "").filter(Boolean);
+    if (skus.length === 0) return;
+
+    fetch("/api/products/social-proof", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ skus }),
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error("Failed to fetch social proof");
+        return res.json();
+      })
+      .then((data) => {
+        if (data.stats) {
+          setSocialProof(data.stats);
+        }
+      })
+      .catch((err) => console.error("Error fetching social proof:", err));
+  }, [products]);
 
   // Resolve current site and locale from URL path for the API call
   const pathSegments = pathname.split("/").filter(Boolean);
@@ -339,6 +356,22 @@ export const Default = (props: OurProductsProps): JSX.Element => {
                       </div>
                     )}
                   </div>
+
+                  {/* Social Proof Badge */}
+                  {socialProof[product.sku?.jsonValue?.value || ""]?.tagType && (
+                    <div className={`absolute top-6 left-6 z-10 flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] font-semibold font-poppins shadow-md backdrop-blur-md transition-all duration-300 ${
+                      socialProof[product.sku?.jsonValue?.value || ""].tagType === "trending"
+                        ? "bg-red-50/90 text-red-600 border border-red-200/50"
+                        : socialProof[product.sku?.jsonValue?.value || ""].tagType === "demand"
+                        ? "bg-amber-50/90 text-[#b88e2f] border border-amber-200/50"
+                        : "bg-blue-50/90 text-blue-600 border border-blue-200/50"
+                    }`}>
+                      {socialProof[product.sku?.jsonValue?.value || ""].tagType === "trending" && <span className="text-xs">🔥</span>}
+                      {socialProof[product.sku?.jsonValue?.value || ""].tagType === "demand" && <span className="text-xs">🛒</span>}
+                      {socialProof[product.sku?.jsonValue?.value || ""].tagType === "views" && <span className="text-xs">👁️</span>}
+                      <span>{socialProof[product.sku?.jsonValue?.value || ""].tagText}</span>
+                    </div>
+                  )}
                 </div>
 
                 {/* Description Box */}
