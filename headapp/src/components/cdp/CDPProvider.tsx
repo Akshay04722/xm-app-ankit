@@ -93,6 +93,58 @@ export function CDPProvider({ children }: { children: ReactNode }) {
     };
   }, [pathname]);
 
+  // Tab title blinking when user goes to another site/tab
+  useEffect(() => {
+    let originalTitle = document.title;
+    let titleInterval: NodeJS.Timeout | null = null;
+    let isOriginal = true;
+
+    const handleVisibilityChange = () => {
+      if (document.hidden) {
+        // Save the current title (in case it changed due to routing)
+        originalTitle = document.title;
+        
+        // Start blinking
+        const promoText = "🛍️ Deals You'll Love, Prices You'll Appreciate.";
+        
+        if (titleInterval) clearInterval(titleInterval);
+        
+        titleInterval = setInterval(() => {
+          document.title = isOriginal ? promoText : originalTitle;
+          isOriginal = !isOriginal;
+        }, 1500); // toggle every 1.5 seconds
+      } else {
+        // Clear blinking and restore original
+        if (titleInterval) {
+          clearInterval(titleInterval);
+          titleInterval = null;
+        }
+        document.title = originalTitle;
+        isOriginal = true;
+      }
+    };
+
+    // Update original title when document title changes in visible state
+    const mutationObserver = new MutationObserver(() => {
+      if (!document.hidden) {
+        originalTitle = document.title;
+      }
+    });
+
+    mutationObserver.observe(document.querySelector("title") || document, {
+      subtree: true,
+      childList: true,
+    });
+
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+
+    return () => {
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+      mutationObserver.disconnect();
+      if (titleInterval) clearInterval(titleInterval);
+    };
+  }, []);
+
   const trackPostClick = useCallback(
     async (post: Omit<RecentlyViewedPost, "viewedAt">) => {
       const engage = await getEngage();

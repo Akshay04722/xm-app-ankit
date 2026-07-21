@@ -1,0 +1,23 @@
+---
+ID: "f47a61d1-678a-4ab5-953a-be7d560c87a5"
+Parent: "aca8d4ff-30c9-4d84-8778-f609664ed4d1"
+Template: "0437fee2-44c9-46a6-abe9-28858d9fee8c"
+Path: "/sitecore/templates/Project/click-click-launch/Components/ShareSetup"
+SharedFields:
+- ID: "12c33f3f-86c5-43a5-bcbf-7c70c0c0c0c0"
+  Hint: __Base template
+  Value: "{0C342C44-3CAE-4C2E-8E2E-A1E4B3BD8713}"
+- ID: "06d5295c-ed2f-4a54-9bf2-26228d113318"
+  Hint: __Icon
+  Value: Network/32x32/share.png
+Languages:
+- Language: en
+  Versions:
+  - Version: 1
+    Fields:
+    - ID: "25bed78c-4957-4165-998a-ca1b52f67497"
+      Hint: __Created
+      Value: 20260616T154000Z
+    - ID: "8cdc337e-a112-42fb-bbb4-4143751e123f"
+      Hint: __Revision
+      Value: "f47a61d1-678a-4ab5-953a-be7d560c87a5"
