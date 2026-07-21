@@ -1,5 +1,13 @@
 import { type NextRequest, NextResponse } from 'next/server';
-import sites from '.sitecore/sites.json';
+import sitesJson from '.sitecore/sites.json';
+
+interface SiteEntry {
+  name?: string;
+  hostName?: string;
+  [key: string]: unknown;
+}
+
+const sites = sitesJson as SiteEntry[];
 
 export const dynamic = 'force-dynamic';
 
